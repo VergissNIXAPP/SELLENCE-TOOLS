@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <title>SELLENCE OOS Scanner</title>
+
+  <link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#5b2bd1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OOS SCANNER">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+
+  <!-- Light UI (wie marktcheck.html) – nur für Login -->
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#121826;
+      --muted:#6b7280;
+      --border: rgba(17,24,39,.10);
+      --accent:#2e007a; /* Sellence Purple */
+      --accent2:#5b2bd1;
+      --danger:#b00020;
+      --radius: 18px;
+    }
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow:hidden;
+    }
+    .loginShell{
+      min-height:100dvh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px 14px calc(18px + env(safe-area-inset-bottom));
+    }
+    .loginCard{
+      width:min(420px,100%);
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px 16px 16px;
+      box-shadow: 0 10px 26px rgba(0,0,0,.06);
+      text-align:center;
+    }
+    .loginTitle{
+      margin: 4px 0 6px;
+      line-height:1.05;
+    }
+    .sellenceTitle{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:2px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+    }
+    .sellenceBrand{
+      font-weight: 900;
+      font-size: 26px;
+      color: var(--accent);
+    }
+    .sellenceSub{
+      font-weight: 900;
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing:.10em;
+    }
+    .sub{
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .field{
+      text-align:left;
+      margin-top: 10px;
+    }
+    .field label{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .field input{
+      width:100%;
+      padding: 12px 12px;
+      border: 1px solid rgba(0,0,0,.10);
+      border-radius: 14px;
+      font-size: 16px;
+      outline:none;
+      background:#fff;
+      color: var(--text);
+    }
+    .field input:focus{
+      border-color: rgba(46,0,122,.45);
+      box-shadow: 0 0 0 3px rgba(46,0,122,.12);
+    }
+    .miniBtn.primary{
+      appearance:none;
+      border:0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 900;
+      cursor:pointer;
+      background: var(--accent);
+      color: white;
+      width: 100%;
+      box-shadow: 0 10px 20px rgba(124,58,237,.22);
+    }
+    .miniBtn.primary:active{transform: scale(.99)}
+    .err{
+      display:none;
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--danger);
+      background: rgba(176,0,32,.06);
+      border: 1px solid rgba(176,0,32,.18);
+      border-radius: 14px;
+      padding: 10px 10px;
+      text-align:left;
+      line-height:1.35;
+    }
+    .smallLink{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      cursor:pointer;
+      display:inline-block;
+      user-select:none;
+    }
+    .smallLink:hover{color: var(--accent2);}
+  </style>
+</head>
+<body>
+  <div class="loginShell">
+    <div class="loginCard" role="dialog" aria-label="Login">
+      <h1 class="title sellenceTitle loginTitle">
+        <span class="sellenceBrand">SELLENCE</span>
+        <span class="sellenceSub">OUT OF STOCK Scanner</span>
+      </h1>
+      <div class="sub">Bitte Passwort eingeben, um OOS SCANNER zu starten.</div>
+
+      <div class="field">
+        <label for="token">Token</label>
+        <input id="token" type="password" inputmode="text" autocomplete="current-password" placeholder="Token Passwort eingeben">
+      </div>
+
+      <button class="miniBtn primary" id="btn" style="margin-top:12px;">Starten</button>
+
+      <div class="err" id="err">Token ist falsch.</div>
+      <div class="smallLink" id="reset">Login zurücksetzen</div>
+    </div>
+  </div>
+
+<script>
+  // einfacher Client-Login (offline / Frontend-only)
+    const TOKEN = "sellence";
+
+  const btn = document.getElementById("btn");
+  const err = document.getElementById("err");
+  const tokenEl = document.getElementById("token");
+
+  function login(){
+    const t = (tokenEl.value || "").trim();
+    if(t.toLowerCase() === TOKEN){
+            localStorage.setItem("sellence_auth","1");
+      window.location.href = "oos.html";
+    } else {
+      err.style.display = "block";
+      tokenEl.focus();
+      tokenEl.select?.();
+    }
+  }
+
+  btn.addEventListener("click", login);
+  document.addEventListener("keydown", (e)=>{ if(e.key==="Enter") login(); });
+
+  document.getElementById("reset").addEventListener("click", ()=>{
+    localStorage.removeItem("sellence_auth");
+    err.style.display = "none";
+    tokenEl.value = "";
+    tokenEl.focus();
+  });
+
+  if(localStorage.getItem("sellence_auth")==="1"){
+    window.location.href = "oos.html";
+  }
+</script>
+
+<script>
+);
+  }
+</script>
+
+</body>
+</html>
