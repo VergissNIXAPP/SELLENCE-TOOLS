@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0A1022">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>SELLENCE Tools</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="tools.css">
+
+  <style>
+    /* small page-specific tweaks */
+    .heroTitle{margin:0;font-size:clamp(22px,3.2vw,30px);font-weight:900;letter-spacing:-.01em;}
+    .heroText{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.45;}
+    .topPad{padding:14px;}
+    .footSplit{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="header" role="banner">
+      <div class="brandLine">SELLENCE</div>
+      <div class="appLine">TOOLS</div>
+      <div class="sub">Einmal anmelden – danach kannst du beide Apps direkt öffnen (iPad & iPhone WebApp).</div>
+    </header>
+
+    <section class="card" aria-label="Tool Auswahl">
+      <div class="topPad" style="text-align:center">
+        <h1 class="heroTitle">Was möchtest du starten?</h1>
+        <p class="heroText">Tippe auf eine Kachel. Wenn du schon eingeloggt bist, geht’s sofort los.</p>
+      </div>
+
+      <div class="tiles">
+        <a class="tile" href="./oos/index.html" aria-label="OOS Scanner öffnen">
+          <div class="thumb"><img src="assets/oos-icon.png" alt="OOS Scanner Icon"></div>
+          <div class="meta">
+            <div class="kicker">Out of Stock</div>
+            <p class="name">OOS Scanner</p>
+            <p class="desc">Screenshot auswählen, EANs erkennen und OOS schnell dokumentieren.</p>
+          </div>
+          <div class="go" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
+          </div>
+        </a>
+
+        <a class="tile" href="./retouren/index.html" aria-label="Retourenrechner öffnen">
+          <div class="thumb"><img src="assets/retouren-icon.png" alt="Retourenrechner Icon"></div>
+          <div class="meta">
+            <div class="kicker">Retouren</div>
+            <p class="name">Retourenrechner</p>
+            <p class="desc">Packs, Preise & Summen – sauber und schnell berechnet inkl. Übersicht.</p>
+          </div>
+          <div class="go" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
+          </div>
+        </a>
+      </div>
+
+      <div class="footerRow">
+        <div class="footSplit">
+          <span class="chip">Login: einmalig · Passcode: <b>sellence</b></span>
+          <button class="linkBtn" id="logout" type="button">Logout</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Login Overlay -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Passcode Dialog">
+    <div class="sheet">
+      <div class="sheetHead">
+        <div class="brandLine">SELLENCE</div>
+        <div class="appLine">PASSCODE</div>
+        <div class="sub">Bitte einmal eingeben. Danach bleibt dieses Gerät angemeldet.</div>
+      </div>
+      <div class="sheetBody">
+        <label class="label" for="pass">Passcode</label>
+        <div class="inputRow">
+          <input id="pass" type="password" inputmode="text" autocomplete="current-password" placeholder="Passcode eingeben">
+          <button class="primaryBtn" id="goBtn" type="button">Anmelden</button>
+        </div>
+        <div class="err" id="err">Falscher Passcode.</div>
+        <button class="ghostBtn" id="clearBtn" type="button">Login zurücksetzen</button>
+        <div class="small">Hinweis: Login wird im Browser (localStorage) gespeichert.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const AUTH_KEY="sellence_auth";
+    const PASSCODE="sellence";
+
+    const overlay=document.getElementById("overlay");
+    const passEl=document.getElementById("pass");
+    const errEl=document.getElementById("err");
+    const goBtn=document.getElementById("goBtn");
+    const logout=document.getElementById("logout");
+    const clearBtn=document.getElementById("clearBtn");
+
+    function isAuthed(){try{return localStorage.getItem(AUTH_KEY)==="1"}catch(e){return false}}
+    function setAuthed(){try{localStorage.setItem(AUTH_KEY,"1")}catch(e){}}
+    function clearAuth(){try{localStorage.removeItem(AUTH_KEY)}catch(e){}}
+
+    function showLogin(){overlay.classList.add("show");setTimeout(()=>passEl.focus(),50)}
+    function hideLogin(){overlay.classList.remove("show");errEl.style.display="none";passEl.value="";}
+
+    function attempt(){
+      const v=(passEl.value||"").trim().toLowerCase();
+      if(v===PASSCODE){setAuthed();hideLogin();}
+      else{errEl.style.display="block";passEl.focus();passEl.select();navigator.vibrate?.(30)}
+    }
+
+    goBtn.addEventListener("click",attempt);
+    passEl.addEventListener("keydown",(e)=>{if(e.key==="Enter") attempt();});
+    logout.addEventListener("click",()=>{clearAuth();showLogin();});
+    clearBtn.addEventListener("click",()=>{clearAuth();passEl.value="";errEl.style.display="none";passEl.focus();});
+
+    if(!isAuthed()) showLogin();
+
+    if("serviceWorker" in navigator){
+      window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+    }
+  </script>
+</body>
+</html>
