@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/>
+<meta content="#0B1020" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Retourenrechner" name="apple-mobile-web-app-title"/>
+<link href="icon-192.png" rel="apple-touch-icon"/>
+<title>SELLENCE Retourenrechner</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+
+
+  <style>
+    :root{
+      --bg1:#0A1022;
+      --bg2:#060812;
+      --card:rgba(255,255,255,.065);
+      --stroke:rgba(255,255,255,.12);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.66);
+      --muted2:rgba(255,255,255,.52);
+      --accent:#5b2bd1;
+      --accent2:#2dd4ff;
+      --danger:#EF4444;
+      --shadow: 0 18px 50px rgba(0,0,0,.40);
+      --r1:22px;
+      --r2:18px;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--text);
+      font-family: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 700px at 20% -10%, rgba(91,43,209,.35), transparent 60%),
+        radial-gradient(900px 600px at 90% 20%, rgba(45,212,255,.28), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      padding: max(env(safe-area-inset-top), 12px) 12px max(env(safe-area-inset-bottom), 16px);
+    }
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:1100px;margin:0 auto 10px;}
+    .brand{text-align:center;user-select:none;}
+    .brandMark{font-family:Montserrat, "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-weight:900;letter-spacing:.22em;font-size:18px;line-height:1;background:linear-gradient(180deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 14px 28px rgba(0,0,0,.40);}
+    .brandSub{margin-top:4px;font-weight:700;letter-spacing:.10em;color:rgba(255,255,255,.72);font-size:11px;}
+    .ghost{border:1px solid var(--stroke);background:rgba(255,255,255,.06);color:var(--text);padding:10px 12px;border-radius:999px;font-weight:800;letter-spacing:.02em;cursor:pointer;-webkit-tap-highlight-color: transparent;}
+    .ghost:active{transform:translateY(1px);} 
+    .ghost.danger{border-color: rgba(239,68,68,.35);} 
+    .wrap{max-width:1100px;margin:0 auto;display:grid;gap:12px;}
+    .summaryCard,.inputCard,.packsCard,.tableCard{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r1);box-shadow:var(--shadow);padding:14px;backdrop-filter:blur(10px);} 
+    .dt{color:var(--muted2);font-weight:700;font-size:12px;letter-spacing:.06em;}
+    .summaryNums{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;}
+    .sumBox{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--r2);padding:12px;}
+    .label{color:var(--muted);font-weight:800;font-size:12px;letter-spacing:.03em;}
+    .value{margin-top:6px;font-size:26px;font-weight:900;letter-spacing:.01em;}
+    .subline{margin-top:10px;color:var(--muted);font-weight:700;font-size:12px;display:flex;justify-content:center;gap:10px;}
+    .inputTitle{font-weight:900;font-size:14px;letter-spacing:.08em;text-transform:uppercase;}
+    .hint{color:var(--muted);margin-top:6px;font-weight:650;font-size:12px;}
+    .grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;margin-top:12px;}
+    .grid2.tight{grid-template-columns:1fr 1fr;margin-top:0;}
+    .field{display:grid;gap:6px;}
+    .field span{color:var(--muted);font-weight:800;font-size:12px;}
+    select,input{width:100%;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.22);color:var(--text);padding:12px 12px;font-size:16px;outline:none;}
+    select:focus,input:focus{border-color:rgba(91,43,209,.55);box-shadow:0 0 0 4px rgba(91,43,209,.12);} 
+    .actions{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .primary{border:0;border-radius:999px;padding:12px 16px;font-weight:900;letter-spacing:.03em;cursor:pointer;background:linear-gradient(135deg, rgba(91,43,209,.95), rgba(45,212,255,.88));color:white;box-shadow:0 14px 34px rgba(0,0,0,.35);} 
+    .primary:active{transform:translateY(1px);} 
+    .progress{color:var(--muted);font-weight:800;}
+    .packsHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+    .packsTitle{font-weight:900;font-size:14px;letter-spacing:.08em;text-transform:uppercase;}
+    .packsHint{color:var(--muted);margin-top:6px;font-weight:650;font-size:12px;max-width:70ch;}
+    .packagesGrid{margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;}
+    .packTile{text-align:left;width:100%;border-radius:22px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);padding:12px;cursor:pointer;color:var(--text);-webkit-tap-highlight-color: transparent;}
+    .packTile.active{border-color:rgba(91,43,209,.55);box-shadow:0 0 0 4px rgba(91,43,209,.12);background:rgba(91,43,209,.10);} 
+    .tileTop{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+    .tileTitle{font-weight:900;font-size:14px;letter-spacing:.04em;}
+    .pill{font-weight:900;font-size:11px;letter-spacing:.09em;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.18);} 
+    .pill.ok{border-color:rgba(34,197,94,.38);} 
+    .pill.warn{border-color:rgba(91,43,209,.38);} 
+    .tileNums{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    .mini{color:var(--muted);font-weight:800;font-size:11px;letter-spacing:.04em;}
+    .big{font-weight:900;font-size:18px;font-family:"Montserrat", "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;margin-top:4px;}
+    .tileSplit{margin-top:10px;color:var(--muted);font-weight:700;font-size:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .tileCats{margin-top:10px;display:grid;gap:6px;}
+    .catLine{display:flex;justify-content:space-between;gap:10px;color:rgba(255,255,255,.78);font-weight:650;font-size:12px;}
+    .moreLine{color:var(--muted2);font-weight:700;font-size:12px;}
+    .tableHeader{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .tableTitle{font-weight:900;letter-spacing:.06em;}
+    .tableHint{color:var(--muted);font-weight:650;font-size:12px;}
+    .tableWrap{overflow:auto;margin-top:10px;border-radius:16px;border:1px solid rgba(255,255,255,.12);} 
+    table{width:100%;border-collapse:collapse;min-width:650px;background:rgba(0,0,0,.12);} 
+    th,td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;} 
+    th{text-align:left;color:var(--muted);font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:11px;} 
+    td.num,th.num{text-align:right;} 
+    .xBtn{border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.18);color:rgba(255,255,255,.9);border-radius:12px;padding:6px 10px;cursor:pointer;font-weight:900;} 
+    .xBtn:active{transform:translateY(1px);} 
+    .modal{position:fixed;inset:0;display:none;} 
+    .modal[aria-hidden="false"]{display:block;} 
+    .modalBackdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);} 
+    .modalSheet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(720px, calc(100% - 24px));max-height:min(78vh, 900px);overflow:auto;background:rgba(15,23,42,.92);border:1px solid rgba(255,255,255,.14);border-radius:26px;box-shadow:var(--shadow);padding:14px;backdrop-filter:blur(12px);} 
+    .modalTop{display:flex;justify-content:space-between;align-items:center;gap:10px;} 
+    .modalTitle{font-weight:900;letter-spacing:.06em;} 
+    .packsList{margin-top:12px;display:grid;gap:10px;} 
+    .packRow{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.06);cursor:pointer;} 
+    .rowTitle{font-weight:900;} 
+    .rowMeta{color:var(--muted);font-weight:650;font-size:12px;margin-top:2px;} 
+    .rowRight{text-align:right;} 
+    .rowNum{font-weight:900;} 
+    .rowNum.sub{color:var(--muted);font-weight:800;font-size:12px;margin-top:2px;} 
+    .toast{position:fixed;left:12px;right:12px;bottom:max(env(safe-area-inset-bottom), 12px);display:none;} 
+    .toast[aria-hidden="false"]{display:block;} 
+    .toastInner{max-width:740px;margin:0 auto;background:rgba(15,23,42,.92);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px;box-shadow:var(--shadow);backdrop-filter:blur(12px);} 
+    .toastTitle{font-weight:900;} 
+    .toastText{color:var(--muted);font-weight:650;margin-top:4px;} 
+    .toastBtnWrap{margin-top:10px;} 
+    .toastBtn{width:100%;border:0;border-radius:14px;padding:10px 12px;font-weight:900;cursor:pointer;background:rgba(91,43,209,.20);color:white;border:1px solid rgba(91,43,209,.28);} 
+    @media (max-width: 720px){ .summaryNums{grid-template-columns:1fr;} .grid2{grid-template-columns:1fr;} table{min-width:520px;} }
+  </style>
+
+</head>
+
+<body>
+  <div class="topbar">
+    <button id="btnLogout" class="ghost">Logout</button>
+    <div class="brand">
+      <div class="brandMark">SELLENCE</div>
+      <div class="brandSub">RETOURENRECHNER</div>
+    </div>
+    <button id="btnReset" class="ghost danger">Reset</button>
+  </div>
+
+  <main class="wrap">
+    <section class="summaryCard">
+      <div class="dt" id="dt"></div>
+      <div class="summaryNums">
+        <div class="sumBox">
+          <div class="label">Summe Gesamt (Retoure)</div>
+          <div class="value" id="totalKvp">0,00 €</div>
+        </div>
+        <div class="sumBox">
+          <div class="label">Summe Rückerstattung (gesamt)</div>
+          <div class="value" id="totalRefund">0,00 €</div>
+        </div>
+      </div>
+      <div class="subline">
+        <span id="countItems">0</span> Einträge • <span id="packCounter">Paket 1</span>
+      </div>
+    </section>
+
+    <section class="inputCard">
+      <div class="inputTitle">Eingabe</div>
+      <div class="hint">Kategorie wählen → Packs & € eingeben → hinzufügen</div>
+
+      <div class="grid2">
+        <label class="field">
+          <span>Kategorie</span>
+          <select id="category">
+            <option value="ZIGARETTEN">Zigaretten (PEGS 90%)</option>
+            <option value="KVP_ZIGARETTEN">KVP-Zigaretten (55%)</option>
+            <option value="PEGS_UTP">PEGS-UTP (90%)</option>
+            <option value="KVP_UTP">KVP-UTP (55%)</option>
+            <option value="HEETS_TEREA">HEETS/TEREA (90%)</option>
+          </select>
+        </label>
+
+        <div class="grid2 tight">
+          <label class="field">
+            <span>Packs</span>
+            <input id="packs" inputmode="numeric" placeholder="z.B. 6" />
+          </label>
+          <label class="field">
+            <span>Euro</span>
+            <input id="price" inputmode="decimal" placeholder="z.B. 7,40" />
+          </label>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="btnAdd" class="primary">Hinzufügen</button>
+        <div class="progress" id="progressText">Bis Paket voll: –</div>
+      </div>
+    </section>
+
+    <section class="packsCard">
+      <div class="packsHeader">
+        <div>
+          <div class="packsTitle">Pakete</div>
+          <div class="packsHint">Ein neues Paket entsteht automatisch, sobald das aktuelle Paket ≥ 500,00 € KVP erreicht.</div>
+        </div>
+        <button id="btnPacks" class="ghost">Übersicht</button>
+      </div>
+
+      <div id="packagesGrid" class="packagesGrid"></div>
+    </section>
+
+    <section class="tableCard">
+      <div class="tableHeader">
+        <div class="tableTitle">Positionen – <span id="activePackTitle">Paket 1</span></div>
+        <div class="tableHint">Tippe auf eine Paket-Kachel, um das Paket zu öffnen.</div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Typ</th>
+              <th class="num">Packs</th>
+              <th class="num">€</th>
+              <th class="num">KVP</th>
+              <th class="num">Erstattung</th>
+              <th class="num">✕</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="packsModal" aria-hidden="true">
+    <div class="modalBackdrop" data-close="1"></div>
+    <div class="modalSheet" role="dialog" aria-modal="true">
+      <div class="modalTop">
+        <div class="modalTitle">Paket-Übersicht</div>
+        <button class="ghost" id="closeModal">Schließen</button>
+      </div>
+      <div id="packsList" class="packsList"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" aria-hidden="true">
+    <div class="toastInner">
+      <div class="toastTitle" id="toastTitle">Info</div>
+      <div class="toastText" id="toastText"></div>
+      <div class="toastBtnWrap" id="toastBtnWrap">
+        <button class="toastBtn" id="toastBtn">Rückgängig</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const AUTH_KEY = "sellence_auth";
+  function isAuthed(){
+    try{ return localStorage.getItem(AUTH_KEY) === "1"; }catch(e){ return false; }
+  }
+  if(!isAuthed()){
+    location.replace("./index.html");
+    return;
+  }
+
+  const dtEl = document.getElementById("dt");
+  function setDT(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,"0");
+    dtEl.textContent = `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} • ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  setDT(); setInterval(setDT, 15000);
+
+  const CATEGORY = {
+    ZIGARETTEN:      { label: "Zigaretten",      program: "PEGS", rate: 0.90 },
+    KVP_ZIGARETTEN:  { label: "KVP-Zigaretten",  program: "KVP",  rate: 0.55 },
+    PEGS_UTP:        { label: "PEGS-UTP",        program: "PEGS", rate: 0.90 },
+    KVP_UTP:         { label: "KVP-UTP",         program: "KVP",  rate: 0.55 },
+    HEETS_TEREA:     { label: "HEETS/TEREA",     program: "PEGS", rate: 0.90 },
+  };
+  const MAX_PACKAGE_VALUE = 500;
+  const MAX_PACKAGES = 10;
+
+  const STORAGE_KEY = "sellence_retouren_state_v3";
+  let state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 };
+  let undo = null;
+
+  const $ = (id)=> document.getElementById(id);
+  const fmt = (n)=> (Number(n)||0).toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+  const parseNum = (s)=> {
+    const v = String(s||"").trim().replace(/\./g,"").replace(",",".");
+    const n = Number(v);
+    return Number.isFinite(n) ? n : NaN;
+  };
+  function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+  function restore(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      const obj = JSON.parse(raw);
+      if(!obj || !Array.isArray(obj.packages) || !obj.packages.length) return;
+      state = obj;
+    }catch(e){}
+  }
+  function getPack(id){ return state.packages.find(p=>p.id===id) || state.packages[0]; }
+  function currentPack(){ return getPack(state.activeId); }
+
+  function packTotals(pack){
+    const totals = { kvp:0, refund:0, byProgram:{PEGS:0, KVP:0}, byCat:{} };
+    for(const it of pack.items){
+      totals.kvp += it.kvp; totals.refund += it.refund;
+      totals.byProgram[it.program] = (totals.byProgram[it.program]||0) + it.kvp;
+      totals.byCat[it.catLabel] = (totals.byCat[it.catLabel]||0) + it.kvp;
+    }
+    return totals;
+  }
+  function allTotals(){
+    const t = { kvp:0, refund:0, items:0 };
+    for(const p of state.packages){
+      const pt = packTotals(p);
+      t.kvp += pt.kvp; t.refund += pt.refund; t.items += p.items.length;
+    }
+    return t;
+  }
+
+  function showToast(title, text, withUndo=false){
+    $("toastTitle").textContent = title || "Info";
+    $("toastText").textContent = text || "";
+    $("toastBtnWrap").style.display = withUndo ? "block" : "none";
+    $("toast").setAttribute("aria-hidden","false");
+    setTimeout(()=> $("toast").setAttribute("aria-hidden","true"), 2200);
+  }
+  $("toastBtn").addEventListener("click", ()=>{
+    if(!undo) return;
+    undo(); undo=null;
+    $("toast").setAttribute("aria-hidden","true");
+    persist(); render();
+  });
+
+  function openModal(){ $("packsModal").setAttribute("aria-hidden","false"); renderPacksList(); }
+  function closeModal(){ $("packsModal").setAttribute("aria-hidden","true"); }
+  $("btnPacks").addEventListener("click", openModal);
+  $("closeModal").addEventListener("click", closeModal);
+  $("packsModal").addEventListener("click", (e)=>{ if(e.target?.dataset?.close==="1") closeModal(); });
+
+  function render(){
+    const totals = allTotals();
+    $("totalKvp").textContent = fmt(totals.kvp);
+    $("totalRefund").textContent = fmt(totals.refund);
+    $("countItems").textContent = String(totals.items);
+
+    const active = currentPack();
+    const at = packTotals(active);
+    $("packCounter").textContent = `Paket ${active.id} von ${state.packages.length}`;
+    $("activePackTitle").textContent = `Paket ${active.id}`;
+
+    const left = Math.max(0, MAX_PACKAGE_VALUE - at.kvp);
+    $("progressText").textContent = active.packed ? "Paket ist gepackt ✓" : `Bis Paket voll: ${fmt(left)}`;
+
+    renderPackagesGrid();
+    renderItemsTable();
+  }
+
+  function renderPackagesGrid(){
+    const grid = $("packagesGrid");
+    grid.innerHTML = "";
+    for(const p of state.packages){
+      const pt = packTotals(p);
+      const isActive = p.id === state.activeId;
+      const status = p.packed ? "GEPACKT" : (pt.kvp >= MAX_PACKAGE_VALUE ? "VOLL" : "OFFEN");
+      const el = document.createElement("button");
+      el.type="button";
+      el.className = "packTile" + (isActive ? " active" : "");
+      el.innerHTML = `
+        <div class="tileTop">
+          <div class="tileTitle">Paket ${p.id}</div>
+          <div class="pill ${p.packed ? "ok" : "warn"}">${status}</div>
+        </div>
+        <div class="tileNums">
+          <div><div class="mini">KVP</div><div class="big">${fmt(pt.kvp)}</div></div>
+          <div><div class="mini">Erstattung</div><div class="big">${fmt(pt.refund)}</div></div>
+        </div>
+        <div class="tileSplit">
+          <span>PEGS: <b>${fmt(pt.byProgram.PEGS||0)}</b></span>
+          <span>•</span>
+          <span>KVP: <b>${fmt(pt.byProgram.KVP||0)}</b></span>
+        </div>
+        <div class="tileCats">
+          ${Object.entries(pt.byCat).slice(0,3).map(([k,v]) => `<div class="catLine"><span>${k}</span><span>${fmt(v)}</span></div>`).join("")}
+          ${Object.keys(pt.byCat).length > 3 ? `<div class="moreLine">+ ${Object.keys(pt.byCat).length - 3} weitere</div>` : ""}
+        </div>
+      `;
+      el.addEventListener("click", ()=>{ state.activeId = p.id; persist(); render(); });
+      grid.appendChild(el);
+    }
+  }
+
+  function renderItemsTable(){
+    const pack = currentPack();
+    const tb = $("itemsTbody");
+    tb.innerHTML = "";
+    for(const it of pack.items){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${it.catLabel}</td>
+        <td class="num">${it.packs}</td>
+        <td class="num">${(Number(it.price)||0).toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td class="num"><b>${fmt(it.kvp)}</b></td>
+        <td class="num">${fmt(it.refund)}</td>
+        <td class="num"><button class="xBtn" title="Entfernen">✕</button></td>
+      `;
+      tr.querySelector("button").addEventListener("click", ()=>{
+        const idx = pack.items.findIndex(x=>x.id===it.id);
+        if(idx<0) return;
+        const removed = pack.items.splice(idx,1)[0];
+        undo = ()=> pack.items.splice(idx,0,removed);
+        showToast("Entfernt", "Eintrag gelöscht.", true);
+        persist(); render();
+      });
+      tb.appendChild(tr);
+    }
+  }
+
+  function renderPacksList(){
+    const list = $("packsList");
+    list.innerHTML = "";
+    for(const p of state.packages){
+      const pt = packTotals(p);
+      const card = document.createElement("div");
+      card.className = "packRow";
+      card.innerHTML = `
+        <div class="rowLeft">
+          <div class="rowTitle">Paket ${p.id}</div>
+          <div class="rowMeta">${p.packed ? "Gepackt ✓" : "Offen"} • ${p.items.length} Einträge</div>
+        </div>
+        <div class="rowRight">
+          <div class="rowNum">${fmt(pt.kvp)}</div>
+          <div class="rowNum sub">${fmt(pt.refund)}</div>
+        </div>
+      `;
+      card.addEventListener("click", ()=>{ state.activeId=p.id; persist(); closeModal(); render(); });
+      list.appendChild(card);
+    }
+  }
+
+  function ensureNextPackageIfNeeded(){
+    const pack = currentPack();
+    const pt = packTotals(pack);
+    if(pack.packed) return;
+    if(pt.kvp >= MAX_PACKAGE_VALUE){
+      pack.packed = true;
+      if(state.packages.length < MAX_PACKAGES){
+        const nextId = state.packages[state.packages.length-1].id + 1;
+        state.packages.push({id:nextId, createdAt:Date.now(), packed:false, items:[]});
+        state.activeId = nextId;
+        showToast("Paket gepackt", `Paket ${pack.id} gepackt – Paket ${nextId} gestartet.`);
+      }else{
+        showToast("Paket voll", `Paket ${pack.id} hat ≥ ${MAX_PACKAGE_VALUE} € erreicht. Max. ${MAX_PACKAGES} Pakete.`);
+      }
+    }
+  }
+
+  function addItem(){
+    const catKey = $("category").value;
+    const cat = CATEGORY[catKey];
+    const packsRaw = parseNum($("packs").value);
+    const packs = Number.isFinite(packsRaw) ? Math.max(1, Math.floor(packsRaw)) : NaN;
+    const price = parseNum($("price").value);
+    if(!cat || !Number.isFinite(price) || !Number.isFinite(packs)){
+      showToast("Eingabe prüfen", "Bitte Packs & Euro korrekt eingeben.");
+      return;
+    }
+    const kvp = packs * price;
+    const refund = kvp * cat.rate;
+    const pack = currentPack();
+    const id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
+    pack.items.push({ id, catKey, catLabel:cat.label, program:cat.program, rate:cat.rate, packs, price, kvp, refund, at:Date.now() });
+
+    $("packs").value = ""; $("price").value = ""; $("packs").focus();
+    persist(); render();
+    ensureNextPackageIfNeeded();
+    persist(); render();
+  }
+
+  $("btnAdd").addEventListener("click", addItem);
+  $("price").addEventListener("keydown", (e)=>{ if(e.key==="Enter") addItem(); });
+  $("packs").addEventListener("keydown", (e)=>{ if(e.key==="Enter") $("price").focus(); });
+
+  $("btnReset").addEventListener("click", ()=>{
+    if(!confirm("Alles löschen?")) return;
+    state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 };
+    undo=null;
+    persist(); render();
+    showToast("Reset", "Alles gelöscht.");
+  });
+  $("btnLogout").addEventListener("click", ()=>{
+    try{ localStorage.removeItem(AUTH_KEY); }catch(e){}
+    location.replace("./index.html");
+  });
+
+  restore();
+  if(!state.packages || !state.packages.length){ state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 }; }
+  if(!state.packages.some(p=>p.id===state.activeId)) state.activeId = state.packages[0].id;
+
+  render();
+})();
+</script>
+</body>
+
+</html>

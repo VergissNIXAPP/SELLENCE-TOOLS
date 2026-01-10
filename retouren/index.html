@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#0A1022" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Retourenrechner" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <title>Login • SELLENCE Retourenrechner</title>
+
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="../tools.css" />
+  <style>
+    body{display:flex;align-items:center;justify-content:center;padding: max(env(safe-area-inset-top), 14px) 14px max(env(safe-area-inset-bottom), 18px);} 
+    .sheet{max-width:560px}
+  </style>
+</head>
+<body>
+  <div class="sheet" role="main" aria-label="Login">
+    <div class="sheetHead">
+      <div class="brandLine">SELLENCE</div>
+      <div class="appLine">RETOURENRECHNER</div>
+      <div class="sub">Passcode nur beim ersten Mal. Danach bleibt das Gerät angemeldet.</div>
+    </div>
+    <div class="sheetBody">
+      <label class="label" for="pw">Passcode</label>
+      <div class="inputRow">
+        <input id="pw" type="password" inputmode="text" autocomplete="off" placeholder="Passcode eingeben" />
+        <button class="primaryBtn" id="btnLogin" type="button">Anmelden</button>
+      </div>
+      <div class="err" id="err">Falscher Passcode.</div>
+      <button class="ghostBtn" id="backHome" type="button">Zurück zu SELLENCE Tools</button>
+      <div class="small">Login wird im Browser (localStorage) gespeichert.</div>
+    </div>
+  </div>
+
+  <script>
+    const AUTH_KEY = "sellence_auth";
+    const PASSCODE = "sellence";
+
+    function isAuthed(){
+      try{ return localStorage.getItem(AUTH_KEY) === "1"; }catch(e){ return false; }
+    }
+    function setAuthed(){
+      try{ localStorage.setItem(AUTH_KEY, "1"); return true; }catch(e){ return false; }
+    }
+    function goApp(){ location.assign("./app.html"); }
+
+    if(isAuthed()){
+      setTimeout(goApp, 40);
+    }
+
+    const pw = document.getElementById("pw");
+    const err = document.getElementById("err");
+    const btn = document.getElementById("btnLogin");
+    const backHome = document.getElementById("backHome");
+
+    function showErr(msg){
+      err.textContent = msg;
+      err.style.display = "block";
+      navigator.vibrate?.(30);
+      setTimeout(()=> err.style.display = "none", 1600);
+    }
+
+    btn.addEventListener("click", (e)=>{
+      e.preventDefault();
+      const v = (pw.value || "").trim().toLowerCase();
+      if(v === PASSCODE){
+        setAuthed();
+        setTimeout(goApp, 60);
+      }else{
+        showErr("Falscher Passcode.");
+        pw.focus();
+        pw.select();
+      }
+    });
+
+    pw.addEventListener("keydown", (e)=>{ if(e.key === "Enter") btn.click(); });
+    backHome.addEventListener("click", ()=> location.assign("../index.html"));
+
+    if("serviceWorker" in navigator){
+      window.addEventListener("load", ()=> navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+    }
+  </script>
+</body>
+</html>
