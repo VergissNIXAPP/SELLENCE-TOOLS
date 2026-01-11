@@ -146,6 +146,14 @@ a{color:inherit;text-decoration:none}
   color:var(--muted);
 }
 
+/* iPhone Hochformat: Sticky-Header kann iOS-typisch Inhalte überlappen */
+@media (max-width: 520px){
+  .header{
+    position:relative;
+    top:auto;
+  }
+}
+
 .card{
   position:relative;
   border-radius:var(--r-xl);

@@ -382,6 +382,19 @@
       top:50%;
       transform: translateY(-50%);
     }
+
+    /* iPhone Hochformat: Counter darf den Titel nicht überdecken */
+    @media (max-width: 430px){
+      .topbar{
+        flex-direction:column;
+        gap:10px;
+        padding-bottom: 14px;
+      }
+      .topbar .pill{
+        position:static;
+        transform:none;
+      }
+    }
     .brandTitle{
       display:flex;
       flex-direction:column;
