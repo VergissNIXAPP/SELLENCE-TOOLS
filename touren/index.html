@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SELLENCE-TOURENPLANER</title>
+  <meta name="theme-color" content="#5B2EFF" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="icon" href="./icons/icon-192.png" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb1"></div>
+  <div class="bg-orb orb2"></div>
+  <div class="bg-orb orb3"></div>
+
+  <header class="topbar">
+    
+    <a class="backBtn" href="../index.html" title="Zurück zur SELLENCE Tools Seite"><span class="backIcon">←</span>Tools</a>
+<div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none">
+          <path d="M12 40c10-18 26-16 40-28" stroke="rgba(255,255,255,.92)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M30 46c7-8 15-12 26-16" stroke="rgba(255,255,255,.62)" stroke-width="6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">SELLENCE</div>
+        <div class="brand-sub">TOURENPLANER</div>
+      </div>
+    </div>
+    
+    <div class="top-actions">
+      <button class="btn" id="menuBtn" aria-label="Menü" title="Menü">☰</button>
+      <div class="menu" id="menuPanel" aria-hidden="true">
+        <button class="btn" id="btnImport">📥 Excel Import</button>
+        <button class="btn" id="btnGeocode" title="Adressen → Koordinaten (OpenStreetMap)">🧭 Geocoding</button>
+        <button class="btn danger" id="btnClearAll">Alles löschen</button>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls" hidden />
+    </div>
+
+  </header>
+
+  <main class="shell">
+    <div class="grid two">
+      <section class="card">
+        <div class="card-h">
+          <div>
+            <h2>Karte / Märkte</h2>
+            <p class="muted">Kostenlos: OpenStreetMap + OSRM. Export startet in Google Maps.</p>
+          </div>
+          <div class="pill" id="marketCount">0</div>
+        </div>
+
+        <div class="row">
+          <label class="field" style="min-width:260px;flex:2">
+            <span>SAP-Nr. Suche</span>
+            <input id="sapSearch" placeholder="z.B. 2011556" inputmode="numeric" autocomplete="off" />
+          </label>
+          <button class="btn primary" id="btnFind">Suchen</button>
+          <button class="btn" id="btnFit">↔︎ Alles anzeigen</button>
+        </div>
+
+        <div class="note" style="margin-top:10px">
+  <b>So funktioniert’s</b>
+  <ol style="margin:8px 0 0 18px; padding:0; display:flex; flex-direction:column; gap:6px">
+    <li><b>Excel-Import</b>: Kundenliste hochladen.</li>
+    <li><b>Geotagging</b>: „Geocoding“ starten (kann je nach Anzahl etwas dauern).</li>
+    <li><b>Aktualisieren</b>: Seite neu laden – danach siehst du alle Märkte als Marker auf der Karte.</li>
+    <li><b>Planung</b>: SAP‑Nummer suchen (wie in Ninox geplant) → Marker anklicken → <b>„In Route +“</b>.</li>
+    <li><b>Route</b>: Standort freigeben → <b>Optimieren</b> → <b>Planen</b> (Google Maps startet mit allen Stops).</li>
+  </ol>
+</div>
+
+        <div class="hr"></div>
+        <div id="map" class="map"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-h">
+          <div>
+            <h2>Tagesroute</h2>
+            <p class="muted">Stops sammeln → Optimieren → Planen → Navigation starten.</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn" id="btnMyPos">📍 Aktueller Standort</button>
+          <button class="btn" id="btnOptimize">🧠 Optimieren (OSRM)</button>
+          <button class="btn" id="btnResetRoute">↩︎ Route zurücksetzen</button>
+          <button class="btn primary" id="btnPlan">🚀 Planen (Google Maps)</button>
+        </div>
+
+        <div class="kpi">
+          <div class="box"><div class="muted tiny">Stops</div><div class="v" id="kStops">0</div></div>
+          <div class="box"><div class="muted tiny">km (OSRM)</div><div class="v" id="kKm">—</div></div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="list" id="routeList"></div>
+
+        <div class="note" style="margin-top:12px">
+          <b>Tipp:</b> Einmal „Geocoding“ laufen lassen, dann sind alle Marker & OSRM-Optimierung stabil.
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -18,7 +18,15 @@ const CORE = [
   "./retouren/manifest.webmanifest",
   "./retouren/sw.js",
   "./retouren/icon-192.png",
-  "./retouren/icon-512.png"
+  "./retouren/icon-512.png",
+  "./assets/touren-icon.png",
+  "./touren/index.html",
+  "./touren/styles.css",
+  "./touren/app.js",
+  "./touren/manifest.json",
+  "./touren/sw.js",
+  "./touren/icons/icon-192.png",
+  "./touren/icons/icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {
