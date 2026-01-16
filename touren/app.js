@@ -5,6 +5,7 @@ const STORE = {
   markets: "sellence_sap_markets_osrm_v1",
   route: "sellence_sap_route_osrm_v1",
   myPos: "sellence_sap_mypos_osrm_v1",
+  lastLinks: "sellence_sap_lastlinks_osrm_v1",
 };
 
 const OSRM_BASE = "https://router.project-osrm.org";
@@ -27,6 +28,52 @@ const NOMINATIM = "https://nominatim.openstreetmap.org/search";
   document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") close(); });
 })();
 
+// Add-market modal helpers
+function setAddMarketStatus(msg=""){
+  const el = document.getElementById("addMarketStatus");
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.toggle("show", !!msg);
+}
+function openAddMarketModal(){
+  const modal = document.getElementById("addMarketModal");
+  if(!modal) return;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden","false");
+  setAddMarketStatus("");
+  (document.getElementById("amName"))?.focus();
+}
+function closeAddMarketModal(){
+  const modal = document.getElementById("addMarketModal");
+  if(!modal) return;
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden","true");
+  setAddMarketStatus("");
+}
+
+// Wire modal UI
+(function(){
+  const btnOpen = document.getElementById("btnAddMarket");
+  const modal = document.getElementById("addMarketModal");
+  if(btnOpen && modal){
+    btnOpen.addEventListener("click", ()=>{
+      // close hamburger menu if open
+      document.getElementById("menuPanel")?.classList.remove("open");
+      document.getElementById("menuPanel")?.setAttribute("aria-hidden","true");
+      // reset fields
+      (document.getElementById("amName")).value = "";
+      (document.getElementById("amAddr")).value = "";
+      (document.getElementById("amSap")).value = "";
+      openAddMarketModal();
+    });
+  }
+
+  document.getElementById("btnAddMarketClose")?.addEventListener("click", closeAddMarketModal);
+  document.getElementById("btnAddMarketCancel")?.addEventListener("click", closeAddMarketModal);
+  modal?.addEventListener("click", (e)=>{ if(e.target === modal) closeAddMarketModal(); });
+  document.addEventListener("keydown", (e)=>{ if(e.key === "Escape") closeAddMarketModal(); });
+})();
+
 function load(key, fallback){
   try{ const raw=localStorage.getItem(key); return raw?JSON.parse(raw):fallback; }catch{return fallback;}
 }
@@ -41,6 +88,42 @@ function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 let markets = load(STORE.markets, []);
 let routeIds = load(STORE.route, []);
 let myPos = load(STORE.myPos, null); // {lat,lng}
+let lastLinks = load(STORE.lastLinks, []);
+
+function setStartEnabled(on){
+  const b = document.getElementById("btnStartMaps");
+  if(!b) return;
+  b.disabled = !on;
+}
+
+function setStatus(msg=""){
+  const el = document.getElementById("status");
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.toggle("show", !!msg);
+}
+
+// "So funktioniert's" collapse
+(function(){
+  const btn = document.getElementById("btnHow");
+  const panel = document.getElementById("howPanel");
+  if(!btn || !panel) return;
+  const sync = ()=>{ btn.textContent = panel.hidden ? "So funktioniert’s" : "So funktioniert’s ausblenden"; };
+  btn.addEventListener("click", ()=>{ panel.hidden = !panel.hidden; sync(); });
+  sync();
+})();
+
+// Return-to-start checkbox hint
+(function(){
+  const chk = document.getElementById("chkReturn");
+  const hint = document.getElementById("returnHint");
+  if(!chk || !hint) return;
+  const sync = ()=>{
+    hint.style.display = chk.checked ? "block" : "none";
+  };
+  chk.addEventListener("change", sync);
+  sync();
+})();
 
 function marketAddr(m){
   const parts=[];
@@ -129,6 +212,60 @@ function setMyMarker(){
 function clearRouteLine(){
   if(routeLine){ routeLine.remove(); routeLine=null; }
 }
+function deleteMarket(id){
+  const m = markets.find(x=>x.id===id);
+  if(!m) return;
+  // remove from route as well
+  routeIds = routeIds.filter(x=>x!==id);
+  markets = markets.filter(x=>x.id!==id);
+  save(STORE.markets, markets);
+  save(STORE.route, routeIds);
+  // invalidate previous Google Maps links
+  lastLinks = [];
+  save(STORE.lastLinks, lastLinks);
+  clearRouteLine();
+  renderRoute();
+  renderMarkers();
+  setStartEnabled(false);
+  try{ map?.closePopup(); }catch(e){}
+}
+
+function attachLongPressDelete(marker, market){
+  let t = null;
+  let fired = false;
+  const start = ()=>{
+    fired = false;
+    clearTimeout(t);
+    t = setTimeout(()=>{
+      fired = true;
+      const name = market.name || 'Markt';
+      if(confirm(`${name}\n\nDauerhaft loeschen?`)){
+        deleteMarket(market.id);
+      }
+    }, 650);
+  };
+  const cancel = ()=>{
+    clearTimeout(t);
+    t = null;
+  };
+
+  // Mobile/PWA: long press usually triggers 'contextmenu' too
+  marker.on('contextmenu', ()=>{
+    const name = market.name || 'Markt';
+    if(confirm(`${name}\n\nDauerhaft loeschen?`)){
+      deleteMarket(market.id);
+    }
+  });
+
+  marker.on('mousedown', start);
+  marker.on('touchstart', start);
+  marker.on('mouseup', cancel);
+  marker.on('touchend', cancel);
+  marker.on('mouseout', cancel);
+  marker.on('touchcancel', cancel);
+  marker.on('mousemove', ()=>{ if(t && !fired){} });
+}
+
 
 function renderMarkers(highlightId=null){
   if(!layer) return;
@@ -140,13 +277,15 @@ function renderMarkers(highlightId=null){
     const color = isHi ? "#FFD250" : (inRoute ? "#31E7A6" : "rgba(255,255,255,.82)");
     const fill = isHi ? "#FFD250" : (inRoute ? "#31E7A6" : "#5B2EFF");
     const marker=L.circleMarker([m.lat,m.lng],{radius:isHi?11:9,weight:2,opacity:1,fillOpacity:0.85,color,fillColor:fill}).addTo(layer);
+    attachLongPressDelete(marker, m);
     const addr = marketAddr(m);
     const popup=document.createElement("div");
+    popup.className = "popupCard";
     popup.innerHTML=`
-      <div style="font-weight:900;margin-bottom:4px">${escapeHTML(m.name||"")}</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.70);margin-bottom:6px">${escapeHTML(addr)}</div>
-      <div style="font-size:12px;color:rgba(255,255,255,.70);margin-bottom:10px"><b>SAP:</b> ${escapeHTML(m.sap||"—")}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div class="popupTitle">${escapeHTML(m.name||"")}</div>
+      <div class="popupAddr">${escapeHTML(addr)}</div>
+      <div class="popupMeta"><b>SAP:</b> ${escapeHTML(m.sap||"—")}</div>
+      <div class="popupActions">
         <button class="btn primary" id="add_${m.id}" style="padding:8px 10px;border-radius:12px">${inRoute?"In Route ✓":"In Route +"}</button>
         <a class="btn" style="padding:8px 10px;border-radius:12px;text-decoration:none" target="_blank" rel="noreferrer"
            href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}">Google</a>
@@ -179,6 +318,10 @@ function toggleRoute(id){
   if(routeIds.includes(id)) routeIds = routeIds.filter(x=>x!==id);
   else routeIds.push(id);
   save(STORE.route, routeIds);
+  // Any change invalidates previous Google Maps links
+  lastLinks = [];
+  save(STORE.lastLinks, lastLinks);
+  setStartEnabled(false);
   clearRouteLine();
 }
 
@@ -205,7 +348,7 @@ function renderRoute(km=null){
         <button class="btn danger" data-del="${m.id}">Entfernen</button>
       </div>
     </div>`;
-  }).join("") || `<div class="muted tiny">Noch keine Stops. SAP suchen → „In Route +“.</div>`;
+  }).join("") || `<div class="muted tiny">Noch keine Stops. SAP suchen → Marker anklicken → „In Route +“.</div>`;
 
   $("routeList").querySelectorAll("button[data-del]").forEach(b=>{
     b.addEventListener("click", ()=>{
@@ -256,7 +399,13 @@ $("fileInput").addEventListener("change", async (e)=>{
     const imported=[];
     for(const r of rows){
       const m=extractFromRow(r);
-      if(m && (m.sap || m.name)) imported.push(m);
+      if(!m || !(m.sap || m.name)) continue;
+
+      // Regel: Rossmann-Märkte ignorieren (werden im Außendienst nicht benötigt)
+      const hay = `${m.name} ${m.anschrift} ${m.ort}`.toLowerCase();
+      if(hay.includes("rossmann")) continue;
+
+      imported.push(m);
     }
     if(!imported.length){ alert("Keine passenden Zeilen gefunden."); return; }
     const res=mergeMarkets(imported);
@@ -277,27 +426,32 @@ $("fileInput").addEventListener("change", async (e)=>{
 $("btnClearAll").addEventListener("click", ()=>{
   if(!confirm("Wirklich ALLES löschen? (Märkte, Koordinaten, Route)")) return;
   markets=[]; routeIds=[]; myPos=null;
+  lastLinks=[];
   localStorage.removeItem(STORE.markets);
   localStorage.removeItem(STORE.route);
   localStorage.removeItem(STORE.myPos);
+  localStorage.removeItem(STORE.lastLinks);
   $("marketCount").textContent="0";
   clearRouteLine();
   renderRoute();
   renderMarkers();
+  setStartEnabled(false);
   alert("Gelöscht.");
 });
 
-// ---------- My location ----------
-$("btnMyPos").addEventListener("click", ()=>{
-  if(!navigator.geolocation){ alert("Geolocation nicht verfügbar."); return; }
-  navigator.geolocation.getCurrentPosition((pos)=>{
-    myPos={lat:pos.coords.latitude, lng:pos.coords.longitude};
-    save(STORE.myPos, myPos);
-    setMyMarker();
-    map.setView([myPos.lat,myPos.lng], Math.max(map.getZoom(), 12));
-    renderMarkers();
-  }, ()=>alert("Standort nicht verfügbar (Berechtigung?)."), {enableHighAccuracy:true, timeout:10000});
-});
+async function getMyPosIfPossible(){
+  if(!navigator.geolocation) return null;
+  return new Promise((resolve)=>{
+    navigator.geolocation.getCurrentPosition(
+      (pos)=>{
+        const p={lat:pos.coords.latitude, lng:pos.coords.longitude};
+        resolve(p);
+      },
+      ()=>resolve(null),
+      {enableHighAccuracy:true, timeout:10000}
+    );
+  });
+}
 
 // ---------- Geocoding (Nominatim) ----------
 async function nominatimGeocode(q){
@@ -310,6 +464,80 @@ async function nominatimGeocode(q){
   if(!isNum(lat)||!isNum(lng)) return null;
   return {lat,lng};
 }
+
+// ---------- Add market (manual) ----------
+function parseAddrForFields(addrInput){
+  const raw = String(addrInput||"").trim();
+  if(!raw) return {anschrift:"", plz:"", ort:""};
+  // Try: "Street 1, 12345 City" or "Street 1 12345 City"
+  let anschrift = raw;
+  let plz = "", ort = "";
+  const parts = raw.split(",").map(s=>s.trim()).filter(Boolean);
+  if(parts.length>=2){
+    anschrift = parts[0];
+    const rest = parts.slice(1).join(" ").trim();
+    const m = rest.match(/\b(\d{5})\s+(.+)$/);
+    if(m){ plz = m[1]; ort = m[2].trim(); }
+    else ort = rest;
+    return {anschrift, plz, ort};
+  }
+  const m = raw.match(/^(.*)\b(\d{5})\s+(.+)$/);
+  if(m){
+    anschrift = m[1].trim().replace(/,\s*$/," ").trim();
+    plz = m[2];
+    ort = m[3].trim();
+  }
+  return {anschrift, plz, ort};
+}
+
+document.getElementById("btnAddMarketSave")?.addEventListener("click", async ()=>{
+  const name = String(document.getElementById("amName")?.value||"").trim();
+  const addr = String(document.getElementById("amAddr")?.value||"").trim();
+  const sap = String(document.getElementById("amSap")?.value||"").trim();
+
+  if(!name || !addr || !sap){
+    setAddMarketStatus("Bitte Marktname, Adresse und SAP‑Nummer ausfüllen.");
+    return;
+  }
+  const hay = `${name} ${addr}`.toLowerCase();
+  if(hay.includes("rossmann")){
+    setAddMarketStatus("Rossmann wird automatisch ignoriert – bitte einen anderen Markt anlegen.");
+    return;
+  }
+
+  setAddMarketStatus("Speichere & geocode …");
+  const {anschrift, plz, ort} = parseAddrForFields(addr);
+
+  // Update existing by SAP if present, else create new
+  let m = markets.find(x=>String(x.sap||"").trim() === sap);
+  if(!m){
+    m = { id: uid(), sap, ninox:"", name, anschrift, plz, ort, lat:null, lng:null };
+    markets.push(m);
+  } else {
+    m.name = name;
+    m.anschrift = anschrift;
+    m.plz = plz;
+    m.ort = ort;
+    m.lat = null;
+    m.lng = null;
+  }
+
+  try{
+    const geo = await nominatimGeocode(`${addr}, Deutschland`);
+    if(geo){ m.lat = geo.lat; m.lng = geo.lng; }
+    save(STORE.markets, markets);
+    document.getElementById("marketCount").textContent = String(markets.length);
+    initMap();
+    renderMarkers(m.id);
+    fitAll();
+    setAddMarketStatus(geo ? "Gespeichert ✓" : "Gespeichert – Geo nicht gefunden (bitte Adresse prüfen)." );
+    // close after a short, subtle delay
+    setTimeout(closeAddMarketModal, 550);
+  } catch(err){
+    console.error(err);
+    setAddMarketStatus("Speichern fehlgeschlagen. Bitte erneut versuchen.");
+  }
+});
 
 $("btnGeocode").addEventListener("click", async ()=>{
   if(!markets.length){ alert("Bitte erst Excel importieren."); return; }
@@ -337,9 +565,9 @@ $("btnGeocode").addEventListener("click", async ()=>{
 // ---------- OSRM Optimize ----------
 function coordStr(lat,lng){ return `${lng.toFixed(6)},${lat.toFixed(6)}`; } // OSRM expects lon,lat
 
-async function osrmTrip(coords, sourceFirst=true){
+async function osrmTrip(coords, sourceFirst=true, roundtrip=false){
   const coordPart = coords.map(c=>coordStr(c.lat,c.lng)).join(";");
-  const url = `${OSRM_BASE}/trip/v1/driving/${coordPart}?source=${sourceFirst?"first":"any"}&roundtrip=false&overview=full&geometries=geojson&steps=false&annotations=false`;
+  const url = `${OSRM_BASE}/trip/v1/driving/${coordPart}?source=${sourceFirst?"first":"any"}&roundtrip=${roundtrip?"true":"false"}&overview=full&geometries=geojson&steps=false&annotations=false`;
   const res = await fetch(url);
   if(!res.ok) throw new Error("OSRM HTTP "+res.status);
   const js = await res.json();
@@ -354,57 +582,53 @@ function drawGeoJsonLine(geo){
   routeLine = L.polyline(latlngs, {weight:6, opacity:0.85}).addTo(map);
 }
 
-$("btnOptimize").addEventListener("click", async ()=>{
+async function optimizeWithOSRM(){
   clearRouteLine();
   const pts=routePoints();
-  if(pts.length<2){ alert("Mindestens 2 Stops in der Route."); return; }
+  if(pts.length<2){ throw new Error("Mindestens 2 Stops in der Route."); }
   const missing = pts.filter(m=>!(isNum(m.lat)&&isNum(m.lng)));
   if(missing.length){
-    alert("Einige Stops haben keine Koordinaten. Bitte erst Geocoding durchführen.");
-    return;
+    throw new Error("Einige Stops haben keine Koordinaten. Bitte erst Geocoding durchführen.");
+  }
+
+  // refresh start location right before planning (iPhone WebApp friendly)
+  const fresh = await getMyPosIfPossible();
+  if(fresh){
+    myPos = fresh;
+    save(STORE.myPos, myPos);
   }
 
   const useStart = myPos && isNum(myPos.lat)&&isNum(myPos.lng);
-  // Build coordinates for OSRM: if start exists, include it first, then all stops
+
+  // optional: include return trip back to the start point (only possible if we have a start location)
+  const chk = document.getElementById("chkReturn");
+  const includeReturn = !!(chk && chk.checked);
+  const roundtrip = includeReturn && useStart;
+
   const coords = (useStart ? [{lat:myPos.lat,lng:myPos.lng, __start:true}] : []).concat(
     pts.map(m=>({lat:m.lat,lng:m.lng, id:m.id}))
   );
 
-  $("btnOptimize").disabled=true;
-  try{
-    const js = await osrmTrip(coords, useStart);
-    const trip = js.trips?.[0];
-    const wps = js.waypoints || [];
-    // waypoint index mapping:
-    // Each waypoint has waypoint_index = position in the trip geometry order for input coord
-    // We sort by waypoint_index to get visited order.
-    const ordered = wps
-      .map((w, idx)=>({idx, order:w.waypoint_index}))
-      .sort((a,b)=>a.order-b.order)
-      .map(x=>coords[x.idx]);
+  const js = await osrmTrip(coords, useStart, roundtrip);
+  const trip = js.trips?.[0];
+  const wps = js.waypoints || [];
+  const ordered = wps
+    .map((w, idx)=>({idx, order:w.waypoint_index}))
+    .sort((a,b)=>a.order-b.order)
+    .map(x=>coords[x.idx]);
 
-    // ordered includes start if provided. We want routeIds only for markets (exclude start).
-    const orderedMarketIds = ordered.filter(o=>!o.__start).map(o=>o.id);
+  const orderedMarketIds = ordered.filter(o=>!o.__start).map(o=>o.id);
+  routeIds = orderedMarketIds;
+  save(STORE.route, routeIds);
 
-    routeIds = orderedMarketIds;
-    save(STORE.route, routeIds);
+  const km = (trip?.distance ?? 0) / 1000;
+  renderRoute(km);
+  renderMarkers();
+  drawGeoJsonLine(trip?.geometry);
+  if(routeLine) map.fitBounds(routeLine.getBounds().pad(0.15));
 
-    const km = (trip?.distance ?? 0) / 1000;
-    renderRoute(km);
-    renderMarkers();
-    drawGeoJsonLine(trip?.geometry);
-    // fit bounds to route
-    if(routeLine) map.fitBounds(routeLine.getBounds().pad(0.15));
-
-    alert("Route optimiert (OSRM – echte Straßenroute). Jetzt „Planen“ drücken.");
-  } catch(err){
-    console.error(err);
-    renderRoute(); // keep list
-    alert("OSRM Optimierung fehlgeschlagen (Server evtl. kurz down). Du kannst trotzdem „Planen“ nutzen.");
-  } finally {
-    $("btnOptimize").disabled=false;
-  }
-});
+  return {km, trip};
+}
 
 // ---------- Plan (Google Maps Export) ----------
 function buildMapsLinks(points, start){
@@ -433,20 +657,63 @@ function buildMapsLinks(points, start){
   return links;
 }
 
-$("btnPlan").addEventListener("click", ()=>{
-  const pts=routePoints();
-  if(!pts.length){ alert("Keine Stops in der Route."); return; }
-  const links = buildMapsLinks(pts, myPos);
-  if(!links.length){ alert("Konnte keinen Maps-Link bauen."); return; }
-  if(links.length===1){
+// ---------- Finalize (auto: current location + OSRM + ready for Maps) ----------
+const __btnFinalize = document.getElementById("btnFinalize");
+if(__btnFinalize){
+  __btnFinalize.addEventListener("click", async ()=>{
+    setStatus("Plane Route …");
+    setStartEnabled(false);
+    __btnFinalize.disabled = true;
+    try{
+      await optimizeWithOSRM();
+
+      const pts = routePoints();
+
+      // Optional: add return to start for Google Maps export (if enabled + start position known)
+      const chk = document.getElementById("chkReturn");
+      const includeReturn = !!(chk && chk.checked);
+      const ptsForMaps = (includeReturn && myPos && isNum(myPos.lat) && isNum(myPos.lng))
+        ? pts.concat([{lat:myPos.lat, lng:myPos.lng, __return:true}])
+        : pts;
+
+      const links = buildMapsLinks(ptsForMaps, myPos);
+      if(!links.length) throw new Error("Konnte keinen Maps-Link bauen.");
+      lastLinks = links;
+      save(STORE.lastLinks, lastLinks);
+      setStartEnabled(true);
+      setStatus("Bereit: Kilometer berechnet. Du kannst jetzt „Starten (Google Maps)“ drücken.");
+    } catch(err){
+      console.error(err);
+      setStatus(err?.message || "Planung fehlgeschlagen.");
+    } finally {
+      __btnFinalize.disabled = false;
+    }
+  });
+}
+
+// ---------- Start (Google Maps) ----------
+const __btnStart = document.getElementById("btnStartMaps");
+if(__btnStart){
+  __btnStart.addEventListener("click", ()=>{
+    const links = Array.isArray(lastLinks) ? lastLinks : [];
+    if(!links.length){
+      setStatus("Bitte zuerst „Planung fertigstellen“ drücken.");
+      return;
+    }
+    if(links.length===1){
+      window.open(links[0], "_blank");
+      return;
+    }
+    // Unauffällig: Öffne Teil 1, kopiere den Rest in die Zwischenablage
     window.open(links[0], "_blank");
-    return;
-  }
-  alert(`Viele Stops – Google Maps wird in ${links.length} Teile aufgeteilt.\nÖffne Teil 1, dann Teil 2, ...`);
-  window.open(links[0], "_blank");
-  const rest = links.slice(1).map((u,i)=>`Teil ${i+2}: ${u}`).join("\n");
-  navigator.clipboard?.writeText(rest).catch(()=>{});
-});
+    const rest = links.slice(1).map((u,i)=>`Teil ${i+2}: ${u}`).join("\n");
+    navigator.clipboard?.writeText(rest).then(()=>{
+      setStatus(`Viele Stops: Teil 1 geöffnet. Rest wurde in die Zwischenablage kopiert.`);
+    }).catch(()=>{
+      setStatus(`Viele Stops: Teil 1 geöffnet. (Rest konnte nicht kopiert werden.)`);
+    });
+  });
+}
 
 
 // ---------- Reload ----------
@@ -457,6 +724,9 @@ $("btnReload")?.addEventListener("click", ()=>location.reload());
 function resetRouteOnly(){
   routeIds = [];
   save(STORE.route, routeIds);
+  lastLinks = [];
+  save(STORE.lastLinks, lastLinks);
+  setStartEnabled(false);
   clearRouteLine();
   renderRoute();
   renderMarkers();
@@ -464,18 +734,24 @@ function resetRouteOnly(){
 const __btnReset = document.getElementById("btnResetRoute");
 if(__btnReset){
   __btnReset.addEventListener("click", ()=>{
-    if(!routeIds.length){ alert("Route ist schon leer."); return; }
-    if(!confirm("Nur die geplante Tagesroute zurücksetzen? (Märkte bleiben gespeichert)")) return;
+    if(!routeIds.length) return;
+    setStatus("");
     resetRouteOnly();
+    setStatus("Route zurückgesetzt.");
   });
 }
 
 // ---------- init ----------
 $("marketCount").textContent = String(markets.length);
+setStartEnabled(Array.isArray(lastLinks) && lastLinks.length>0);
 initMap();
 renderRoute();
 renderMarkers();
 fitAll();
+
+setStartEnabled(Array.isArray(lastLinks) && lastLinks.length>0);
+
+setStartEnabled(Array.isArray(lastLinks) && lastLinks.length>0);
 
 if("serviceWorker" in navigator){
   window.addEventListener("load", ()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));

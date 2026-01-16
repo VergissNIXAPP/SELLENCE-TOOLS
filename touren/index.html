@@ -39,6 +39,7 @@
     <div class="top-actions">
       <button class="btn" id="menuBtn" aria-label="Menü" title="Menü">☰</button>
       <div class="menu" id="menuPanel" aria-hidden="true">
+        <button class="btn" id="btnAddMarket">➕ Markt hinzufügen</button>
         <button class="btn" id="btnImport">📥 Excel Import</button>
         <button class="btn" id="btnGeocode" title="Adressen → Koordinaten (OpenStreetMap)">🧭 Geocoding</button>
         <button class="btn danger" id="btnClearAll">Alles löschen</button>
@@ -54,7 +55,6 @@
         <div class="card-h">
           <div>
             <h2>Karte / Märkte</h2>
-            <p class="muted">Super einfache Tourenplanung für deinen Außendienst!</p>
           </div>
           <div class="pill" id="marketCount">0</div>
         </div>
@@ -68,16 +68,18 @@
           <button class="btn" id="btnFit">↔︎ Alles anzeigen</button>
         </div>
 
-        <div class="note" style="margin-top:10px">
-  <b>So funktioniert’s</b>
-  <ol style="margin:8px 0 0 18px; padding:0; display:flex; flex-direction:column; gap:6px">
-    <li><b>Excel-Import</b>: Kundenliste hochladen.</li>
-    <li><b>Geotagging</b>: „Geocoding“ starten (kann je nach Anzahl etwas dauern).</li>
-    <li><b>Aktualisieren</b>: Seite neu laden – danach siehst du alle Märkte als Marker auf der Karte.</li>
-    <li><b>Planung</b>: SAP‑Nummer suchen (wie in Ninox geplant) → Marker anklicken → <b>„In Route +“</b>.</li>
-    <li><b>Route</b>: Standort freigeben → <b>Optimieren</b> → <b>Planen</b> (Google Maps startet mit allen Stops).</li>
-  </ol>
-</div>
+        <div class="how" style="margin-top:10px">
+          <button class="btn" id="btnHow" type="button">So funktioniert’s</button>
+          <div class="note how-panel" id="howPanel" hidden>
+            <ol style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px">
+              <li><b>Excel-Import</b>: Kundenliste hochladen.</li>
+              <li><b>Geotagging</b>: „Geocoding“ starten (kann je nach Anzahl etwas dauern).</li>
+              <li><b>Aktualisieren</b>: Seite neu laden – danach siehst du alle Märkte als Marker auf der Karte.</li>
+              <li><b>Planung</b>: SAP‑Nummer suchen (wie in Ninox geplant) → Marker anklicken → <b>„In Route +“</b>.</li>
+              <li><b>Fertigstellen</b>: „Planung fertigstellen“ → Route wird automatisch optimiert und ist bereit für Google Maps.</li>
+            </ol>
+          </div>
+        </div>
 
         <div class="hr"></div>
         <div id="map" class="map"></div>
@@ -86,36 +88,81 @@
       <section class="card">
         <div class="card-h">
           <div>
-            <h2>Tagesroute</h2>
-            <p class="muted">Stops sammeln → Optimieren → Planen → Navigation starten.</p>
+            <h2>Routenplaner mit allen Märkten</h2>
           </div>
         </div>
 
         <div class="row">
-          <button class="btn" id="btnMyPos">📍 Aktueller Standort</button>
-          <button class="btn" id="btnOptimize">🧠 Optimieren (OSRM)</button>
-          <button class="btn" id="btnResetRoute">↩︎ Route zurücksetzen</button>
-          <button class="btn primary" id="btnPlan">🚀 Planen (Google Maps)</button>
+          <button class="btn primary" id="btnFinalize">✅ Planung fertigstellen</button>
+          <button class="btn primary" id="btnStartMaps" disabled>🧭 Starten (Google Maps)</button>
+          <button class="btn" id="btnResetRoute">↩︎ Zurücksetzen</button>
         </div>
+
+        <label class="check" for="chkReturn" style="margin-top:8px">
+          <input type="checkbox" id="chkReturn" checked />
+          <span class="checkDot" aria-hidden="true"></span>
+          <span class="checkText">Startpunkt als letzten Stopp hinzufügen (Rückfahrt)</span>
+        </label>
+        <div class="muted tiny" id="returnHint" style="margin-top:4px">
+          Aktiv: Die Tour endet wieder am Startpunkt.
+        </div>
+
+        <div class="status" id="status" aria-live="polite"></div>
 
         <div class="kpi">
           <div class="box"><div class="muted tiny">Stops</div><div class="v" id="kStops">0</div></div>
-          <div class="box"><div class="muted tiny">km (OSRM)</div><div class="v" id="kKm">—</div></div>
+          <div class="box"><div class="muted tiny">Tour km</div><div class="v" id="kKm">—</div></div>
         </div>
 
         <div class="hr"></div>
         <div class="list" id="routeList"></div>
 
         <div class="note" style="margin-top:12px">
-          <b>Tipp:</b> Einmal „Geocoding“ laufen lassen, dann sind alle Marker & OSRM-Optimierung stabil.
+          <b>Tipp:</b> Einmal „Geocoding“ laufen lassen, dann sind alle Marker & die Optimierung stabil.
         </div>
       </section>
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  <!-- Defer scripts so DOM (incl. modal) exists before app.js wires event listeners -->
+  <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
           integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="./app.js"></script>
+  <script defer src="./app.js"></script>
+
+  <!-- Modal: Markt hinzufügen -->
+  <div class="modal" id="addMarketModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modalCard" role="document">
+      <div class="modalHead">
+        <div>
+          <div class="modalTitle">Markt hinzufügen</div>
+          <div class="muted tiny">Name, Adresse & SAP‑Nummer eintragen – Geocoding läuft automatisch.</div>
+        </div>
+        <button class="btn" id="btnAddMarketClose" aria-label="Schließen">✕</button>
+      </div>
+
+      <div class="modalBody">
+        <label class="field">
+          <span>Marktname</span>
+          <input id="amName" placeholder="z.B. EDEKA Jürgensen" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>Adresse</span>
+          <input id="amAddr" placeholder="Straße, PLZ Ort" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>SAP‑Nummer</span>
+          <input id="amSap" placeholder="z.B. 2011556" inputmode="numeric" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="modalActions">
+        <button class="btn" id="btnAddMarketCancel">Abbrechen</button>
+        <button class="btn primary" id="btnAddMarketSave">Speichern</button>
+      </div>
+
+      <div class="status" id="addMarketStatus" aria-live="polite"></div>
+    </div>
+  </div>
 </body>
 </html>

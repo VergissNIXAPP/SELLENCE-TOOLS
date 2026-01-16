@@ -133,6 +133,7 @@
         <span class="backIcon">←</span>
         Tools
       </a>
+      <button id="btnLogout" class="ghost">Logout</button>
     </div>
     <div class="brand">
       <div class="brandMark">SELLENCE</div>
@@ -492,6 +493,10 @@
     undo=null;
     persist(); render();
     showToast("Reset", "Alles gelöscht.");
+  });
+  $("btnLogout").addEventListener("click", ()=>{
+    try{ localStorage.removeItem(AUTH_KEY); }catch(e){}
+    location.replace("./index.html");
   });
 
   restore();

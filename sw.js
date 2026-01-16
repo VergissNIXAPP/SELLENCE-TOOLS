@@ -9,6 +9,7 @@ const CORE = [
   "./icon-512.png",
   "./assets/oos-icon.png",
   "./assets/retouren-icon.png",
+  "./assets/stempeluhr-icon.png",
   "./oos/index.html",
   "./oos/oos.html",
   "./oos/style.css",
@@ -27,6 +28,14 @@ const CORE = [
   "./touren/sw.js",
   "./touren/icons/icon-192.png",
   "./touren/icons/icon-512.png",
+
+  "./stempeluhr/index.html",
+  "./stempeluhr/styles.css",
+  "./stempeluhr/app.js",
+  "./stempeluhr/manifest.json",
+  "./stempeluhr/sw.js",
+  "./stempeluhr/assets/icon-192.png",
+  "./stempeluhr/assets/icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {

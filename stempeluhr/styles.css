@@ -1,0 +1,254 @@
+
+:root{
+  --bg1:#0b1220;
+  --bg2:#0b1b2a;
+  --card:#0f2033;
+  --stroke:rgba(255,255,255,.10);
+  --text:rgba(255,255,255,.92);
+  --muted:rgba(255,255,255,.62);
+  --accent:#18d6b6;      /* mint */
+  --accent2:#4aa3ff;     /* sky */
+  --danger:#ff4d6d;
+  --shadow:0 14px 50px rgba(0,0,0,.45);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  color:var(--text);
+  background:radial-gradient(1200px 700px at 20% 10%, rgba(24,214,182,.15), transparent 55%),
+             radial-gradient(900px 600px at 85% 30%, rgba(74,163,255,.18), transparent 55%),
+             linear-gradient(180deg, var(--bg1), var(--bg2));
+  padding:calc(env(safe-area-inset-top) + 14px) 14px calc(env(safe-area-inset-bottom) + 16px);
+}
+body.noScroll{overflow:hidden;}
+.app{max-width:1100px; margin:0 auto;}
+
+.top{
+  display:flex; align-items:center; justify-content:center;
+  padding:12px 12px;
+  border:1px solid var(--stroke);
+  border-radius:calc(var(--radius) + 8px);
+  background:rgba(15,32,51,.72);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+}
+.topGrid{width:100%;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:10px;}
+.topSpacer{width:44px;height:44px;}
+.brandCenter{justify-content:center;text-align:center;}
+.brandCenter .title,.brandCenter .subtitle{text-align:center;}
+.brand{display:flex; align-items:center; gap:12px}
+.logo{
+  width:42px; height:42px; border-radius:14px;
+  display:grid; place-items:center;
+  font-weight:900;
+  background:linear-gradient(135deg, rgba(24,214,182,.95), rgba(74,163,255,.95));
+  color:#071019;
+}
+.title{font-weight:900; letter-spacing:.08em; font-size:14px}
+.subtitle{font-weight:800; letter-spacing:.14em; font-size:12px; color:var(--muted)}
+
+.iconBtn{
+  width:44px; height:44px;
+  border-radius:14px;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+}
+.iconBtn:active{transform:scale(.98)}
+.backBtn{display:grid;place-items:center;text-decoration:none;font-size:18px;font-weight:900;line-height:1}
+.bars{display:block; width:18px; height:2px; background:var(--text); position:relative; margin:0 auto}
+.bars:before,.bars:after{content:""; position:absolute; left:0; width:18px; height:2px; background:var(--text)}
+.bars:before{top:-6px}
+.bars:after{top:6px}
+
+.grid{display:grid; gap:14px; margin-top:14px}
+/* keep it clean: one column; overview appears on demand */
+
+.card{
+  border:1px solid var(--stroke);
+  border-radius:var(--radius);
+  background:rgba(15,32,51,.72);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+  padding:14px;
+}
+
+.row{display:flex; align-items:end}
+.gap{gap:12px}
+.between{justify-content:space-between}
+.wrap{flex-wrap:wrap}
+.center{justify-content:center; align-items:center}
+
+.centerStack{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.nameField{max-width:420px; width:100%;}
+.pauseNote{opacity:.8}
+.tiny{font-size:12px}
+
+.stateRow{display:flex; gap:10px; align-items:center; justify-content:center; margin-top:2px}
+.stateLabel{font-size:12px; font-weight:900; letter-spacing:.04em; color:var(--muted); text-transform:uppercase}
+.stateBadge{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.06);
+  font-weight:950;
+}
+.stateBadge.on{border-color:rgba(34,197,94,.55); background:rgba(34,197,94,.16)}
+.stateBadge.off{border-color:rgba(255,255,255,.14); background:rgba(255,255,255,.05)}
+
+.field{display:flex; flex-direction:column; gap:6px; flex:1; min-width:200px}
+.field span{font-size:12px; color:var(--muted); font-weight:700; letter-spacing:.02em}
+input[type='text'], input[type='date']{
+  width:100%;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  border-radius:16px;
+  padding:12px 12px;
+  font-weight:700;
+  outline:none;
+}
+input[type='text']::placeholder{color:rgba(255,255,255,.35)}
+
+.pill{
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.06);
+  padding:11px 12px;
+  border-radius:16px;
+  font-weight:800;
+}
+
+.btn{
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.06);
+  color:var(--text);
+  border-radius:18px;
+  padding:12px 14px;
+  font-weight:900;
+  letter-spacing:.02em;
+  cursor:pointer;
+  user-select:none;
+}
+.btn:active{transform:scale(.99)}
+.btn.full{width:100%}
+.btn.small{padding:10px 12px; border-radius:16px}
+.btn.primary{
+  background:linear-gradient(135deg, rgba(24,214,182,.95), rgba(74,163,255,.95));
+  border:0;
+  color:#071019;
+}
+.btn.success{
+  background:linear-gradient(135deg, rgba(34,197,94,.95), rgba(16,185,129,.95));
+  border:0;
+  color:#071019;
+}
+.btn.ghost{background:rgba(255,255,255,.04)}
+.btn.ghost.active{background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.22)}
+.btn.danger{
+  background:linear-gradient(135deg, rgba(239,68,68,.35), rgba(244,63,94,.22));
+  border-color:rgba(244,63,94,.45);
+}
+
+.status{margin-top:10px; color:var(--muted); font-size:12px; min-height:16px}
+
+.hint{
+  margin-top:12px;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(24,214,182,.35);
+  background:rgba(24,214,182,.12);
+  color:rgba(255,255,255,.88);
+  font-weight:800;
+}
+.hidden{display:none}
+
+/* Hard guarantee: if the sheet is hidden via the HTML attribute, it's REALLY gone (iOS/PWA safe). */
+.sheet[hidden]{
+  display:none !important;
+}
+
+.h2{font-size:14px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.85)}
+.totals{display:flex; gap:10px; flex-wrap:wrap}
+.kpi{border:1px solid var(--stroke); background:rgba(255,255,255,.05); border-radius:18px; padding:10px 12px}
+.kpiLabel{font-size:11px; color:var(--muted); font-weight:800; letter-spacing:.02em}
+.kpiValue{font-size:18px; font-weight:950}
+
+.filters{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px}
+.chip{
+  display:flex; align-items:center; gap:8px;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.05);
+  padding:10px 12px;
+  border-radius:18px;
+  font-weight:900;
+  color:rgba(255,255,255,.85);
+  cursor:pointer;
+  user-select:none;
+}
+.chip input{accent-color: var(--accent)}
+.custom{display:flex; gap:8px; align-items:center}
+.custom span{color:var(--muted); font-weight:900}
+
+.listWrap{margin-top:12px; overflow:auto; border-radius:18px; border:1px solid var(--stroke)}
+.table{width:100%; border-collapse:separate; border-spacing:0; min-width:640px}
+thead th{
+  text-align:left;
+  font-size:12px;
+  color:var(--muted);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:12px;
+  background:rgba(255,255,255,.04);
+}
+tbody td{
+  padding:12px;
+  border-top:1px solid rgba(255,255,255,.08);
+  font-weight:800;
+}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+
+.muted{color:var(--muted)}
+
+.iconSmall{
+  width:34px; height:34px;
+  border-radius:14px;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+  font-weight:950;
+}
+
+.foot{margin-top:14px; text-align:center; font-size:12px; color:var(--muted)}
+
+.sheet{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:14px;
+  z-index:9999;
+}
+.sheetCard{
+  width:min(520px, 100%);
+  border:1px solid var(--stroke);
+  border-radius:28px;
+  background:rgba(15,32,51,.92);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+  padding:14px;
+}
+.sheetTitle{font-weight:950; letter-spacing:.06em; text-transform:uppercase; font-size:13px; color:rgba(255,255,255,.85); margin:4px 0 12px}
