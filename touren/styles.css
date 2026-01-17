@@ -223,7 +223,3 @@ input:focus{border-color:rgba(91,46,255,.55);box-shadow:0 0 0 4px rgba(91,46,255
   font-size:18px;
   line-height:1;
 }
-
-
-/* Share button (AirDrop / iOS Share Sheet) */
-#shareBtn{ font-weight:900; }
