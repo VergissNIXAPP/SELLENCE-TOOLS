@@ -208,3 +208,22 @@ input:focus{border-color:rgba(91,46,255,.55);box-shadow:0 0 0 4px rgba(91,46,255
   .menu{left:0; right:auto; width: min(92vw, 320px);}
 }
 
+
+
+/* Icon-only Back Button */
+.backBtn--icon{
+  padding:8px;
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  justify-content:center;
+}
+
+.backBtn--icon .backIcon{
+  font-size:18px;
+  line-height:1;
+}
+
+
+/* Share button (AirDrop / iOS Share Sheet) */
+#shareBtn{ font-weight:900; }

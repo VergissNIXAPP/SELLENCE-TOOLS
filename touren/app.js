@@ -11,6 +11,16 @@ const STORE = {
 const OSRM_BASE = "https://router.project-osrm.org";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 
+// Märkte, die im Tourenplaner ignoriert werden sollen
+// (Case-insensitive, Treffer per "includes")
+const IGNORE_MARKETS = [
+  "rossmann",
+  "aldi",
+  "lidl",
+  "netto",
+  "penny",
+];
+
 
 // Hamburger menu
 (function(){
@@ -27,6 +37,89 @@ const NOMINATIM = "https://nominatim.openstreetmap.org/search";
   document.addEventListener("click", close);
   document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") close(); });
 })();
+
+
+// Share (AirDrop / iOS Share Sheet via Web Share API)
+(function(){
+  const btn = document.getElementById("shareBtn");
+  if(!btn) return;
+
+  function buildShareText(){
+    const ordered = routeIds
+      .map(id=>markets.find(m=>m.id===id))
+      .filter(Boolean);
+
+    if(!ordered.length) return "Noch keine Route geplant.";
+    return ordered.map((m,i)=>{
+      const addr = marketAddr(m);
+      const sap = m.sap ? ` (SAP ${m.sap})` : "";
+      return `${i+1}. ${m.name}${sap}${addr?` – ${addr}`:""}`;
+    }).join("\n");
+  }
+
+  function buildShareFile(){
+    const ordered = routeIds
+      .map(id=>markets.find(m=>m.id===id))
+      .filter(Boolean)
+      .map(m=>({
+        id: m.id,
+        name: m.name,
+        sap: m.sap || "",
+        anschrift: m.anschrift || "",
+        plz: m.plz || "",
+        ort: m.ort || "",
+        lat: m.lat ?? null,
+        lng: m.lng ?? null,
+      }));
+
+    const payload = {
+      app: "SELLENCE-TOURENPLANER",
+      createdAt: new Date().toISOString(),
+      route: ordered
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+    return new File([blob], "sellence-tourenplan.json", {type:"application/json"});
+  }
+
+  async function copy(text){
+    try{
+      await navigator.clipboard.writeText(text);
+      alert("Link kopiert ✅");
+    }catch(e){
+      prompt("Kopieren:", text);
+    }
+  }
+
+  btn.addEventListener("click", async ()=>{
+    const url = location.href;
+    const title = "SELLENCE Tourenplaner – Route";
+    const text = buildShareText();
+
+    // Prefer sharing a small JSON export too (works great with AirDrop into Files/Notes/WhatsApp)
+    const file = buildShareFile();
+    const payloadWithFile = { title, text, url, files:[file] };
+    const payloadNoFile = { title, text, url };
+
+    if(navigator.share){
+      try{
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          await navigator.share(payloadWithFile);
+        }else{
+          await navigator.share(payloadNoFile);
+        }
+      }catch(err){
+        // user canceled or share failed – silently ignore
+        console.warn(err);
+      }
+      return;
+    }
+
+    // Fallback: copy link
+    await copy(url);
+  });
+})();
+
 
 // Add-market modal helpers
 function setAddMarketStatus(msg=""){
@@ -401,9 +494,9 @@ $("fileInput").addEventListener("change", async (e)=>{
       const m=extractFromRow(r);
       if(!m || !(m.sap || m.name)) continue;
 
-      // Regel: Rossmann-Märkte ignorieren (werden im Außendienst nicht benötigt)
+      // Regel: Bestimmte Märkte ignorieren
       const hay = `${m.name} ${m.anschrift} ${m.ort}`.toLowerCase();
-      if(hay.includes("rossmann")) continue;
+      if(IGNORE_MARKETS.some(x => hay.includes(x))) continue;
 
       imported.push(m);
     }
@@ -500,8 +593,8 @@ document.getElementById("btnAddMarketSave")?.addEventListener("click", async ()=
     return;
   }
   const hay = `${name} ${addr}`.toLowerCase();
-  if(hay.includes("rossmann")){
-    setAddMarketStatus("Rossmann wird automatisch ignoriert – bitte einen anderen Markt anlegen.");
+  if(IGNORE_MARKETS.some(x => hay.includes(x))){
+    setAddMarketStatus("Diese Märkte werden automatisch ignoriert: Rossmann, Aldi, Lidl, Netto, Penny.");
     return;
   }
 
