@@ -6,6 +6,7 @@ const STORE = {
   route: "sellence_sap_route_osrm_v1",
   myPos: "sellence_sap_mypos_osrm_v1",
   lastLinks: "sellence_sap_lastlinks_osrm_v1",
+  history: "sellence_sap_tour_history_v1",
 };
 
 const OSRM_BASE = "https://router.project-osrm.org";
@@ -788,6 +789,9 @@ if(__btnFinalize){
 const __btnStart = document.getElementById("btnStartMaps");
 if(__btnStart){
   __btnStart.addEventListener("click", ()=>{
+    // Speichere Tour (Datum/Uhrzeit + Stops + km)
+    try{ recordTourStart(); }catch(e){}
+
     const links = Array.isArray(lastLinks) ? lastLinks : [];
     if(!links.length){
       setStatus("Bitte zuerst „Planung fertigstellen“ drücken.");
@@ -849,3 +853,364 @@ setStartEnabled(Array.isArray(lastLinks) && lastLinks.length>0);
 if("serviceWorker" in navigator){
   window.addEventListener("load", ()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 }
+
+document.addEventListener("DOMContentLoaded",()=>{
+ if(localStorage.getItem("introSeen")){
+  const o=document.getElementById("introOverlay");
+  if(o) o.style.display="none";
+ }
+});
+function closeIntro(){
+ localStorage.setItem("introSeen","true");
+ const o=document.getElementById("introOverlay");
+ const v=document.getElementById("introVideo");
+ if(v) v.pause();
+ if(o) o.style.display="none";
+}
+
+function closeIntro(){
+  localStorage.setItem("introSeen","true");
+  const o=document.getElementById("introOverlay");
+  const v=document.getElementById("introVideo");
+  if(v) v.pause();
+  if(o){
+    o.classList.add("fade-out");
+    setTimeout(()=>{ o.style.display="none"; },400);
+  }
+}
+
+
+// ---------- Tour Historie ----------
+function pad2(n){ return String(n).padStart(2,"0"); }
+function fmtDateTime(iso){
+  const d = new Date(iso);
+  return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+function fmtDate(iso){
+  const d = new Date(iso);
+  return `${pad2(d.getDate())}.${pad2(d.getMonth()+1)}.${d.getFullYear()}`;
+}
+function isoDateLocal(d){
+  // yyyy-mm-dd in local time
+  const dt = new Date(d);
+  const y = dt.getFullYear();
+  const m = pad2(dt.getMonth()+1);
+  const da = pad2(dt.getDate());
+  return `${y}-${m}-${da}`;
+}
+function loadHistory(){
+  return load(STORE.history, []);
+}
+function saveHistory(arr){
+  save(STORE.history, arr);
+}
+function getLastPlannedKm(){
+  // UI shows last planned km in #kKm; parse safely
+  const el = document.getElementById("kKm");
+  if(!el) return null;
+  const t = (el.textContent||"").replace(",",".");
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
+function recordTourStart(){
+  const pts = routePoints();
+  if(!pts.length) return;
+
+  const nowIso = new Date().toISOString();
+  const km = getLastPlannedKm();
+
+  const tour = {
+    id: "t_" + Math.random().toString(36).slice(2,10) + "_" + Date.now(),
+    startedAt: nowIso,
+    plannedKm: km,
+    stops: pts.map((m,idx)=>({
+      idx: idx+1,
+      id: m.id || "",
+      name: m.name || "",
+      sap: m.sap || "",
+      anschrift: m.anschrift || "",
+      plz: m.plz || "",
+      ort: m.ort || "",
+      lat: m.lat ?? null,
+      lng: m.lng ?? null,
+    })),
+  };
+
+  const hist = loadHistory();
+  hist.unshift(tour);
+  saveHistory(hist);
+  renderHistory();
+}
+
+function historyRange(){
+  const fromEl = document.getElementById("hFrom");
+  const toEl = document.getElementById("hTo");
+  const from = fromEl?.value ? new Date(fromEl.value+"T00:00:00") : null;
+  const to = toEl?.value ? new Date(toEl.value+"T23:59:59") : null;
+  return {from,to};
+}
+function filterHistory(hist){
+  const {from,to}=historyRange();
+  return hist.filter(t=>{
+    const d = new Date(t.startedAt);
+    if(from && d < from) return false;
+    if(to && d > to) return false;
+    return true;
+  });
+}
+function sumKm(hist){
+  return hist.reduce((acc,t)=> acc + (Number.isFinite(t.plannedKm)?t.plannedKm:0), 0);
+}
+
+function renderHistory(){
+  const list = document.getElementById("historyList");
+  const hKm = document.getElementById("hKm");
+  const hTours = document.getElementById("hTours");
+  if(!list || !hKm || !hTours) return;
+
+  const all = loadHistory();
+  const filtered = filterHistory(all);
+
+  hTours.textContent = String(filtered.length);
+  const km = sumKm(filtered);
+  hKm.textContent = filtered.length ? formatKm(km) : "—";
+
+  if(!filtered.length){
+    list.innerHTML = `<div class="muted">Noch keine Tour gespeichert. Sobald du auf „Starten“ drückst, landet sie hier.</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(t=>{
+    const badgeKm = Number.isFinite(t.plannedKm) ? `${formatKm(t.plannedKm)} km` : "km —";
+    const badgeStops = `${(t.stops||[]).length} Stop(s)`;
+    const rows = (t.stops||[]).map(s=>`
+      <tr>
+        <td>${s.idx}</td>
+        <td>${escapeHTML(s.name)}</td>
+        <td>${escapeHTML([s.plz,s.ort].filter(Boolean).join(" "))}</td>
+        <td>${escapeHTML(s.anschrift||"")}</td>
+      </tr>
+    `).join("");
+
+    return `
+      <div class="h-tour">
+        <div class="top">
+          <div class="meta">
+            <span class="h-badge">🕒 ${fmtDateTime(t.startedAt)}</span>
+            <span class="h-badge">🧭 ${badgeKm}</span>
+            <span class="h-badge">📍 ${badgeStops}</span>
+          </div>
+        </div>
+        <table class="h-table">
+          <thead><tr><th>#</th><th>Markt</th><th>Ort</th><th>Anschrift</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  }).join("");
+}
+
+function exportHistoryCsv(){
+  const all = loadHistory();
+  const filtered = filterHistory(all);
+  if(!filtered.length){
+    setStatus("Keine Touren im gewählten Zeitraum.");
+    return;
+  }
+  const rows = [];
+  filtered.forEach(t=>{
+    const started = t.startedAt;
+    const date = fmtDate(started);
+    const time = fmtDateTime(started).split(" ")[1] || "";
+    const km = Number.isFinite(t.plannedKm) ? t.plannedKm : "";
+    (t.stops||[]).forEach(s=>{
+      rows.push({
+        tour_started_at: started,
+        tour_date: date,
+        tour_time: time,
+        tour_planned_km: km,
+        stop_index: s.idx,
+        market_name: s.name || "",
+        plz: s.plz || "",
+        ort: s.ort || "",
+        anschrift: s.anschrift || "",
+        sap: s.sap || "",
+      });
+    });
+  });
+
+  const headers = Object.keys(rows[0]);
+  const esc = (v)=>{
+    const s = String(v ?? "");
+    if(/[",\n;]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
+    return s;
+  };
+  const csv = [
+    headers.join(";"),
+    ...rows.map(r=>headers.map(h=>esc(r[h])).join(";"))
+  ].join("\n");
+
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,"-");
+  a.href = URL.createObjectURL(blob);
+  a.download = `sellence-touren-historie_${stamp}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setStatus("CSV export erstellt.");
+}
+
+function printHistory(){
+  const all = loadHistory();
+  const filtered = filterHistory(all);
+  if(!filtered.length){
+    setStatus("Keine Touren im gewählten Zeitraum.");
+    return;
+  }
+  const km = sumKm(filtered);
+  const {from,to}=historyRange();
+  const rangeLabel = `${from?isoDateLocal(from):"—"} bis ${to?isoDateLocal(to):"—"}`;
+
+  const html = `
+  <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>SELLENCE Tour‑Historie</title>
+    <style>
+      body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; padding:20px}
+      h1{margin:0 0 6px 0}
+      .muted{color:#555}
+      .sum{margin:14px 0 18px 0}
+      table{width:100%; border-collapse:collapse; margin:8px 0 18px 0}
+      th,td{border:1px solid #ccc; padding:6px 8px; text-align:left; vertical-align:top; font-size:12px}
+      th{background:#f3f3f3}
+      .tour{margin-top:14px}
+    </style>
+  </head>
+  <body>
+    <h1>SELLENCE Tour‑Historie</h1>
+    <div class="muted">Zeitraum: ${rangeLabel}</div>
+    <div class="sum"><b>Gefahrene Kilometer:</b> ${Number.isFinite(km)?km.toFixed(1).replace(".",","):"—"} &nbsp; | &nbsp; <b>Touren:</b> ${filtered.length}</div>
+    ${filtered.map(t=>`
+      <div class="tour">
+        <div><b>Tour:</b> ${fmtDateTime(t.startedAt)} &nbsp; | &nbsp; <b>km:</b> ${Number.isFinite(t.plannedKm)?t.plannedKm.toFixed(1).replace(".",","):"—"} &nbsp; | &nbsp; <b>Stops:</b> ${(t.stops||[]).length}</div>
+        <table>
+          <thead><tr><th>#</th><th>Markt</th><th>PLZ/Ort</th><th>Anschrift</th></tr></thead>
+          <tbody>
+            ${(t.stops||[]).map(s=>`
+              <tr><td>${s.idx}</td><td>${(s.name||"").replace(/</g,"&lt;")}</td><td>${[s.plz,s.ort].filter(Boolean).join(" ")}</td><td>${(s.anschrift||"").replace(/</g,"&lt;")}</td></tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `).join("")}
+    <script>window.print();</script>
+  </body>
+  </html>`;
+  const w = window.open("", "_blank");
+  if(!w){ setStatus("Popup blockiert – bitte Popups erlauben."); return; }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+function initHistoryUI(){
+  const card = document.getElementById("historyCard");
+  if(!card) return;
+
+  const fromEl = document.getElementById("hFrom");
+  const toEl = document.getElementById("hTo");
+
+  // Default: last 30 days
+  const now = new Date();
+  const to = new Date(now);
+  const from = new Date(now);
+  from.setDate(from.getDate()-30);
+  if(fromEl && !fromEl.value) fromEl.value = isoDateLocal(from);
+  if(toEl && !toEl.value) toEl.value = isoDateLocal(to);
+
+  const rer = ()=>renderHistory();
+  fromEl?.addEventListener("change", rer);
+  toEl?.addEventListener("change", rer);
+
+  document.getElementById("btnRangeToday")?.addEventListener("click", ()=>{
+    const d = new Date();
+    fromEl.value = isoDateLocal(d);
+    toEl.value = isoDateLocal(d);
+    renderHistory();
+  });
+  document.getElementById("btnRangeWeek")?.addEventListener("click", ()=>{
+    const d = new Date();
+    const start = new Date(d);
+    start.setDate(d.getDate()-6);
+    fromEl.value = isoDateLocal(start);
+    toEl.value = isoDateLocal(d);
+    renderHistory();
+  });
+  document.getElementById("btnRangeMonth")?.addEventListener("click", ()=>{
+    const d = new Date();
+    const start = new Date(d);
+    start.setMonth(d.getMonth()-1);
+    fromEl.value = isoDateLocal(start);
+    toEl.value = isoDateLocal(d);
+    renderHistory();
+  });
+
+  document.getElementById("btnExportCsv")?.addEventListener("click", exportHistoryCsv);
+  document.getElementById("btnPrintHistory")?.addEventListener("click", printHistory);
+  document.getElementById("btnClearHistory")?.addEventListener("click", ()=>{
+    if(confirm("Historie wirklich löschen? (Nur auf diesem Gerät)")){
+      saveHistory([]);
+      renderHistory();
+      setStatus("Historie gelöscht.");
+    }
+  });
+
+  renderHistory();
+}
+
+document.addEventListener("DOMContentLoaded", initHistoryUI);
+
+
+/* Fahrdaten Drawer (Menüeintrag) */
+document.addEventListener("DOMContentLoaded", ()=>{
+  const btn = document.getElementById("btnFahrdaten");
+  const drawer = document.getElementById("fahrdatenDrawer");
+  const close = document.getElementById("closeFahrdaten");
+  const body = document.getElementById("fahrdatenBody");
+  const history = document.getElementById("historyCard");
+
+  // Existing menu elements
+  const menuBtn = document.getElementById("menuBtn");
+  const menuPanel = document.getElementById("menuPanel");
+
+  // Move history card into drawer (keeps all functionality)
+  if(history && body && !body.contains(history)){
+    body.appendChild(history);
+  }
+
+  const openDrawer = ()=>{
+    if(!drawer) return;
+    drawer.classList.add("open");
+    drawer.setAttribute("aria-hidden","false");
+    // close the small menu panel
+    if(menuPanel){
+      menuPanel.classList.remove("open");
+      menuPanel.setAttribute("aria-hidden","true");
+    }
+  };
+  const closeDrawer = ()=>{
+    if(!drawer) return;
+    drawer.classList.remove("open");
+    drawer.setAttribute("aria-hidden","true");
+  };
+
+  btn?.addEventListener("click", openDrawer);
+  close?.addEventListener("click", closeDrawer);
+
+  // Close drawer on ESC
+  document.addEventListener("keydown", (e)=>{
+    if(e.key==="Escape") closeDrawer();
+  });
+});

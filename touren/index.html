@@ -42,6 +42,7 @@
         <button class="btn" id="btnAddMarket">➕ Markt hinzufügen</button>
         <button class="btn" id="btnImport">📥 Excel Import</button>
         <button class="btn" id="btnGeocode" title="Adressen → Koordinaten (OpenStreetMap)">🧭 Geocoding</button>
+        <button class="btn" id="btnFahrdaten">📊 Fahrdaten</button>
         <button class="btn danger" id="btnClearAll">Alles löschen</button>
       </div>
       <input type="file" id="fileInput" accept=".xlsx,.xls" hidden />
@@ -166,3 +167,61 @@
   </div>
 </body>
 </html>
+
+
+        <!-- =======================
+             Tour-Historie
+        ======================== -->
+        <section class="card" id="historyCard" style="margin-top:14px">
+          <div class="card-head">
+            <h2>📚 Tour‑Historie</h2>
+            <p class="muted">Wird automatisch gespeichert, sobald du auf „Starten“ drückst.</p>
+          </div>
+
+          <div class="history-controls">
+            <div class="field">
+              <label for="hFrom">Von</label>
+              <input type="date" id="hFrom" />
+            </div>
+            <div class="field">
+              <label for="hTo">Bis</label>
+              <input type="date" id="hTo" />
+            </div>
+
+            <div class="history-actions">
+              <button class="btn" id="btnRangeToday">Heute</button>
+              <button class="btn" id="btnRangeWeek">Woche</button>
+              <button class="btn" id="btnRangeMonth">Monat</button>
+              <button class="btn" id="btnExportCsv">CSV export</button>
+              <button class="btn" id="btnPrintHistory">Drucken</button>
+              <button class="btn danger" id="btnClearHistory" title="Löscht nur die Historie auf diesem Gerät">Historie löschen</button>
+            </div>
+          </div>
+
+          <div class="history-summary">
+            <div><b>Gefahrene Kilometer:</b> <span id="hKm">—</span></div>
+            <div><b>Gespeicherte Touren:</b> <span id="hTours">0</span></div>
+          </div>
+
+          <div id="historyList" class="history-list"></div>
+        </section>
+
+
+<!-- Fahrdaten Drawer -->
+<div id="fahrdatenDrawer" class="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>📊 Fahrdaten</h2>
+    <button class="drawer-close" id="closeFahrdaten" aria-label="Schließen">✕</button>
+  </div>
+  <div class="drawer-body" id="fahrdatenBody"></div>
+</div>
+
+<!-- Intro Video Overlay -->
+<div id="introOverlay" class="intro-overlay">
+  <div class="intro-content">
+    <button class="intro-close" onclick="closeIntro()">✕</button>
+    <video id="introVideo" controls autoplay muted playsinline>
+      <source src="assets/intro.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
