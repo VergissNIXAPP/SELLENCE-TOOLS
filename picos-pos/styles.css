@@ -65,9 +65,32 @@ body{
   background: linear-gradient(180deg, rgba(6,12,34,.85), rgba(6,12,34,.55));
   border-bottom: 1px solid var(--stroke);
   padding: calc(12px + env(safe-area-inset-top)) var(--pad) 12px;
-  display:flex; align-items:center; justify-content:space-between;
+  display:grid; align-items:center;
+  grid-template-columns: 44px 1fr auto;
   gap: 14px;
 }
+
+.backBtn{
+  width:44px; height:44px;
+  border-radius: 16px;
+  display:grid; place-items:center;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  text-decoration:none;
+  color: rgba(255,255,255,.92);
+  box-shadow: 0 10px 22px rgba(0,0,0,.25);
+}
+.backBtn:hover{ background: rgba(255,255,255,.10); }
+
+.topbar .brand{ justify-self:center; }
+.topbar .totals{ justify-self:end; }
+
+@media (max-width: 620px){
+  .topbar{ grid-template-columns: 44px 1fr; grid-template-rows:auto auto; }
+  .topbar .brand{ grid-column:2; grid-row:1; }
+  .topbar .totals{ grid-column:1/-1; grid-row:2; text-align:left; }
+}
+
 
 .brand{ display:flex; align-items:center; gap: 12px; min-width: 0; }
 .logoMark{
