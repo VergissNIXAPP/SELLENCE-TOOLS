@@ -465,7 +465,25 @@ input:focus, select:focus{
 }
 .tile--soon .go{opacity:.35}
 .kicker--soon{
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.14);
+  background:none;
+  border:none;
+  color:#FFD966;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  display:flex;
+  align-items:center;
+  gap:6px;
 }
+
+.soon-icon{
+  font-size:14px;
+  animation:pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%{opacity:.6}
+  50%{opacity:1}
+  100%{opacity:.6}
+}
+
 .tile--soon .desc{opacity:.95}
