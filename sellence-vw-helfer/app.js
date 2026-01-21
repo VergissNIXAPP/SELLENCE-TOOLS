@@ -16,7 +16,7 @@ const BUILTIN = [
   {
     id: "camwash",
     tag: "Reinigung & Sicht",
-    title: "Kamera schnell sauber",
+    title: "Rückfahrkamera schnell sauber machen",
     how:
 `1) Rückwärtsgang einlegen.
 2) Heckscheiben-Wischwasser kurz aktivieren.
@@ -26,7 +26,7 @@ const BUILTIN = [
   {
     id: "inf_reboot",
     tag: "Infotainment",
-    title: "Infotainment reboot",
+    title: "Infotainment Neustart",
     how:
 `Power/Volume am Infotainment ca. 10 Sekunden gedrückt halten,
 bis der Bildschirm neu startet.`,
@@ -46,7 +46,7 @@ Dann im Fahrzeug-Menü: CAR/Vehicle → Einstellungen → Reifen/TPMS → „Set
     tag: "Komfort",
     title: "Spiegel senkt beim Rückwärtsfahren",
     how:
-`(Wenn vorhanden) Spiegelwahlschalter auf Beifahrer (R/Right) stellen.
+`Spiegelwahlschalter auf (R/Right) stellen.
 Rückwärtsgang einlegen.
 Beifahrerspiegel auf Wunschposition einstellen.
 → Danach klappt die Absenkung beim Rückwärtsfahren meist automatisch.`,
@@ -65,7 +65,7 @@ B) Zündung aus → innerhalb weniger Sekunden den Wischerhebel kurz nach unten 
   {
     id: "rearwiperreverse",
     tag: "Reinigung & Sicht",
-    title: "Heckwischer in Reverse",
+    title: "Heckwischen beim einlegen in den Rückwärtsgang",
     how:
 `Wenn der Frontwischer läuft und du in den Rückwärtsgang gehst:
 → macht der Heckwischer bei vielen Golf Variant einmal einen Wisch.`,
@@ -74,7 +74,7 @@ B) Zündung aus → innerhalb weniger Sekunden den Wischerhebel kurz nach unten 
   {
     id: "rear_wiper_setting",
     tag: "Reinigung & Sicht",
-    title: "Reverse-Heckwischer an/aus",
+    title: "Rückwärts-Heckwischer an/aus",
     how:
 `Im Fahrzeug-Menü (je nach Modell):
 Car/Vehicle → Wischer → „Heckwischer in Rückwärtsgang“ / „Automatik bei Regen“.
@@ -84,7 +84,7 @@ Dort kannst du es aktivieren oder deaktivieren.`,
   {
     id: "windows_remote",
     tag: "Komfort",
-    title: "Fenster per Schlüssel",
+    title: "Fenster per Schlüssel öffnen oder schliessen",
     how:
 `Unlock gedrückt halten → Fenster fahren runter.
 Lock gedrückt halten → Fenster fahren hoch.
@@ -94,7 +94,7 @@ Lock gedrückt halten → Fenster fahren hoch.
   {
     id: "unlock_all",
     tag: "Alltag",
-    title: "1× oder alle Türen",
+    title: "1× drücken = alle Türen aufschließen",
     how:
 `Im Fahrzeug-Menü: Setup/Car → Türen → Entriegelung.
 Dort kannst du oft wählen: 1× = Fahrertür oder 1× = alle Türen.`,
@@ -105,7 +105,7 @@ Dort kannst du oft wählen: 1× = Fahrertür oder 1× = alle Türen.`,
     tag: "Fahren & Assistenz",
     title: "Auto Hold (Ampel-Hack)",
     how:
-`Auto Hold einschalten (Taste bei EPB/Schaltkulisse).
+`Auto Hold einschalten (Taste beim Gangschalter).
 An der Ampel: bremsen → Auto bleibt stehen, ohne dass du das Pedal halten musst.
 Anfahren: Gas geben → löst automatisch.`,
     why: "Entspannter Stop-and-Go, besonders im Stadtverkehr oder am Berg.",
