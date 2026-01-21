@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>SELLENCE • VW Helfer</title>
   <meta name="theme-color" content="#0b1533" />
-  <link rel="icon" href="assets/vw-icon.png" type="image/png">
-  <link rel="apple-touch-icon" href="assets/vw-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="VW Helfer" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="assets/vw-icon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -49,6 +53,80 @@
           <button class="pill pillBtn" id="toggleFav" type="button" title="Nur Favoriten anzeigen">
             ★
           </button>
+        </div>
+      </div>
+
+      <!-- Warnleuchten (über den Tipps) -->
+      <div class="warnPanel" aria-label="VW Warnleuchten">
+        <div class="warnHead">
+          <div class="warnTitle">VW Warnleuchten – kurz erklärt</div>
+          <div class="warnHint">🔴 = sofort handeln · 🟠 = zeitnah prüfen</div>
+        </div>
+
+        <div class="warnGrid">
+          <div class="warnCard red">
+            <div class="warnIcon" aria-hidden="true">🛢️</div>
+            <div class="warnTxt">
+              <div class="warnName">Öldruck</div>
+              <div class="warnDesc">Sofort anhalten & Motor aus. Nicht weiterfahren.</div>
+            </div>
+          </div>
+
+          <div class="warnCard red">
+            <div class="warnIcon" aria-hidden="true">🌡️</div>
+            <div class="warnTxt">
+              <div class="warnName">Kühlmittel / Temperatur</div>
+              <div class="warnDesc">Motor zu heiß – abkühlen lassen, Kühlmittel prüfen.</div>
+            </div>
+          </div>
+
+          <div class="warnCard red">
+            <div class="warnIcon" aria-hidden="true">⚡</div>
+            <div class="warnTxt">
+              <div class="warnName">Batterie / Generator</div>
+              <div class="warnDesc">Stromversorgung gestört – zeitnah sicher anhalten.</div>
+            </div>
+          </div>
+
+          <div class="warnCard red">
+            <div class="warnIcon" aria-hidden="true">🛑</div>
+            <div class="warnTxt">
+              <div class="warnName">Bremsanlage</div>
+              <div class="warnDesc">Handbremse / Bremsflüssigkeit / Defekt – stoppen & prüfen.</div>
+            </div>
+          </div>
+
+          <div class="warnCard orange">
+            <div class="warnIcon" aria-hidden="true">⚙️</div>
+            <div class="warnTxt">
+              <div class="warnName">Motorkontrollleuchte</div>
+              <div class="warnDesc">Notlauf möglich – vorsichtig fahren, Werkstatt einplanen.</div>
+            </div>
+          </div>
+
+          <div class="warnCard orange">
+            <div class="warnIcon" aria-hidden="true">🛞</div>
+            <div class="warnTxt">
+              <div class="warnName">Reifendruck</div>
+              <div class="warnDesc">Druck prüfen & im Menü speichern (TPMS „Set“).</div>
+            </div>
+          </div>
+
+          <div class="warnCard orange">
+            <div class="warnIcon" aria-hidden="true">🔧</div>
+            <div class="warnTxt">
+              <div class="warnName">Service</div>
+              <div class="warnDesc">Inspektion/Ölservice fällig – Termin einplanen.</div>
+            </div>
+          </div>
+
+          <div class="warnCard orange">
+            <div class="warnIcon" aria-hidden="true">🚗💨</div>
+            <div class="warnTxt">
+              <div class="warnName">ESP / Assistenz</div>
+              <div class="warnDesc">System eingeschränkt – Ursachen prüfen (Sensoren, Wetter).</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -102,7 +180,22 @@
       </form>
     </div>
   </div>
-
+  <script>
+    // PWA: Service Worker registrieren
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+      });
+    }
+  </script>
   <script src="app.js"></script>
+<script>
+    // PWA: Service Worker registrieren
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+      });
+    }
+  </script>
 </body>
 </html>
