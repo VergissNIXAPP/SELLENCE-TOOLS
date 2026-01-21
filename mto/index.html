@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SELLENCE – MTO Rechner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#0b0b12;
+      --bg2:#120a22;
+      --stroke:rgba(255,255,255,.10);
+      --stroke2:rgba(255,255,255,.14);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.68);
+      --muted2:rgba(255,255,255,.52);
+      --radius:18px;
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Barlow", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 700px at 20% -10%, rgba(138,91,255,.35), transparent 60%),
+        radial-gradient(900px 650px at 110% 10%, rgba(47,214,255,.22), transparent 55%),
+        radial-gradient(900px 650px at 30% 120%, rgba(255,120,225,.15), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2) 55%, #06060b);
+      overflow-x:hidden;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:22px 16px 34px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background: linear-gradient(135deg, rgba(138,91,255,.95), rgba(47,214,255,.85));
+      box-shadow: 0 14px 30px rgba(138,91,255,.18), 0 10px 22px rgba(47,214,255,.10);
+      position:relative;
+    }
+    .logo:after{
+      content:"";
+      position:absolute;inset:1px;border-radius:13px;
+      background: radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.35), transparent 60%);
+      mix-blend-mode: screen;
+    }
+    .title{line-height:1.05}
+    .title .top{font-weight:800;letter-spacing:.10em;text-transform:uppercase;font-size:14px;color:rgba(255,255,255,.85)}
+    .title .sub{font-weight:700;font-size:22px;margin-top:4px}
+    .pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+    }
+    .pill label{font-size:13px;color:var(--muted)}
+    select{
+      appearance:none;
+      background: rgba(0,0,0,.25);
+      color:var(--text);
+      border:1px solid var(--stroke2);
+      border-radius:999px;
+      padding:10px 38px 10px 12px;
+      font-weight:650;
+      outline:none;
+    }
+    .selectWrap{position:relative}
+    .selectWrap:after{
+      content:"▾";
+      position:absolute;right:12px;top:50%;
+      transform:translateY(-50%);
+      color:var(--muted);
+      pointer-events:none;
+      font-size:14px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 880px){
+      .grid{grid-template-columns:1fr}
+      header{flex-direction:column;align-items:flex-start}
+      .pill{width:100%;justify-content:space-between}
+    }
+    .card{
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding:14px 14px 12px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .cardHeader h2{margin:0;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.78)}
+    .hint{font-size:12px;color:var(--muted2)}
+    .cardBody{padding:14px}
+    .sec{padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);background: rgba(0,0,0,.20);}
+    .sec + .sec{margin-top:10px}
+    .secTop{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .secTop .name{font-weight:800;letter-spacing:.10em;text-transform:uppercase;font-size:13px}
+    .secTop .weight{font-size:12px;color:var(--muted)}
+    .fields{display:grid;grid-template-columns: repeat(12, 1fr); gap:10px}
+    .field{grid-column: span 6}
+    .field.wide{grid-column: span 12}
+    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input[type="number"]{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--stroke2);
+      background: rgba(0,0,0,.22);
+      color:var(--text);
+      font-size:16px;
+      font-weight:650;
+      outline:none;
+    }
+    input[type="number"]::placeholder{color:rgba(255,255,255,.35)}
+    .kpi{display:grid;gap:10px;grid-template-columns: 1fr 1fr;}
+    @media (max-width: 520px){.kpi{grid-template-columns:1fr}}
+    .kpiCard{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.11);
+      background: rgba(0,0,0,.25);
+    }
+    .kpiCard .k{font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+    .kpiCard .v{font-size:26px;font-weight:850;margin-top:6px}
+    .kpiCard .s{font-size:12px;color:var(--muted2);margin-top:2px}
+    .total{
+      padding:16px;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(420px 220px at 20% 0%, rgba(138,91,255,.35), transparent 70%),
+        radial-gradient(420px 220px at 90% 20%, rgba(47,214,255,.22), transparent 65%),
+        rgba(0,0,0,.24);
+    }
+    .total .k{font-size:12px;color:rgba(255,255,255,.72);letter-spacing:.12em;text-transform:uppercase}
+    .total .v{font-size:38px;font-weight:900;margin-top:6px;line-height:1.05}
+    .btnRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color:var(--text);
+      padding:11px 12px;
+      border-radius:14px;
+      font-weight:750;
+      cursor:pointer;
+    }
+    button.primary{
+      border-color: rgba(138,91,255,.45);
+      background: linear-gradient(135deg, rgba(138,91,255,.75), rgba(47,214,255,.35));
+    }
+    button:hover{filter:brightness(1.06)}
+    .note{font-size:12px;color:var(--muted2);margin-top:10px;line-height:1.35}
+    .mono{font-variant-numeric: tabular-nums}
+    .small{font-size:12px;color:var(--muted2)}
+    .badges{display:flex;gap:8px;flex-wrap:wrap}
+    .badge{
+      font-size:12px;color:rgba(255,255,255,.75);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      padding:6px 10px;border-radius:999px;
+    }
+  </style>
+
+<style>
+.app-header{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px 16px;
+  background:linear-gradient(135deg,#4f73ff,#2e4bff);
+  color:#fff;
+  text-align:center;
+}
+.app-logo{
+  height:40px;
+  width:auto;
+}
+.app-title{
+  margin:0;
+  line-height:1.05;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+.app-title span{
+  font-weight:600;
+  font-size:.9em;
+  opacity:.95;
+}
+</style>
+
+</head>
+<body>
+  <div class="wrap">
+    <header>
+
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="title">
+          <div class="top">SELLENCE</div>
+          <div class="sub">MTO Rechner</div>
+        </div>
+      </div>
+
+      <div class="pill">
+        <label for="month">Monat der Erhebung</label>
+        <div class="selectWrap">
+          <select id="month"></select>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <div class="cardHeader">
+          <h2>Eingaben</h2>
+          <div class="hint">Gebinde / Stückzahlen eintragen</div>
+        </div>
+        <div class="cardBody">
+
+          <div class="sec">
+            <div class="secTop">
+              <div class="name">CIG</div>
+              <div class="weight">Gewichtung: <span class="mono" id="wCIG">–</span></div>
+            </div>
+            <div class="fields">
+              <div class="field wide">
+                <label for="cig"># Gebinde CIG</label>
+                <input id="cig" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+              </div>
+            </div>
+          </div>
+
+          <div class="sec">
+            <div class="secTop">
+              <div class="name">HNB</div>
+              <div class="weight">Gewichtung: <span class="mono" id="wHNB">–</span></div>
+            </div>
+            <div class="fields">
+              <div class="field wide">
+                <label for="hnb"># Gebinde HNB (Consumables)</label>
+                <input id="hnb" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+              </div>
+            </div>
+          </div>
+
+          <div class="sec">
+            <div class="secTop">
+              <div class="name">VAPE</div>
+              <div class="weight">Gewichtung: <span class="mono" id="wVAPE">–</span></div>
+            </div>
+            <div class="fields">
+              <div class="field">
+                <label for="vapeDisp"># Vape Einweg</label>
+                <input id="vapeDisp" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+              </div>
+              <div class="field">
+                <label for="vapePods"># Vape Pods</label>
+                <input id="vapePods" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+              </div>
+              <div class="field wide small">
+                Berechnung wie in Excel: (Einweg + Pods) × 10 € × Gewichtung
+              </div>
+            </div>
+          </div>
+
+          <div class="sec">
+            <div class="secTop">
+              <div class="name">OTP</div>
+              <div class="weight">Gewichtung: <span class="mono" id="wOTP">–</span></div>
+            </div>
+            <div class="fields">
+              <div class="field"><label for="otpBox"># Boxen</label><input id="otpBox" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+              <div class="field"><label for="otpBeutel"># Beutel</label><input id="otpBeutel" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+              <div class="field"><label for="otpPouch"># Pouches</label><input id="otpPouch" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+              <div class="field"><label for="otpDose"># Dosen</label><input id="otpDose" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+              <div class="field wide"><label for="otpCiga"># Cigarillos</label><input id="otpCiga" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+              <div class="field wide small">
+                Preise (aus Excel): Box 43,95 € · Beutel 26,95 € · Pouch 7,90 € · Dose 20,83 € · Cigarillo 2,87 €
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="cardHeader">
+          <h2>Ergebnis</h2>
+          <div class="badges">
+            <div class="badge">Auto‑Save</div>
+            <div class="badge">Copy</div>
+          </div>
+        </div>
+        <div class="cardBody">
+
+          <div class="total">
+            <div class="k">MTO Gesamt</div>
+            <div class="v mono" id="mtoTotal">0,00 €</div>
+            <div class="small" id="monthLabel">–</div>
+
+            <div class="btnRow">
+              <button class="primary" id="copyBtn">MTO kopieren</button>
+              <button id="resetBtn">Zurücksetzen</button>
+            </div>
+
+            <div class="note">
+              Der MTO ist der Monatsumsatz‑Wert
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="kpi">
+            <div class="kpiCard">
+              <div class="k">CIG Umsatz</div>
+              <div class="v mono" id="mtoCIG">0,00 €</div>
+              <div class="s">Gebinde × 80,41 € × Gewichtung</div>
+            </div>
+
+            <div class="kpiCard">
+              <div class="k">HNB Umsatz</div>
+              <div class="v mono" id="mtoHNB">0,00 €</div>
+              <div class="s">Gebinde × 73,30 € × Gewichtung</div>
+            </div>
+
+            <div class="kpiCard">
+              <div class="k">VAPE Umsatz</div>
+              <div class="v mono" id="mtoVAPE">0,00 €</div>
+              <div class="s">(Einweg + Pods) × 10 € × Gewichtung</div>
+            </div>
+
+            <div class="kpiCard">
+              <div class="k">OTP Umsatz</div>
+              <div class="v mono" id="mtoOTP">0,00 €</div>
+              <div class="s">Summe × Gewichtung</div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Gewichtungen (aus deiner Excel "Gewichtung")
+    const WEIGHTS = {
+  "Januar": {
+    "CIG": 0.8320379773218148,
+    "OTP": 0.8555001661526878,
+    "HNB": 0.8021298129075063,
+    "VAPE": 0.8320379773218148
+  },
+  "Februar": {
+    "CIG": 0.8567945046817542,
+    "OTP": 0.9081324762841629,
+    "HNB": 0.8648236759539497,
+    "VAPE": 0.8567945046817542
+  },
+  "März": {
+    "CIG": 1.1244271173763862,
+    "OTP": 1.1608476057453558,
+    "HNB": 1.339754582899149,
+    "VAPE": 1.1244271173763862
+  },
+  "April": {
+    "CIG": 0.9733580596711551,
+    "OTP": 0.976481011784347,
+    "HNB": 0.8035935160815006,
+    "VAPE": 0.9733580596711551
+  },
+  "Mai": {
+    "CIG": 1.0241304198550074,
+    "OTP": 1.0179025428751314,
+    "HNB": 0.9494473238166703,
+    "VAPE": 1.0241304198550074
+  },
+  "Juni": {
+    "CIG": 1.1524477295733808,
+    "OTP": 1.0905890448464082,
+    "HNB": 0.9999305228514817,
+    "VAPE": 1.1524477295733808
+  },
+  "Juli": {
+    "CIG": 1.0854394939343153,
+    "OTP": 1.1024492333644542,
+    "HNB": 0.9811434466159513,
+    "VAPE": 1.0854394939343153
+  },
+  "August": {
+    "CIG": 1.011631408501152,
+    "OTP": 0.9641006562037373,
+    "HNB": 0.9250153524307462,
+    "VAPE": 1.011631408501152
+  },
+  "September": {
+    "CIG": 1.0102060355296638,
+    "OTP": 0.9777423152529833,
+    "HNB": 0.9560265889122426,
+    "VAPE": 1.0102060355296638
+  },
+  "Oktober": {
+    "CIG": 0.9834387904503148,
+    "OTP": 0.9712548391434898,
+    "HNB": 0.9964200513008308,
+    "VAPE": 0.9834387904503148
+  },
+  "November": {
+    "CIG": 0.9313679874026801,
+    "OTP": 0.9557814862837439,
+    "HNB": 1.0667798816083294,
+    "VAPE": 0.9313679874026801
+  },
+  "Dezember": {
+    "CIG": 1.0147204757023744,
+    "OTP": 1.0192186220634984,
+    "HNB": 1.3149352446216431,
+    "VAPE": 1.0147204757023744
+  }
+};
+
+    // Preise (aus der Excel-Formel im Sheet "Gebinde & Stückzahlen = Monat")
+    const PRICES = {
+      CIG_CASE: 80.41,
+      HNB_CASE: 73.30,
+      VAPE_AVG: 10.00,
+      OTP_BOX: 43.95,
+      OTP_BEUTEL: 26.95,
+      OTP_POUCH: 7.90,
+      OTP_DOSE: 20.83,
+      OTP_CIGARILLO: 2.87
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const euro = (n) => new Intl.NumberFormat('de-DE', { style:'currency', currency:'EUR' }).format(n || 0);
+
+    const els = {
+      month: $('month'),
+      cig: $('cig'),
+      hnb: $('hnb'),
+      vapeDisp: $('vapeDisp'),
+      vapePods: $('vapePods'),
+      otpBox: $('otpBox'),
+      otpBeutel: $('otpBeutel'),
+      otpPouch: $('otpPouch'),
+      otpDose: $('otpDose'),
+      otpCiga: $('otpCiga'),
+
+      wCIG: $('wCIG'),
+      wHNB: $('wHNB'),
+      wVAPE: $('wVAPE'),
+      wOTP: $('wOTP'),
+      monthLabel: $('monthLabel'),
+
+      mtoTotal: $('mtoTotal'),
+      mtoCIG: $('mtoCIG'),
+      mtoHNB: $('mtoHNB'),
+      mtoVAPE: $('mtoVAPE'),
+      mtoOTP: $('mtoOTP'),
+
+      copyBtn: $('copyBtn'),
+      resetBtn: $('resetBtn')
+    };
+
+    function getNum(el) {
+      const v = (el.value ?? '').toString().replace(',', '.').trim();
+      const n = Number(v);
+      return Number.isFinite(n) ? Math.max(0, n) : 0;
+    }
+
+    function compute() {
+      const month = els.month.value;
+      const w = WEIGHTS[month] || WEIGHTS['Januar'];
+
+      els.wCIG.textContent = (w.CIG).toFixed(3);
+      els.wHNB.textContent = (w.HNB).toFixed(3);
+      els.wVAPE.textContent = (w.VAPE).toFixed(3);
+      els.wOTP.textContent = (w.OTP).toFixed(3);
+      els.monthLabel.textContent = 'Gewichtung nach Monatsumsatz: ' + month;
+
+      const cigCases = getNum(els.cig);
+      const hnbCases = getNum(els.hnb);
+      const vapeDisp = getNum(els.vapeDisp);
+      const vapePods = getNum(els.vapePods);
+
+      const otpBox = getNum(els.otpBox);
+      const otpBeutel = getNum(els.otpBeutel);
+      const otpPouch = getNum(els.otpPouch);
+      const otpDose = getNum(els.otpDose);
+      const otpCiga = getNum(els.otpCiga);
+
+      const mtoCIG = cigCases * PRICES.CIG_CASE * w.CIG;
+      const mtoHNB = hnbCases * PRICES.HNB_CASE * w.HNB;
+      const mtoVAPE = (vapeDisp + vapePods) * PRICES.VAPE_AVG * w.VAPE;
+
+      // In der Excel-Formel für OTP stand "... + E30 + 2.87" – das wirkt wie ein Tippfehler.
+      // Sinnvoll ist: CigarillosCount * 2.87. (So ist es hier umgesetzt.)
+      const otpBase =
+        otpBox * PRICES.OTP_BOX +
+        otpBeutel * PRICES.OTP_BEUTEL +
+        otpPouch * PRICES.OTP_POUCH +
+        otpDose * PRICES.OTP_DOSE +
+        otpCiga * PRICES.OTP_CIGARILLO;
+
+      const mtoOTP = otpBase * w.OTP;
+
+      const total = mtoCIG + mtoHNB + mtoVAPE + mtoOTP;
+
+      els.mtoCIG.textContent = euro(mtoCIG);
+      els.mtoHNB.textContent = euro(mtoHNB);
+      els.mtoVAPE.textContent = euro(mtoVAPE);
+      els.mtoOTP.textContent = euro(mtoOTP);
+      els.mtoTotal.textContent = euro(total);
+
+      saveState();
+      return { total, month, mtoCIG, mtoHNB, mtoVAPE, mtoOTP };
+    }
+
+    const LS_KEY = 'sellence_mto_state_v1';
+
+    function saveState() {
+      const state = {
+        month: els.month.value,
+        cig: els.cig.value,
+        hnb: els.hnb.value,
+        vapeDisp: els.vapeDisp.value,
+        vapePods: els.vapePods.value,
+        otpBox: els.otpBox.value,
+        otpBeutel: els.otpBeutel.value,
+        otpPouch: els.otpPouch.value,
+        otpDose: els.otpDose.value,
+        otpCiga: els.otpCiga.value,
+        t: Date.now()
+      };
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return;
+        const s = JSON.parse(raw);
+        if (s.month && WEIGHTS[s.month]) els.month.value = s.month;
+        for (const k of ['cig','hnb','vapeDisp','vapePods','otpBox','otpBeutel','otpPouch','otpDose','otpCiga']) {
+          if (typeof s[k] !== 'undefined') els[k].value = s[k];
+        }
+      } catch (e) {}
+    }
+
+    function resetAll() {
+      for (const k of ['cig','hnb','vapeDisp','vapePods','otpBox','otpBeutel','otpPouch','otpDose','otpCiga']) {
+        els[k].value = '';
+      }
+      compute();
+    }
+
+    async function copyTotal() {
+      const res = compute();
+      const text = euro(res.total) + ' (MTO – ' + res.month + ')';
+      try {
+        await navigator.clipboard.writeText(text);
+        els.copyBtn.textContent = 'Kopiert ✓';
+        setTimeout(() => els.copyBtn.textContent = 'MTO kopieren', 1200);
+      } catch {
+        prompt('Kopieren nicht möglich – hier ist der Wert:', text);
+      }
+    }
+
+    function init() {
+      const months = Object.keys(WEIGHTS);
+      months.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        els.month.appendChild(opt);
+      });
+
+      const now = new Date();
+      const monthNames = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+      const guess = monthNames[now.getMonth()];
+      if (WEIGHTS[guess]) els.month.value = guess;
+
+      loadState();
+      compute();
+
+      const onChange = () => compute();
+      els.month.addEventListener('change', onChange);
+      for (const k of ['cig','hnb','vapeDisp','vapePods','otpBox','otpBeutel','otpPouch','otpDose','otpCiga']) {
+        els[k].addEventListener('input', onChange);
+      }
+
+      els.copyBtn.addEventListener('click', copyTotal);
+      els.resetBtn.addEventListener('click', () => {
+        localStorage.removeItem(LS_KEY);
+        resetAll();
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>

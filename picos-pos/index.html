@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b3bff" />
+  <title>SELLENCE · PICOS POS Rechner</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-stars" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logoMark" aria-hidden="true">
+        <span class="dot"></span>
+        <span class="ring"></span>
+      </div>
+      <div class="brandText">
+        <div class="brandTop">SELLENCE</div>
+        <div class="brandBottom">PICOS POS Rechner</div>
+      </div>
+    </div>
+
+    <div class="totals">
+      <div class="totalLabel">Gesamt</div>
+      <div class="totalValue" id="grandTotal">0,00 €</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Übersicht</h1>
+
+      <div class="controls">
+        <label class="search">
+          <span class="icon" aria-hidden="true">⌕</span>
+          <input id="searchInput" type="search" placeholder="Produkt suchen (z. B. Theke, Distributionstool …)" autocomplete="off" />
+        </label>
+
+        <div class="actions">
+          <button class="btn ghost" id="resetBtn" type="button" title="Alles zurücksetzen">Zurücksetzen</button>
+               </div>
+      </div>
+    </section>
+
+    <section id="listRoot" class="listRoot" aria-label="Produktübersicht">
+      <!-- injected by app.js -->
+    </section>
+
+    <section class="summaryCard" aria-label="Zusammenfassung">
+      <div class="summaryTop">
+        <div>
+          <div class="summaryTitle">Zusammenfassung</div>
+          <div class="summaryHint">Häkchen setzen, Menge wählen, Summe wird live aktualisiert.</div>
+        </div>
+        <div class="summaryTotal">
+          <div class="summaryTotalLabel">Gesamt</div>
+          <div class="summaryTotalValue" id="grandTotal2">0,00 €</div>
+        </div>
+      </div>
+
+      <div class="summaryMeta" id="summaryMeta">
+        <span class="pill">0 Positionen</span>
+        <span class="pill">0,00 €</span>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footNote">© SELLENCE-TOOLS · Offline-fähig (PWA)</div>
+    </footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+    }
+  </script>
+</body>
+</html>

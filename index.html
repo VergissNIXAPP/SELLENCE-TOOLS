@@ -105,6 +105,38 @@
             <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
           </div>
         </a>
+        <a class="tile" data-tool="mto" href="./mto/index.html" aria-label="MTO Rechner öffnen">
+          <div class="reorderCtrls" aria-hidden="true">
+            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
+            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
+          </div>
+          <div class="thumb"><img src="assets/mto-icon.png" alt="MTO Rechner Icon"></div>
+          <div class="meta">
+            <div class="kicker">MTO</div>
+            <p class="name">MTO Rechner</p>
+            <p class="desc">MTO schnell berechnen und sauber dokumentieren – übersichtlich, mobil & sofort einsatzbereit.</p>
+          </div>
+          <div class="go" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
+          </div>
+        </a>
+
+        <a class="tile" data-tool="picos" href="./picos-pos/index.html" aria-label="PICOS POS Rechner öffnen">
+          <div class="reorderCtrls" aria-hidden="true">
+            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
+            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
+          </div>
+          <div class="thumb"><img src="assets/picos-icon.png" alt="PICOS POS Rechner Icon"></div>
+          <div class="meta">
+            <div class="kicker">PICOS · POS</div>
+            <p class="name">PICOS POS Rechner</p>
+            <p class="desc">PICOS/POS Werte eingeben und direkt ausrechnen – ideal für schnelle Kalkulationen unterwegs.</p>
+          </div>
+          <div class="go" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
+          </div>
+        </a>
+
 
       </div>
 
@@ -164,17 +196,50 @@
     }
     function applyOrder(){
       if(!tilesWrap) return;
+
+      const pinnedLast = ["mto","picos"];
+      const baseDefault = ["touren","stempeluhr","retouren","oos"];
+
       let order = readOrder();
-      // Default order for new devices
+
       if(!Array.isArray(order) || !order.length){
-        order = ["touren","stempeluhr","retouren","oos"]; 
-        writeOrder(order);
+        order = [...baseDefault, ...pinnedLast];
+      } else {
+        const seen = new Set();
+        const cleaned = [];
+        for(const id of order){
+          if(!id) continue;
+          if(pinnedLast.includes(id)) continue; // always pinned to the bottom
+          if(seen.has(id)) continue;
+          cleaned.push(id);
+          seen.add(id);
+        }
+        // ensure base tools exist (if user had an older saved order)
+        for(const id of baseDefault){
+          if(!seen.has(id)){
+            cleaned.push(id);
+            seen.add(id);
+          }
+        }
+        order = [...cleaned, ...pinnedLast];
       }
+
+      // persist (also fixes old saved orders automatically)
+      writeOrder(order);
+
       const map = new Map(tileEls().map(el=>[el.dataset.tool, el]));
       // known ids first
       order.forEach(id=>{ const el=map.get(id); if(el) tilesWrap.appendChild(el); });
-      // append any new tools not in saved order
-      tileEls().forEach(el=>tilesWrap.appendChild(el));
+      // append any new tools not in saved order (but still keep pinnedLast last)
+      const pinnedSet = new Set(pinnedLast);
+      tileEls().forEach(el=>{
+        if(pinnedSet.has(el.dataset.tool)) return;
+        tilesWrap.appendChild(el);
+      });
+      pinnedLast.forEach(id=>{
+        const el = map.get(id);
+        if(el) tilesWrap.appendChild(el);
+      });
     }
     function persistCurrentOrder(){
       const ids = tileEls().map(el=>el.dataset.tool).filter(Boolean);
