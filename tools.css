@@ -454,3 +454,18 @@ input:focus, select:focus{
   font-size:12px;
   text-align:center;
 }
+
+
+/* --- Coming soon tile --- */
+.thumb svg{width:100%;height:100%;display:block;opacity:.9}
+.thumb svg path{fill:currentColor}
+
+.tile--soon{
+  cursor:default;
+}
+.tile--soon .go{opacity:.35}
+.kicker--soon{
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.14);
+}
+.tile--soon .desc{opacity:.95}

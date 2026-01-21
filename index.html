@@ -74,6 +74,23 @@
           </div>
         </a>
 
+        <a class="tile" data-tool="vwhelfer" href="./sellence-vw-helfer/index.html" aria-label="VW Helfer öffnen">
+          <div class="reorderCtrls" aria-hidden="true">
+            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
+            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
+          </div>
+          <div class="thumb"><img src="sellence-vw-helfer/assets/icon.svg" alt="VW Helfer Icon"></div>
+          <div class="meta">
+            <div class="kicker">VW · Tipps & Tricks</div>
+            <p class="name">VW Helfer</p>
+            <p class="desc">Schnelle Hilfe für Golf Variant: Funktionen, Shortcuts und kleine Alltags-Hacks – inkl. eigener Tipps.</p>
+          </div>
+          <div class="go" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
+          </div>
+        </a>
+
+
         <a class="tile" data-tool="retouren" href="./retouren/index.html" aria-label="Retourenrechner öffnen">
           <div class="reorderCtrls" aria-hidden="true">
             <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
@@ -103,6 +120,25 @@
           </div>
           <div class="go" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
+          </div>
+        </a>
+        <a class="tile tile--soon" data-tool="lagerbestand" href="#" aria-label="SELLENCE Lagerbestand (bald verfügbar)">
+          <div class="reorderCtrls" aria-hidden="true">
+            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
+            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
+          </div>
+          <div class="thumb" aria-hidden="true">
+            <svg viewBox="0 0 64 64" role="img" aria-label="">
+              <path d="M10 20l22-10 22 10-22 10-22-10zm0 8l22 10 22-10v8L32 46 10 36v-8zm0 16l22 10 22-10v6L32 60 10 50v-6z"/>
+            </svg>
+          </div>
+          <div class="meta">
+            <div class="kicker kicker--soon">Bald verfügbar</div>
+            <p class="name">Lagerbestand</p>
+            <p class="desc">PMG-Bestellung als Screenshot hochladen → Alles im Lagerbestand ✅</p>
+          </div>
+          <div class="go" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg>
           </div>
         </a>
         <a class="tile" data-tool="mto" href="./mto/index.html" aria-label="MTO Rechner öffnen">
@@ -198,7 +234,7 @@
       if(!tilesWrap) return;
 
       const pinnedLast = ["mto","picos"];
-      const baseDefault = ["touren","stempeluhr","retouren","oos"];
+      const baseDefault = ["touren","stempeluhr","vwhelfer","retouren","oos","lagerbestand"];
 
       let order = readOrder();
 
@@ -216,10 +252,19 @@
         }
         // ensure base tools exist (if user had an older saved order)
         for(const id of baseDefault){
-          if(!seen.has(id)){
-            cleaned.push(id);
+          if(seen.has(id)) continue;
+
+          // NEW tool: VW Helfer should default to position 3 (after Tourenplaner + Stempeluhr)
+          if(id==="vwhelfer"){
+            const idx = cleaned.indexOf("stempeluhr");
+            if(idx>=0) cleaned.splice(idx+1, 0, id);
+            else cleaned.push(id);
             seen.add(id);
+            continue;
           }
+
+          cleaned.push(id);
+          seen.add(id);
         }
         order = [...cleaned, ...pinnedLast];
       }
@@ -251,6 +296,16 @@
     }
 
     applyOrder();
+
+    // placeholder tiles (coming soon)
+    tilesWrap?.addEventListener("click", (e)=>{
+      const a = e.target.closest?.("a.tile--soon");
+      if(!a) return;
+      if(document.body.classList.contains("reorderMode")) return;
+      e.preventDefault();
+      alert("Die SELLENCE Lagerbestand App ist bald verfügbar 🙂");
+    });
+
 
     // prevent navigation while reordering
     document.addEventListener("click", (e)=>{
