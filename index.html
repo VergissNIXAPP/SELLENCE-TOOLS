@@ -177,7 +177,26 @@
         </div>
       </div>
     </section>
-  </main>
+  
+    <section class="privacy">
+      <h3>Datenschutz</h3>
+      <p>
+        Der Schutz deiner Daten ist uns wichtig.
+        Die SELLENCE-TOOLS WebApp funktioniert vollständig lokal auf deinem Gerät.
+      </p>
+      <ul>
+        <li>Es werden <strong>keine Daten an Server übertragen</strong>.</li>
+        <li>Alle Eingaben bleiben <strong>ausschließlich auf deinem iPhone oder iPad</strong>.</li>
+        <li>Die Nutzung ist <strong>jederzeit offline</strong> möglich.</li>
+        <li>Es werden <strong>keine personenbezogenen Daten</strong> erhoben oder gespeichert.</li>
+        <li>Gespeicherte Inhalte können jederzeit durch einen Reset oder das Entfernen der App gelöscht werden.</li>
+      </ul>
+      <p class="privacy-note">
+        SELLENCE-TOOLS dient ausschließlich als digitales Arbeits- und Rechenhilfsmittel.
+      </p>
+    </section>
+
+</main>
 
   <!-- Login Overlay -->
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Passcode Dialog">
@@ -350,5 +369,10 @@
       window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
     }
   </script>
+
+<footer class="app-footer">
+  <span>© Andre Schorn</span>
+</footer>
+
 </body>
 </html>
