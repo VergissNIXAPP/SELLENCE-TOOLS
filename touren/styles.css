@@ -67,6 +67,12 @@ h2{margin:0;font-size:16px;letter-spacing:.02em;}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
 .field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px;}
 .field span{font-size:12px;color:rgba(255,255,255,.70);font-weight:900;letter-spacing:.02em;}
+.field .hint{
+  margin-top:2px;
+  font-size:11px;
+  line-height:1.25;
+  color:rgba(255,255,255,.55);
+}
 input{
   appearance:none;width:100%;
   padding:12px 12px;border-radius:14px;
@@ -387,3 +393,76 @@ input:focus{border-color:rgba(91,46,255,.55);box-shadow:0 0 0 4px rgba(91,46,255
   font-size:22px;
   cursor:pointer;
 }
+
+
+/* Stop-für-Stop Navigation */
+.navCard{
+  margin-top:12px;
+  padding:14px;
+  border-radius:18px;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,.28);
+}
+.navTop{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  justify-content:space-between;
+}
+.navKicker{
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color: rgba(255,255,255,.65);
+}
+.navTitle{
+  font-size:16px;
+  font-weight:800;
+  line-height:1.15;
+  margin-top:4px;
+}
+.navAddr{
+  margin-top:6px;
+  color: rgba(255,255,255,.72);
+  font-size:13px;
+  line-height:1.25;
+}
+.navCounter{
+  font-variant-numeric: tabular-nums;
+  font-weight:800;
+  font-size:14px;
+  line-height:1;
+  white-space:nowrap;
+  padding:8px 10px;
+  border-radius:999px;
+  background: rgba(91,46,255,.22);
+  border:1px solid rgba(91,46,255,.35);
+}
+
+.hint{
+  display:block;
+  margin-top:6px;
+  color: rgba(255,255,255,.55);
+  font-size:12px;
+  line-height:1.2;
+}
+.navBtns{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.navBtns #btnOpenMaps{
+  grid-column: 1 / -1;
+}
+@media (max-width:520px){
+  .navBtns{ grid-template-columns: 1fr 1fr; }
+  .navBtns #btnOpenMaps{ grid-column: 1 / -1; }
+}
+
+.btn.ok{
+  border-color: rgba(58, 220, 155, .35);
+  background: rgba(58, 220, 155, .10);
+}
+.btn.ok:hover{ filter: brightness(1.06); }

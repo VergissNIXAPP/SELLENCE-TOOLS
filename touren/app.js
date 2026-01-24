@@ -7,6 +7,8 @@ const STORE = {
   myPos: "sellence_sap_mypos_osrm_v1",
   lastLinks: "sellence_sap_lastlinks_osrm_v1",
   history: "sellence_sap_tour_history_v1",
+  navPlan: "sellence_sap_navplan_v1",
+  navIdx: "sellence_sap_navidx_v1",
 };
 
 const OSRM_BASE = "https://router.project-osrm.org";
@@ -183,6 +185,8 @@ let markets = load(STORE.markets, []);
 let routeIds = load(STORE.route, []);
 let myPos = load(STORE.myPos, null); // {lat,lng}
 let lastLinks = load(STORE.lastLinks, []);
+let navPlan = load(STORE.navPlan, []); // ordered points for stop-by-stop navigation
+let navIdx = load(STORE.navIdx, 0);
 
 function setStartEnabled(on){
   const b = document.getElementById("btnStartMaps");
@@ -195,6 +199,92 @@ function setStatus(msg=""){
   if(!el) return;
   el.textContent = msg;
   el.classList.toggle("show", !!msg);
+}
+
+// ---------- Stop-by-stop Navigation ----------
+function isReturnStop(p){ return !!p?.__return; }
+
+function pointTitle(p){
+  if(!p) return "—";
+  if(isReturnStop(p)) return "🏠 Rückfahrt / Zuhause";
+  return p.name || p.title || p.market || "Markt";
+}
+function pointAddress(p){
+  if(!p) return "—";
+  if(isReturnStop(p)) return "Zum Startpunkt zurück";
+  // Support app's market fields (anschrift/plz/ort)
+  if(p.anschrift || p.plz || p.ort){
+    const parts=[];
+    if(p.anschrift) parts.push(String(p.anschrift).trim());
+    const line2=[p.plz, p.ort].filter(Boolean).join(" ").trim();
+    if(line2) parts.push(line2);
+    if(parts.length) return parts.join(", ");
+  }
+  // Prefer structured fields
+  const parts = [];
+  if(p.street) parts.push(p.street);
+  if(p.zip || p.city){
+    const zc = [p.zip, p.city].filter(Boolean).join(" ");
+    if(zc) parts.push(zc);
+  }
+  if(parts.length) return parts.join(", ");
+  // Fallback to any free-text address
+  return p.address || p.addr || "";
+}
+
+function mapsLinkForPoint(p){
+  if(!p) return null;
+  const params = new URLSearchParams();
+  params.set("api","1");
+  params.set("travelmode","driving");
+  const dest = (isNum(p.lat) && isNum(p.lng)) ? `${p.lat},${p.lng}` : (pointAddress(p) || p.name || "");
+  if(!dest) return null;
+  params.set("destination", dest);
+  // origin intentionally omitted -> Google uses current location
+  return `https://www.google.com/maps/dir/?${params.toString()}`;
+}
+
+function showNavCard(show){
+  const card = document.getElementById("navCard");
+  if(!card) return;
+  card.hidden = !show;
+}
+
+function renderNav(){
+  const titleEl = document.getElementById("navTitle");
+  const addrEl  = document.getElementById("navAddr");
+  const counterEl = document.getElementById("navCounter");
+  const btnPrev = document.getElementById("btnPrevStop");
+  const btnArr = document.getElementById("btnArrived");
+  const btnNext = document.getElementById("btnNextStop");
+  const btnOpen = document.getElementById("btnOpenMaps");
+
+  const pts = Array.isArray(navPlan) ? navPlan : [];
+  const total = pts.length;
+
+  if(!total){
+    showNavCard(false);
+    return;
+  }
+
+  navIdx = Math.max(0, Math.min(navIdx || 0, total-1));
+  const p = pts[navIdx];
+
+  if(titleEl) titleEl.textContent = pointTitle(p);
+  if(addrEl)  addrEl.textContent  = pointAddress(p);
+  if(counterEl) counterEl.textContent = `${navIdx+1} / ${total}`;
+
+  if(btnPrev) btnPrev.disabled = (navIdx<=0);
+  if(btnArr) btnArr.disabled = (navIdx>=total-1);
+  if(btnNext) btnNext.disabled = (navIdx>=total-1);
+
+  const link = mapsLinkForPoint(p);
+  if(btnOpen){
+    btnOpen.disabled = !link;
+    btnOpen.dataset.href = link || "";
+  }
+
+  showNavCard(true);
 }
 
 // "So funktioniert's" collapse
@@ -317,6 +407,11 @@ function deleteMarket(id){
   // invalidate previous Google Maps links
   lastLinks = [];
   save(STORE.lastLinks, lastLinks);
+  navPlan = [];
+  save(STORE.navPlan, navPlan);
+  navIdx = 0;
+  save(STORE.navIdx, navIdx);
+  showNavCard(false);
   clearRouteLine();
   renderRoute();
   renderMarkers();
@@ -415,6 +510,11 @@ function toggleRoute(id){
   // Any change invalidates previous Google Maps links
   lastLinks = [];
   save(STORE.lastLinks, lastLinks);
+  navPlan = [];
+  save(STORE.navPlan, navPlan);
+  navIdx = 0;
+  save(STORE.navIdx, navIdx);
+  showNavCard(false);
   setStartEnabled(false);
   clearRouteLine();
 }
@@ -462,18 +562,83 @@ function findBySAP(sap){
   if(!s) return null;
   return markets.find(m=>String(m.sap||"").trim()===s) || null;
 }
+function parseSapList(input){
+  const raw = String(input||"").trim();
+  if(!raw) return [];
+  // split by comma, semicolon, whitespace, or newlines
+  return raw
+    .split(/[\s,;\n\r\t]+/g)
+    .map(s=>s.trim())
+    .filter(Boolean);
+}
+
+function addMarketsToRouteBySap(saps){
+  const missing = [];
+  let added = 0;
+  let already = 0;
+  const foundIds = [];
+
+  for(const sap of saps){
+    const m = findBySAP(sap);
+    if(!m){ missing.push(sap); continue; }
+    foundIds.push(m.id);
+    if(routeIds.includes(m.id)){ already++; continue; }
+    routeIds.push(m.id);
+    added++;
+  }
+
+  save(STORE.route, routeIds);
+  clearRouteLine();
+  renderRoute();
+  renderMarkers();
+
+  // focus first found marker if possible
+  const first = markets.find(x=>x.id===foundIds[0]);
+  if(first && isNum(first.lat) && isNum(first.lng)){
+    map.setView([first.lat, first.lng], Math.max(map.getZoom(), 14));
+    renderMarkers(first.id);
+  }
+
+  return {added, already, missing};
+}
+
 $("btnFind").addEventListener("click", ()=>{
-  const m=findBySAP($("sapSearch").value);
+  const raw = $("sapSearch").value;
+  const saps = parseSapList(raw);
+  if(!saps.length){
+    alert("Bitte SAP‑Nummer(n) eingeben.");
+    return;
+  }
+
+  // Bulk mode
+  if(saps.length > 1){
+    const res = addMarketsToRouteBySap(saps);
+    const lines = [
+      `Übernommen ✅`,
+      `Neu in Planung: ${res.added}`,
+      `Schon drin: ${res.already}`,
+    ];
+    if(res.missing.length) lines.push(`Nicht gefunden: ${res.missing.slice(0,12).join(", ")}${res.missing.length>12?" …":""}`);
+    alert(lines.join("\n"));
+    return;
+  }
+
+  // Single SAP: direkt in Planung + auf Karte zentrieren
+  const sap = saps[0];
+  const m = findBySAP(sap);
   if(!m){ alert("SAP-Nr. nicht gefunden."); return; }
+  if(!routeIds.includes(m.id)){
+    routeIds.push(m.id);
+    save(STORE.route, routeIds);
+    clearRouteLine();
+    renderRoute();
+  }
+  // focus / highlight marker
   if(isNum(m.lat)&&isNum(m.lng)){
     map.setView([m.lat,m.lng], Math.max(map.getZoom(), 14));
     renderMarkers(m.id);
   } else {
-    if(confirm(`Markt gefunden:\n${m.name}\n${marketAddr(m)}\n\nIn Route aufnehmen?`)){
-      toggleRoute(m.id);
-      renderRoute();
-      renderMarkers();
-    }
+    renderMarkers();
   }
 });
 $("sapSearch").addEventListener("keydown",(e)=>{ if(e.key==="Enter"){ e.preventDefault(); $("btnFind").click(); } });
@@ -770,12 +935,17 @@ if(__btnFinalize){
         ? pts.concat([{lat:myPos.lat, lng:myPos.lng, __return:true}])
         : pts;
 
-      const links = buildMapsLinks(ptsForMaps, myPos);
-      if(!links.length) throw new Error("Konnte keinen Maps-Link bauen.");
-      lastLinks = links;
+      // Stop-für-Stop: wir speichern die geplante Reihenfolge als Punkte
+      navPlan = ptsForMaps;
+      save(STORE.navPlan, navPlan);
+      navIdx = 0;
+      save(STORE.navIdx, navIdx);
+      // legacy: invalidate old multi-stop links
+      lastLinks = [];
       save(STORE.lastLinks, lastLinks);
+
       setStartEnabled(true);
-      setStatus("Bereit: Kilometer berechnet. Du kannst jetzt „Starten (Google Maps)“ drücken.");
+      setStatus("Bereit: Kilometer berechnet. Du kannst jetzt „Starten (Stop für Stop)“ drücken.");
     } catch(err){
       console.error(err);
       setStatus(err?.message || "Planung fehlgeschlagen.");
@@ -785,33 +955,58 @@ if(__btnFinalize){
   });
 }
 
-// ---------- Start (Google Maps) ----------
+// ---------- Start (Stop-by-stop) ----------
 const __btnStart = document.getElementById("btnStartMaps");
 if(__btnStart){
   __btnStart.addEventListener("click", ()=>{
     // Speichere Tour (Datum/Uhrzeit + Stops + km)
     try{ recordTourStart(); }catch(e){}
 
-    const links = Array.isArray(lastLinks) ? lastLinks : [];
-    if(!links.length){
+    const pts = Array.isArray(navPlan) ? navPlan : [];
+    if(!pts.length){
       setStatus("Bitte zuerst „Planung fertigstellen“ drücken.");
       return;
     }
-    if(links.length===1){
-      window.open(links[0], "_blank");
-      return;
-    }
-    // Unauffällig: Öffne Teil 1, kopiere den Rest in die Zwischenablage
-    window.open(links[0], "_blank");
-    const rest = links.slice(1).map((u,i)=>`Teil ${i+2}: ${u}`).join("\n");
-    navigator.clipboard?.writeText(rest).then(()=>{
-      setStatus(`Viele Stops: Teil 1 geöffnet. Rest wurde in die Zwischenablage kopiert.`);
-    }).catch(()=>{
-      setStatus(`Viele Stops: Teil 1 geöffnet. (Rest konnte nicht kopiert werden.)`);
-    });
+    navIdx = 0;
+    save(STORE.navIdx, navIdx);
+    renderNav();
+    setStatus("Stop 1 ist bereit. Tippe auf „Öffnen in Google Maps“ (oder wechsel mit Zurück/Weiter).");
   });
 }
 
+// ---------- Navigation buttons ----------
+document.getElementById("btnOpenMaps")?.addEventListener("click", ()=>{
+  const href = document.getElementById("btnOpenMaps")?.dataset?.href;
+  if(href) window.open(href, "_blank");
+});
+document.getElementById("btnPrevStop")?.addEventListener("click", ()=>{
+  const pts = Array.isArray(navPlan) ? navPlan : [];
+  if(!pts.length) return;
+  navIdx = Math.max(0, (navIdx||0) - 1);
+  save(STORE.navIdx, navIdx);
+  renderNav();
+});
+
+document.getElementById("btnArrived")?.addEventListener("click", ()=>{
+  const pts = Array.isArray(navPlan) ? navPlan : [];
+  if(!pts.length) return;
+  if((navIdx||0) >= pts.length-1){
+    setStatus("Letzter Stopp erreicht ✅");
+    renderNav();
+    return;
+  }
+  navIdx = Math.min(pts.length-1, (navIdx||0) + 1);
+  save(STORE.navIdx, navIdx);
+  renderNav();
+  setStatus(`Nächster Stopp bereit: ${pointTitle(pts[navIdx])}`);
+});
+document.getElementById("btnNextStop")?.addEventListener("click", ()=>{
+  const pts = Array.isArray(navPlan) ? navPlan : [];
+  if(!pts.length) return;
+  navIdx = Math.min(pts.length-1, (navIdx||0) + 1);
+  save(STORE.navIdx, navIdx);
+  renderNav();
+});
 
 // ---------- Reload ----------
 $("btnReload")?.addEventListener("click", ()=>location.reload());
@@ -823,6 +1018,11 @@ function resetRouteOnly(){
   save(STORE.route, routeIds);
   lastLinks = [];
   save(STORE.lastLinks, lastLinks);
+  navPlan = [];
+  save(STORE.navPlan, navPlan);
+  navIdx = 0;
+  save(STORE.navIdx, navIdx);
+  showNavCard(false);
   setStartEnabled(false);
   clearRouteLine();
   renderRoute();
@@ -840,15 +1040,15 @@ if(__btnReset){
 
 // ---------- init ----------
 $("marketCount").textContent = String(markets.length);
-setStartEnabled(Array.isArray(lastLinks) && lastLinks.length>0);
+setStartEnabled(Array.isArray(navPlan) && navPlan.length>0);
 initMap();
 renderRoute();
 renderMarkers();
 fitAll();
 
-setStartEnabled(Array.isArray(lastLinks) && lastLinks.length>0);
+setStartEnabled(Array.isArray(navPlan) && navPlan.length>0);
 
-setStartEnabled(Array.isArray(lastLinks) && lastLinks.length>0);
+setStartEnabled(Array.isArray(navPlan) && navPlan.length>0);
 
 if("serviceWorker" in navigator){
   window.addEventListener("load", ()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
