@@ -1,378 +1,251 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0A1022">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>SELLENCE Tools</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SELLENCE-TOURENPLANER</title>
+  <meta name="theme-color" content="#5B2EFF" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="icon" href="./icons/icon-192.png" />
 
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon-192.png" sizes="192x192">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="tools.css">
-
-  <style>
-    /* small page-specific tweaks */
-    .heroTitle{margin:0;font-size:clamp(22px,3.2vw,30px);font-weight:900;letter-spacing:-.01em;}
-    .heroText{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.45;}
-    .topPad{padding:14px;}
-    .footSplit{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-    /* reorder mode */
-    .tiles{position:relative;}
-    .tile{position:relative;}
-    .reorderCtrls{position:absolute;right:12px;top:12px;display:none;gap:6px;z-index:2;}
-    body.reorderMode .reorderCtrls{display:flex;}
-    .reBtn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(10,16,34,.65);color:#fff;display:grid;place-items:center;font-weight:900;}
-    .reBtn:active{transform:scale(.98);}
-  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <main class="container">
-    <header class="header" role="banner">
-      <div class="brandLine">SELLENCE</div>
-      <div class="appLine">TOOLS</div>
-        <p class="heroText">Digital - Einfach - Arbeiten</p>
-    </header>
+  <div class="bg-orb orb1"></div>
+  <div class="bg-orb orb2"></div>
+  <div class="bg-orb orb3"></div>
 
-    <section class="card" aria-label="Tool Auswahl">
-      <div class="topPad" style="text-align:center">
-        <h1 class="heroTitle">Was möchtest du starten?</h1>
+  <header class="topbar">
+    
+    <a class="backBtn backBtn--icon" href="../index.html" title="Zurück zu SELLENCE Tools"><span class="backIcon">←</span></a>
+<div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none">
+          <path d="M12 40c10-18 26-16 40-28" stroke="rgba(255,255,255,.92)" stroke-width="6" stroke-linecap="round"/>
+          <path d="M30 46c7-8 15-12 26-16" stroke="rgba(255,255,255,.62)" stroke-width="6" stroke-linecap="round"/>
+        </svg>
       </div>
-
-      <div class="tiles" id="tiles">
-        <a class="tile" data-tool="touren" href="./touren/index.html" aria-label="Tourenplaner öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb"><img src="assets/touren-icon.png" alt="Tourenplaner Icon"></div>
-          <div class="meta">
-            <div class="kicker">Google Maps Export</div>
-            <p class="name">Tourenplaner</p>
-            <p class="desc">Kundenliste importieren, SAP suchen, Stops sammeln & in Maps starten.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-
-        <a class="tile" data-tool="stempeluhr" href="./stempeluhr/index.html" aria-label="Stempeluhr öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb"><img src="assets/stempeluhr-icon.png" alt="Stempeluhr Icon"></div>
-          <div class="meta">
-            <div class="kicker">Arbeitszeit</div>
-            <p class="name">Stempeluhr</p>
-            <p class="desc">Ein- & Ausstempeln, Tagesliste, Netto-Stunden inkl. Pause und Excel/CSV Export.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-
-        <a class="tile" data-tool="vwhelfer" href="./sellence-vw-helfer/index.html" aria-label="VW Helfer öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb"><img src="sellence-vw-helfer/assets/vw-icon.png" alt="VW Helfer Icon"></div>
-          <div class="meta">
-            <div class="kicker">VW · Tipps & Tricks</div>
-            <p class="name">VW Helfer</p>
-            <p class="desc">Schnelle Hilfe: Funktionen, Shortcuts und kleine Alltags-Hacks.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-
-
-        <a class="tile" data-tool="retouren" href="./retouren/index.html" aria-label="Retourenrechner öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb"><img src="assets/retouren-icon.png" alt="Retourenrechner Icon"></div>
-          <div class="meta">
-            <div class="kicker">Retouren</div>
-            <p class="name">Retourenrechner</p>
-            <p class="desc">Packs, Preise & Summen – sauber und schnell berechnet inkl. Übersicht.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-
-        <a class="tile" data-tool="oos" href="./oos/index.html" aria-label="OOS Scanner öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb"><img src="assets/oos-icon.png" alt="OOS Scanner Icon"></div>
-          <div class="meta">
-            <div class="kicker">Out of Stock</div>
-            <p class="name">OOS Scanner</p>
-            <p class="desc">Screenshot auswählen, EANs erkennen und OOS schnell dokumentieren.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-      <a class="tile tile--soon" data-tool="lagerbestand" href="javascript:void(0)" aria-label="SELLENCE Lagerbestand (bald verfügbar)">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb"><img src="assets/lager-icon.png" alt="Lagerbestand Icon"></div>
-          <div class="meta">
-            <div class="kicker kicker--soon"><span class="soon-icon">🚧</span> In Bearbeitung</div>
-            <p class="name">Lagerbestand</p>
-            <p class="desc">PMI-Bestellbestätigung als Screenshot hochladen → Alles im Lagerbestand ✅</p>
-          </div>
-        </a>
-
-        <a class="tile" data-tool="mto" href="./mto/index.html" aria-label="MTO Rechner öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-<div class="thumb"><img src="assets/mto-icon.png" alt="MTO Rechner Icon"></div>
-          <div class="meta">
-            <div class="kicker">MTO</div>
-            <p class="name">MTO Rechner</p>
-            <p class="desc">Schnell berechnen und dokumentieren – übersichtlich & sofort einsatzbereit.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-
-        <a class="tile" data-tool="picos" href="./picos-pos/index.html" aria-label="PICOS POS Rechner öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb"><img src="assets/picos-icon.png" alt="PICOS POS Rechner Icon"></div>
-          <div class="meta">
-            <div class="kicker">PICOS · POS</div>
-            <p class="name">PICOS POS Rechner</p>
-            <p class="desc">Produkte eingeben und direkt ausrechnen – ideal für schnelle Kalkulationen unterwegs.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-
-
-      </div>
-
-      <div class="footerRow">
-        <div class="footSplit">
-          <button class="linkBtn" id="reorderBtn" type="button">Reihenfolge ändern</button>
-          <button class="linkBtn" id="logout" type="button">Logout</button>
-        </div>
-      </div>
-    </section>
-  
-    <section class="privacy">
-      <h3>Datenschutz</h3>
-      <p>
-        Der Schutz deiner Daten ist uns wichtig.
-        Die SELLENCE-TOOLS WebApp funktioniert vollständig lokal auf deinem Gerät.
-      </p>
-      <ul>
-        <li>Es werden <strong>keine Daten an Server übertragen</strong>.</li>
-        <li>Alle Eingaben bleiben <strong>ausschließlich auf deinem iPhone oder iPad</strong>.</li>
-        <li>Die Nutzung ist <strong>jederzeit offline</strong> möglich.</li>
-        <li>Es werden <strong>keine personenbezogenen Daten</strong> erhoben oder gespeichert.</li>
-        <li>Gespeicherte Inhalte können jederzeit durch einen Reset oder das Entfernen der App gelöscht werden.</li>
-      </ul>
-      <p class="privacy-note">
-        SELLENCE-TOOLS dient ausschließlich als digitales Arbeits- und Rechenhilfsmittel.
-      </p>
-    </section>
-
-</main>
-
-  <!-- Login Overlay -->
-  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Passcode Dialog">
-    <div class="sheet">
-      <div class="sheetHead">
-        <div class="brandLine">SELLENCE</div>
-        <div class="appLine">PASSCODE</div>
-        <div class="sub">Bitte einmal eingeben. Danach bleibt dieses Gerät angemeldet.</div>
-      </div>
-      <div class="sheetBody">
-        <label class="label" for="pass">Passcode</label>
-        <div class="inputRow">
-          <input id="pass" type="password" inputmode="text" autocomplete="current-password" placeholder="Passcode eingeben">
-          <button class="primaryBtn" id="goBtn" type="button">Anmelden</button>
-        </div>
-        <div class="err" id="err">Falscher Passcode.</div>
-        <button class="ghostBtn" id="clearBtn" type="button">Login zurücksetzen</button>
-        <div class="small">Hinweis: Login wird im Browser (localStorage) gespeichert.</div>
+      <div>
+        <div class="brand-title">SELLENCE</div>
+        <div class="brand-sub">TOURENPLANER</div>
       </div>
     </div>
+    
+    <div class="top-actions">
+      <button class="btn" id="menuBtn" aria-label="Menü" title="Menü">☰</button>
+      <div class="menu" id="menuPanel" aria-hidden="true">
+        <button class="btn" id="btnAddMarket">➕ Markt hinzufügen</button>
+        <button class="btn" id="btnImport">📥 Excel Import</button>
+        <button class="btn" id="btnGeocode" title="Adressen → Koordinaten (OpenStreetMap)">🧭 Geocoding</button>
+        <button class="btn" id="btnFahrdaten">📊 Fahrdaten</button>
+        <button class="btn danger" id="btnClearAll">Alles löschen</button>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx,.xls" hidden />
+    </div>
+
+  </header>
+
+  <main class="shell">
+    <div class="grid two">
+      <section class="card">
+        <div class="card-h">
+          <div>
+            <h2>Karte / Märkte</h2>
+          </div>
+          <div class="pill" id="marketCount">0</div>
+        </div>
+
+        <div class="row">
+          <label class="field" style="min-width:260px;flex:2">
+            <span>SAP-Nr. (einzeln oder mehrere)</span>
+            <input id="sapSearch" placeholder="z.B. 2011556 oder: 2011556 2011504 2551974" inputmode="numeric" autocomplete="off" />
+            <small class="hint">Mehrere SAP‑Nummern einfach mit Leerzeichen, Komma oder Zeilenumbruch trennen – sie werden direkt in die Planung übernommen.</small>
+          </label>
+          <button class="btn primary" id="btnFind">Übernehmen</button>
+          <button class="btn" id="btnFit">↔︎ Alles anzeigen</button>
+        </div>
+
+        <div class="how" style="margin-top:10px">
+          <button class="btn" id="btnHow" type="button">So funktioniert’s</button>
+          <div class="note how-panel" id="howPanel" hidden>
+            <ol style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px">
+              <li><b>Excel-Import</b>: Kundenliste hochladen.</li>
+              <li><b>Geotagging</b>: „Geocoding“ starten (kann je nach Anzahl etwas dauern).</li>
+              <li><b>Aktualisieren</b>: Seite neu laden – danach siehst du alle Märkte als Marker auf der Karte.</li>
+              <li><b>Planung</b>: SAP‑Nummer(n) einfügen → <b>„Übernehmen“</b> (landet direkt in der Route).</li>
+              <li><b>Fertigstellen</b>: „Planung fertigstellen“ → Route wird automatisch optimiert und ist bereit für Google Maps.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+        <div id="map" class="map"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-h">
+          <div>
+            <h2>Navigation: Stop für Stop</h2>
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn primary" id="btnFinalize">✅ Planung fertigstellen</button>
+          <button class="btn primary" id="btnStartMaps" disabled>▶️ Starten (Stop für Stop)</button>
+          <button class="btn" id="btnResetRoute">↩︎ Zurücksetzen</button>
+        
+        <div class="navCard" id="navCard" hidden>
+          <div class="navTop">
+            <div>
+              <div class="navKicker">Aktueller Stopp</div>
+              <div class="navTitle" id="navTitle">—</div>
+              <div class="navAddr" id="navAddr">—</div>
+            </div>
+            <div class="navCounter" id="navCounter">0 / 0</div>
+          </div>
+
+          <div class="navBtns">
+            <button class="btn primary" id="btnOpenMaps">🗺️ Öffnen in Google Maps</button>
+            <button class="btn" id="btnPrevStop">← Zurück</button>
+            <button class="btn ok" id="btnArrived">✅ Angekommen</button>
+            <button class="btn" id="btnNextStop">Weiter →</button>
+          </div>
+
+          <div class="muted tiny" id="navHint" style="margin-top:6px">
+            Tipp: Du kannst die Reihenfolge flexibel ändern – erst in der Liste, oder hier mit Zurück/Weiter.
+          </div>
+        </div>
+
+</div>
+
+        <label class="check" for="chkReturn" style="margin-top:8px">
+          <input type="checkbox" id="chkReturn" checked />
+          <span class="checkDot" aria-hidden="true"></span>
+          <span class="checkText">Startpunkt als letzten Stopp hinzufügen (Rückfahrt)</span>
+        </label>
+        <div class="muted tiny" id="returnHint" style="margin-top:4px">
+          Aktiv: Die Tour endet wieder am Startpunkt.
+        </div>
+
+        <div class="status" id="status" aria-live="polite"></div>
+
+        <div class="kpi">
+          <div class="box"><div class="muted tiny">Stops</div><div class="v" id="kStops">0</div></div>
+          <div class="box"><div class="muted tiny">Tour km</div><div class="v" id="kKm">—</div></div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="list" id="routeList"></div>
+
+        <div class="note" style="margin-top:12px">
+          <b>Tipp:</b> Einmal „Geocoding“ laufen lassen, dann sind alle Marker & die Optimierung stabil.
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Defer scripts so DOM (incl. modal) exists before app.js wires event listeners -->
+  <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script defer src="./app.js"></script>
+
+  <!-- Modal: Markt hinzufügen -->
+  <div class="modal" id="addMarketModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modalCard" role="document">
+      <div class="modalHead">
+        <div>
+          <div class="modalTitle">Markt hinzufügen</div>
+          <div class="muted tiny">Name, Adresse & SAP‑Nummer eintragen – Geocoding läuft automatisch.</div>
+        </div>
+        <button class="btn" id="btnAddMarketClose" aria-label="Schließen">✕</button>
+      </div>
+
+      <div class="modalBody">
+        <label class="field">
+          <span>Marktname</span>
+          <input id="amName" placeholder="z.B. EDEKA Jürgensen" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>Adresse</span>
+          <input id="amAddr" placeholder="Straße, PLZ Ort" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>SAP‑Nummer</span>
+          <input id="amSap" placeholder="z.B. 2011556" inputmode="numeric" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="modalActions">
+        <button class="btn" id="btnAddMarketCancel">Abbrechen</button>
+        <button class="btn primary" id="btnAddMarketSave">Speichern</button>
+      </div>
+
+      <div class="status" id="addMarketStatus" aria-live="polite"></div>
+    </div>
   </div>
-
-  <script>
-    const AUTH_KEY="sellence_auth";
-    const PASSCODE="sellence";
-
-    const overlay=document.getElementById("overlay");
-    const passEl=document.getElementById("pass");
-    const errEl=document.getElementById("err");
-    const goBtn=document.getElementById("goBtn");
-    const logout=document.getElementById("logout");
-    const reorderBtn=document.getElementById("reorderBtn");
-    const clearBtn=document.getElementById("clearBtn");
-
-    // ---- Tool order (per-device, localStorage) ----
-    const ORDER_KEY = "sellence_tools_order";
-    const tilesWrap = document.getElementById("tiles");
-    const tileEls = ()=>Array.from(tilesWrap?.querySelectorAll(".tile")||[]);
-
-    function readOrder(){
-      try{ return JSON.parse(localStorage.getItem(ORDER_KEY)||"[]") }catch{ return [] }
-    }
-    function writeOrder(ids){
-      try{ localStorage.setItem(ORDER_KEY, JSON.stringify(ids)); }catch(e){}
-    }
-    function applyOrder(){
-      if(!tilesWrap) return;
-
-      const pinnedLast = ["mto","picos"];
-      const baseDefault = ["touren","stempeluhr","vwhelfer","retouren","oos","lagerbestand"];
-
-      let order = readOrder();
-
-      if(!Array.isArray(order) || !order.length){
-        order = [...baseDefault, ...pinnedLast];
-      } else {
-        const seen = new Set();
-        const cleaned = [];
-        for(const id of order){
-          if(!id) continue;
-          if(pinnedLast.includes(id)) continue; // always pinned to the bottom
-          if(seen.has(id)) continue;
-          cleaned.push(id);
-          seen.add(id);
-        }
-        // ensure base tools exist (if user had an older saved order)
-        for(const id of baseDefault){
-          if(seen.has(id)) continue;
-
-          // NEW tool: VW Helfer should default to position 3 (after Tourenplaner + Stempeluhr)
-          if(id==="vwhelfer"){
-            const idx = cleaned.indexOf("stempeluhr");
-            if(idx>=0) cleaned.splice(idx+1, 0, id);
-            else cleaned.push(id);
-            seen.add(id);
-            continue;
-          }
-
-          cleaned.push(id);
-          seen.add(id);
-        }
-        order = [...cleaned, ...pinnedLast];
-      }
-
-      // persist (also fixes old saved orders automatically)
-      writeOrder(order);
-
-      const map = new Map(tileEls().map(el=>[el.dataset.tool, el]));
-      // known ids first
-      order.forEach(id=>{ const el=map.get(id); if(el) tilesWrap.appendChild(el); });
-      // append any new tools not in saved order (but still keep pinnedLast last)
-      const pinnedSet = new Set(pinnedLast);
-      tileEls().forEach(el=>{
-        if(pinnedSet.has(el.dataset.tool)) return;
-        tilesWrap.appendChild(el);
-      });
-      pinnedLast.forEach(id=>{
-        const el = map.get(id);
-        if(el) tilesWrap.appendChild(el);
-      });
-    }
-    function persistCurrentOrder(){
-      const ids = tileEls().map(el=>el.dataset.tool).filter(Boolean);
-      writeOrder(ids);
-    }
-    function setReorderMode(on){
-      document.body.classList.toggle("reorderMode", !!on);
-      reorderBtn.textContent = on ? "Fertig" : "Reihenfolge ändern";
-    }
-
-    applyOrder();
-
-    // placeholder tiles (coming soon)
-    tilesWrap?.addEventListener("click", (e)=>{
-      const a = e.target.closest?.("a.tile--soon");
-      if(!a) return;
-      if(document.body.classList.contains("reorderMode")) return;
-      e.preventDefault();
-      alert("Die SELLENCE Lagerbestand App ist bald verfügbar 🙂");
-    });
-
-
-    // prevent navigation while reordering
-    document.addEventListener("click", (e)=>{
-      if(!document.body.classList.contains("reorderMode")) return;
-      const a = e.target.closest?.("a.tile");
-      if(a){ e.preventDefault(); }
-    }, true);
-
-    // reorder controls
-    tilesWrap?.addEventListener("click", (e)=>{
-      const btn = e.target.closest?.(".reBtn");
-      if(!btn) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const tile = btn.closest(".tile");
-      if(!tile) return;
-      const dir = btn.dataset.move;
-      const list = tileEls();
-      const idx = list.indexOf(tile);
-      if(dir==="up" && idx>0){ tilesWrap.insertBefore(tile, list[idx-1]); persistCurrentOrder(); }
-      if(dir==="down" && idx>=0 && idx<list.length-1){ tilesWrap.insertBefore(list[idx+1], tile); persistCurrentOrder(); }
-    });
-
-    reorderBtn?.addEventListener("click", ()=>{
-      setReorderMode(!document.body.classList.contains("reorderMode"));
-    });
-
-    function isAuthed(){try{return localStorage.getItem(AUTH_KEY)==="1"}catch(e){return false}}
-    function setAuthed(){try{localStorage.setItem(AUTH_KEY,"1")}catch(e){}}
-    function clearAuth(){try{localStorage.removeItem(AUTH_KEY)}catch(e){}}
-
-    function showLogin(){overlay.classList.add("show");setTimeout(()=>passEl.focus(),50)}
-    function hideLogin(){overlay.classList.remove("show");errEl.style.display="none";passEl.value="";}
-
-    function attempt(){
-      const v=(passEl.value||"").trim().toLowerCase();
-      if(v===PASSCODE){setAuthed();hideLogin();}
-      else{errEl.style.display="block";passEl.focus();passEl.select();navigator.vibrate?.(30)}
-    }
-
-    goBtn.addEventListener("click",attempt);
-    passEl.addEventListener("keydown",(e)=>{if(e.key==="Enter") attempt();});
-    logout.addEventListener("click",()=>{clearAuth();showLogin();});
-    clearBtn.addEventListener("click",()=>{clearAuth();passEl.value="";errEl.style.display="none";passEl.focus();});
-
-    if(!isAuthed()) showLogin();
-
-    if("serviceWorker" in navigator){
-      window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
-    }
-  </script>
-
-<footer class="app-footer">
-  <span>© Andre Schorn</span>
-</footer>
-
 </body>
 </html>
+
+
+        <!-- =======================
+             Tour-Historie
+        ======================== -->
+        <section class="card" id="historyCard" style="margin-top:14px">
+          <div class="card-head">
+            <h2>📚 Tour‑Historie</h2>
+            <p class="muted">Wird automatisch gespeichert, sobald du auf „Starten“ drückst.</p>
+          </div>
+
+          <div class="history-controls">
+            <div class="field">
+              <label for="hFrom">Von</label>
+              <input type="date" id="hFrom" />
+            </div>
+            <div class="field">
+              <label for="hTo">Bis</label>
+              <input type="date" id="hTo" />
+            </div>
+
+            <div class="history-actions">
+              <button class="btn" id="btnRangeToday">Heute</button>
+              <button class="btn" id="btnRangeWeek">Woche</button>
+              <button class="btn" id="btnRangeMonth">Monat</button>
+              <button class="btn" id="btnExportCsv">CSV export</button>
+              <button class="btn" id="btnPrintHistory">Drucken</button>
+              <button class="btn danger" id="btnClearHistory" title="Löscht nur die Historie auf diesem Gerät">Historie löschen</button>
+            </div>
+          </div>
+
+          <div class="history-summary">
+            <div><b>Gefahrene Kilometer:</b> <span id="hKm">—</span></div>
+            <div><b>Gespeicherte Touren:</b> <span id="hTours">0</span></div>
+          </div>
+
+          <div id="historyList" class="history-list"></div>
+        </section>
+
+
+<!-- Fahrdaten Drawer -->
+<div id="fahrdatenDrawer" class="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>📊 Fahrdaten</h2>
+    <button class="drawer-close" id="closeFahrdaten" aria-label="Schließen">✕</button>
+  </div>
+  <div class="drawer-body" id="fahrdatenBody"></div>
+</div>
+
+<!-- Intro Video Overlay -->
+<div id="introOverlay" class="intro-overlay">
+  <div class="intro-content">
+    <button class="intro-close" onclick="closeIntro()">✕</button>
+    <video id="introVideo" controls autoplay muted playsinline>
+      <source src="assets/intro.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
