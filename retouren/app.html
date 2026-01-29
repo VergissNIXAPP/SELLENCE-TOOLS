@@ -46,7 +46,11 @@
     .leftActions{display:flex;align-items:center;gap:10px;justify-self:start;}
     .rightActions{display:flex;align-items:center;gap:10px;justify-self:end;}
     .backLink{display:inline-flex;align-items:center;gap:8px;text-decoration:none;}
-    .backLink .backIcon{width:22px;height:22px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:rgba(91,43,209,.18);border:1px solid rgba(255,255,255,.10);font-weight:900;}
+    .backLink 
+    .backLink{padding:10px 12px;border-radius:14px;gap:0;min-width:44px;justify-content:center}
+    .backIcon{font-size:18px;opacity:.9}
+
+    .backIcon{width:22px;height:22px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:rgba(91,43,209,.18);border:1px solid rgba(255,255,255,.10);font-weight:900;}
     .brand{text-align:center;user-select:none;justify-self:center;}
     .brandMark{font-family:Montserrat, "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-weight:900;letter-spacing:.22em;font-size:18px;line-height:1;background:linear-gradient(180deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 14px 28px rgba(0,0,0,.40);}
     .brandSub{margin-top:4px;font-weight:700;letter-spacing:.10em;color:rgba(255,255,255,.72);font-size:11px;}
@@ -70,14 +74,23 @@
     select,input{width:100%;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.22);color:var(--text);padding:12px 12px;font-size:16px;outline:none;}
     select:focus,input:focus{border-color:rgba(91,43,209,.55);box-shadow:0 0 0 4px rgba(91,43,209,.12);} 
     .actions{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .btnRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
     .primary{border:0;border-radius:999px;padding:12px 16px;font-weight:900;letter-spacing:.03em;cursor:pointer;background:linear-gradient(135deg, rgba(91,43,209,.95), rgba(45,212,255,.88));color:white;box-shadow:0 14px 34px rgba(0,0,0,.35);} 
+    button{transition:transform .12s ease, filter .18s ease, border-color .18s ease, background .18s ease;}
     .primary:active{transform:translateY(1px);} 
+    .chipBtn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text);padding:12px 14px;border-radius:999px;font-weight:900;letter-spacing:.02em;cursor:pointer;-webkit-tap-highlight-color: transparent;}
+    .chipBtn:hover{border-color:rgba(255,255,255,.20);}
+    .chipBtn:active{transform:translateY(1px);} 
+    .chipBtn.ok{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08);} 
+    .chipBtn.warn{border-color:rgba(91,43,209,.35);background:rgba(91,43,209,.10);} 
+    .chipBtn.danger{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10);} 
     .progress{color:var(--muted);font-weight:800;}
     .packsHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
     .packsTitle{font-weight:900;font-size:14px;letter-spacing:.08em;text-transform:uppercase;}
     .packsHint{color:var(--muted);margin-top:6px;font-weight:650;font-size:12px;max-width:70ch;}
     .packagesGrid{margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;}
-    .packTile{text-align:left;width:100%;border-radius:22px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);padding:12px;cursor:pointer;color:var(--text);-webkit-tap-highlight-color: transparent;}
+    .packTile{text-align:left;width:100%;border-radius:22px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);padding:12px;cursor:pointer;color:var(--text);-webkit-tap-highlight-color: transparent;transition:transform .12s ease, border-color .18s ease, background .18s ease;}
+    .packTile:hover{transform:translateY(-1px);} 
     .packTile.active{border-color:rgba(91,43,209,.55);box-shadow:0 0 0 4px rgba(91,43,209,.12);background:rgba(91,43,209,.10);} 
     .tileTop{display:flex;justify-content:space-between;align-items:center;gap:10px;}
     .tileTitle{font-weight:900;font-size:14px;letter-spacing:.04em;}
@@ -92,6 +105,21 @@
     .catLine{display:flex;justify-content:space-between;gap:10px;color:rgba(255,255,255,.78);font-weight:650;font-size:12px;}
     .moreLine{color:var(--muted2);font-weight:700;font-size:12px;}
     .tableHeader{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .packWindowActions{display:flex;align-items:center;gap:10px;justify-self:end;}
+    .pill.btn{cursor:pointer;}
+    .pill[role="button"], #btnPackStatus{cursor:pointer;}
+    .iconBtn{width:42px;height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.18);color:rgba(255,255,255,.92);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color: transparent;}
+    .iconBtn:hover{border-color:rgba(255,255,255,.24);} 
+    .iconBtn:active{transform:translateY(1px);} 
+    .iconBtn.danger{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10);} 
+
+    .packWinActions{display:flex;align-items:center;gap:10px;justify-content:flex-end;}
+    .iconBtn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer;font-size:18px;line-height:1;-webkit-tap-highlight-color: transparent;}
+    .iconBtn:hover{border-color:rgba(255,255,255,.22);}
+    .iconBtn:active{transform:translateY(1px);}
+    .iconBtn.danger{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10);}
+    .pillBtn{cursor:pointer;}
+
     .tableTitle{font-weight:900;letter-spacing:.06em;}
     .tableHint{color:var(--muted);font-weight:650;font-size:12px;}
     .tableWrap{overflow:auto;margin-top:10px;border-radius:16px;border:1px solid rgba(255,255,255,.12);} 
@@ -130,11 +158,8 @@
   <div class="topbar">
     <div class="leftActions">
       <a class="ghost backLink" href="../index.html" title="Zurück zur SELLENCE Tools Seite">
-        <span class="backIcon">←</span>
-        Tools
-      </a>
-      <button id="btnLogout" class="ghost">Logout</button>
-    </div>
+        <span class="backIcon">←</span></a>
+</div>
     <div class="brand">
       <div class="brandMark">SELLENCE</div>
       <div class="brandSub">RETOURENRECHNER</div>
@@ -191,7 +216,10 @@
       </div>
 
       <div class="actions">
-        <button id="btnAdd" class="primary">Hinzufügen</button>
+        <div class="btnRow">
+          <button id="btnAdd" class="primary">Hinzufügen</button>
+          <button id="btnNewPack" class="chipBtn" title="Aktuelles Paket abschließen & neues starten">Neues Paket</button>
+                  </div>
         <div class="progress" id="progressText">Bis Paket voll: –</div>
       </div>
     </section>
@@ -210,8 +238,14 @@
 
     <section class="tableCard">
       <div class="tableHeader">
-        <div class="tableTitle">Positionen – <span id="activePackTitle">Paket 1</span></div>
-        <div class="tableHint">Tippe auf eine Paket-Kachel, um das Paket zu öffnen.</div>
+        <div>
+          <div class="tableTitle">Positionen – <span id="activePackTitle">Paket 1</span></div>
+          <div class="tableHint">Tippe auf eine Paket-Kachel, um das Paket zu öffnen.</div>
+        </div>
+        <div class="packWindowActions">
+          <button id="btnPackStatus" class="pill warn" type="button" title="Status umschalten">OFFEN</button>
+          <button id="btnDeletePack" class="iconBtn danger" type="button" title="Paket löschen" aria-label="Paket löschen">🗑</button>
+        </div>
       </div>
 
       <div class="tableWrap">
@@ -282,7 +316,7 @@
   const MAX_PACKAGE_VALUE = 500;
   const MAX_PACKAGES = 10;
 
-  const STORAGE_KEY = "sellence_retouren_state_v3";
+  const STORAGE_KEY = "sellence_retouren_state_v4";
   let state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 };
   let undo = null;
 
@@ -357,6 +391,23 @@
 
     const left = Math.max(0, MAX_PACKAGE_VALUE - at.kvp);
     $("progressText").textContent = active.packed ? "Paket ist gepackt ✓" : `Bis Paket voll: ${fmt(left)}`;
+
+    // Paketfenster-Status (oben rechts)
+    const stBtn = $("btnPackStatus");
+    if(stBtn){
+      if(active.packed){
+        stBtn.textContent = "GEPACKT";
+        stBtn.classList.remove("warn");
+        stBtn.classList.add("ok");
+        stBtn.title = "Klicken: wieder OFFEN setzen";
+      }else{
+        stBtn.textContent = "OFFEN";
+        stBtn.classList.remove("ok");
+        stBtn.classList.add("warn");
+        stBtn.title = "Klicken: als GEPACKT markieren";
+      }
+    }
+
 
     renderPackagesGrid();
     renderItemsTable();
@@ -461,7 +512,70 @@
     }
   }
 
-  function addItem(){
+  
+  function startNewPackage(manual=false){
+    const cur = currentPack();
+    if(!cur) return;
+    if(!cur.packed){
+      cur.packed = true;
+      if(manual){
+        showToast("Paket abgeschlossen", `Paket ${cur.id} wurde manuell abgeschlossen.`);
+      }
+    }
+    if(state.packages.length >= MAX_PACKAGES){
+      showToast("Limit erreicht", `Maximal ${MAX_PACKAGES} Pakete möglich.`);
+      return;
+    }
+    const nextId = state.packages[state.packages.length-1].id + 1;
+    state.packages.push({id:nextId, createdAt:Date.now(), packed:false, items:[]});
+    state.activeId = nextId;
+    persist(); render();
+    if(manual){
+      showToast("Neues Paket", `Paket ${nextId} gestartet.`);
+    }
+  }
+
+  function togglePackedActive(){
+    const p = currentPack();
+    if(!p) return;
+    p.packed = !p.packed;
+    if(p.packed){
+      showToast("Gepackt", `Paket ${p.id} ist jetzt gepackt.`);
+    }else{
+      showToast("Wieder offen", `Paket ${p.id} ist wieder offen.`);
+    }
+    persist(); render();
+  }
+
+  function deleteActivePackage(){
+    const p = currentPack();
+    if(!p) return;
+    const packIndex = state.packages.findIndex(x=>x.id===p.id);
+    if(packIndex < 0) return;
+
+    const msg = p.items?.length
+      ? `Paket ${p.id} wirklich löschen? (${p.items.length} Einträge gehen verloren)`
+      : `Paket ${p.id} wirklich löschen?`;
+    if(!confirm(msg)) return;
+
+    state.packages.splice(packIndex, 1);
+
+    // ensure at least one package exists
+    if(state.packages.length === 0){
+      state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 };
+      undo = null;
+      persist(); render();
+      showToast("Gelöscht", "Paket gelöscht.");
+      return;
+    }
+
+    // choose a sane next active pack
+    const next = state.packages[Math.min(packIndex, state.packages.length-1)];
+    state.activeId = next.id;
+    persist(); render();
+    showToast("Gelöscht", `Paket ${p.id} gelöscht.`);
+  }
+function addItem(){
     const catKey = $("category").value;
     const cat = CATEGORY[catKey];
     const packsRaw = parseNum($("packs").value);
@@ -471,14 +585,40 @@
       showToast("Eingabe prüfen", "Bitte Packs & Euro korrekt eingeben.");
       return;
     }
+
+    const pack = currentPack();
+    if(pack.packed){
+      showToast("Paket ist gepackt", "Dieses Paket ist abgeschlossen. Bitte ein offenes Paket wählen oder ein neues starten.");
+      return;
+    }
+
     const kvp = packs * price;
     const refund = kvp * cat.rate;
-    const pack = currentPack();
-    const id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
-    pack.items.push({ id, catKey, catLabel:cat.label, program:cat.program, rate:cat.rate, packs, price, kvp, refund, at:Date.now() });
+
+    // Streng: Paket darf 500 € NICHT überschreiten
+    const pt = packTotals(pack);
+    if(pt.kvp + kvp > MAX_PACKAGE_VALUE){
+      const left = Math.max(0, MAX_PACKAGE_VALUE - pt.kvp);
+      showToast("Zu viel fürs Paket", `Es passen nur noch ${fmt(left)} in dieses Paket. Starte ggf. „Neues Paket“.`);
+      return;
+    }
+
+    // Gleiche €-Werte innerhalb der gleichen Kategorie zusammenführen
+    const existing = pack.items.find(it => it.catKey === catKey && Number(it.price) === Number(price));
+    if(existing){
+      existing.packs += packs;
+      existing.kvp += kvp;
+      existing.refund += refund;
+      existing.at = Date.now();
+    }else{
+      const id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
+      pack.items.push({ id, catKey, catLabel:cat.label, program:cat.program, rate:cat.rate, packs, price, kvp, refund, at:Date.now() });
+    }
 
     $("packs").value = ""; $("price").value = ""; $("packs").focus();
     persist(); render();
+
+    // Auto: wenn exakt voll → automatisch packen & nächstes Paket starten
     ensureNextPackageIfNeeded();
     persist(); render();
   }
@@ -487,6 +627,11 @@
   $("price").addEventListener("keydown", (e)=>{ if(e.key==="Enter") addItem(); });
   $("packs").addEventListener("keydown", (e)=>{ if(e.key==="Enter") $("price").focus(); });
 
+  $("btnNewPack").addEventListener("click", ()=>{ startNewPackage(true); });
+  $("btnPackStatus").addEventListener("click", togglePackedActive);
+  $("btnPackStatus").addEventListener("click", togglePackedActive);
+  $("btnDeletePack").addEventListener("click", deleteActivePackage);
+
   $("btnReset").addEventListener("click", ()=>{
     if(!confirm("Alles löschen?")) return;
     state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 };
@@ -494,12 +639,7 @@
     persist(); render();
     showToast("Reset", "Alles gelöscht.");
   });
-  $("btnLogout").addEventListener("click", ()=>{
-    try{ localStorage.removeItem(AUTH_KEY); }catch(e){}
-    location.replace("./index.html");
-  });
-
-  restore();
+restore();
   if(!state.packages || !state.packages.length){ state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 }; }
   if(!state.packages.some(p=>p.id===state.activeId)) state.activeId = state.packages[0].id;
 
