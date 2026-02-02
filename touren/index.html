@@ -62,11 +62,10 @@
 
         <div class="row">
           <label class="field" style="min-width:260px;flex:2">
-            <span>SAP-Nr. (einzeln oder mehrere)</span>
-            <input id="sapSearch" placeholder="z.B. 2011556 oder: 2011556 2011504 2551974" inputmode="text" autocomplete="off" />
-            <small class="hint">Mehrere SAP‑Nummern einfach mit Leerzeichen, Komma oder Zeilenumbruch trennen – sie werden direkt in die Planung übernommen.</small>
+            <span>SAP-Nr. Suche</span>
+            <input id="sapSearch" placeholder="z.B. 2011556" inputmode="numeric" autocomplete="off" />
           </label>
-          <button class="btn primary" id="btnFind">Übernehmen</button>
+          <button class="btn primary" id="btnFind">Suchen</button>
           <button class="btn" id="btnFit">↔︎ Alles anzeigen</button>
         </div>
 
@@ -77,20 +76,42 @@
               <li><b>Excel-Import</b>: Kundenliste hochladen.</li>
               <li><b>Geotagging</b>: „Geocoding“ starten (kann je nach Anzahl etwas dauern).</li>
               <li><b>Aktualisieren</b>: Seite neu laden – danach siehst du alle Märkte als Marker auf der Karte.</li>
-              <li><b>Planung</b>: SAP‑Nummer(n) einfügen → <b>„Übernehmen“</b> (landet direkt in der Route).</li>
+              <li><b>Planung</b>: SAP‑Nummer suchen (wie in Ninox geplant) → Marker anklicken → <b>„In Route +“</b>.</li>
               <li><b>Fertigstellen</b>: „Planung fertigstellen“ → Route wird automatisch optimiert und ist bereit für Google Maps.</li>
             </ol>
           </div>
         </div>
+
+
+<div class="geoPanel" id="geoPanel" hidden>
+  <div class="geoHead">
+    <div id="geoTitle">🧭 Geotagging</div>
+    <button class="btn" id="btnGeoStop" type="button">Stop</button>
+  </div>
+  <div class="geoBar" aria-hidden="true"><div class="geoBarFill" id="geoBarFill"></div></div>
+  <div class="muted tiny" id="geoText">—</div>
+</div>
 
         <div class="hr"></div>
         <div id="map" class="map"></div>
       </section>
 
       <section class="card">
+
+<div class="authGate" id="tourGate">
+  <div class="authBox">
+    <div class="authTitle">🔒 Touren freischalten</div>
+    <div class="muted tiny">Passwort eingeben (sellence oder franco)</div>
+    <div class="row" style="margin-top:10px">
+      <input id="tourPass" class="authInput" value="sellence" autocomplete="off" />
+      <button class="btn primary" id="btnUnlock" type="button">Freischalten</button>
+    </div>
+    <div class="muted tiny" id="authHint" style="margin-top:8px"></div>
+  </div>
+</div>
         <div class="card-h">
           <div>
-            <h2>Navigation: Stop für Stop</h2>
+            <h2>Routenplaner mit allen Märkten</h2>
           </div>
         </div>
 
@@ -120,7 +141,6 @@
             Tipp: Du kannst die Reihenfolge flexibel ändern – erst in der Liste, oder hier mit Zurück/Weiter.
           </div>
         </div>
-
 </div>
 
         <label class="check" for="chkReturn" style="margin-top:8px">

@@ -1,28 +1,54 @@
 /* SELLENCE-TOURENPLANER (SAP) – OSRM v1 (kostenlos) */
 const $ = (id)=>document.getElementById(id);
 
-const STORE = {
+let ACCOUNT = localStorage.getItem("sellence_tour_account_v1") || "sellence";
+const STORE_BASE = {
   markets: "sellence_sap_markets_osrm_v1",
   route: "sellence_sap_route_osrm_v1",
   myPos: "sellence_sap_mypos_osrm_v1",
   lastLinks: "sellence_sap_lastlinks_osrm_v1",
   history: "sellence_sap_tour_history_v1",
-  navPlan: "sellence_sap_navplan_v1",
-  navIdx: "sellence_sap_navidx_v1",
 };
+function storeFor(account){
+  if(account === "franco"){
+    return {
+      markets: STORE_BASE.markets + "_franco",
+      route: STORE_BASE.route + "_franco",
+      myPos: STORE_BASE.myPos + "_franco",
+      lastLinks: STORE_BASE.lastLinks + "_franco",
+      history: STORE_BASE.history + "_franco",
+    };
+  }
+  return STORE_BASE;
+}
+let STORE = storeFor(ACCOUNT);
+
+const AUTH_PASSWORDS = { sellence: "sellence", franco: "franco" };
+const SESSION_UNLOCK_KEY = "sellence_tour_unlocked_v1";
+const isUnlocked = () => sessionStorage.getItem(SESSION_UNLOCK_KEY) === "1";
 
 const OSRM_BASE = "https://router.project-osrm.org";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 
 // Märkte, die im Tourenplaner ignoriert werden sollen
 // (Case-insensitive, Treffer per "includes")
-const IGNORE_MARKETS = [
+const IGNORE_MARKETS_SELLENCE = [
   "rossmann",
   "aldi",
   "lidl",
   "netto",
   "penny",
 ];
+const IGNORE_MARKETS_FRANCO = [
+  "rossmann",
+  "aldi",
+  "lidl",
+  "netto",
+];
+let IGNORE_MARKETS = (ACCOUNT === "franco") ? IGNORE_MARKETS_FRANCO : IGNORE_MARKETS_SELLENCE;
+
+const PRELOADED_FRANCO_MARKETS = [{"ninox": "150937", "sap": "2007773", "name": "REWE", "anschrift": "BORSTELER CHAUSSEE 17-25", "plz": "22453", "ort": "HAMBURG"}, {"ninox": "150945", "sap": "2014193", "name": "REWE", "anschrift": "ULZBURGER STR. 332", "plz": "22846", "ort": "NORDERSTEDT"}, {"ninox": "150949", "sap": "2014895", "name": "REWE", "anschrift": "KLEINER REITWEG 30", "plz": "25421", "ort": "PINNEBERG"}, {"ninox": "150952", "sap": "2016204", "name": "REWE", "anschrift": "HOHELUFTCHAUSSEE  23-25", "plz": "20253", "ort": "HAMBURG"}, {"ninox": "150959", "sap": "2018870", "name": "REWE", "anschrift": "AM MARKT 10", "plz": "25474", "ort": "BÖNNINGSTEDT"}, {"ninox": "150962", "sap": "2020024", "name": "REWE", "anschrift": "ELBGAUSTR. 1 IM EIDELSTEDT CENTER", "plz": "22523", "ort": "HAMBURG"}, {"ninox": "150965", "sap": "2021141", "name": "REWE CENTER", "anschrift": "FRIEDRICH-EBERT-ALLEE 3-11", "plz": "22869", "ort": "SCHENEFELD"}, {"ninox": "150967", "sap": "2021199", "name": "REWE", "anschrift": "LINDENWEG 2", "plz": "25436", "ort": "TORNESCH"}, {"ninox": "150969", "sap": "2021892", "name": "REWE", "anschrift": "GRELCKSTR. 34", "plz": "22529", "ort": "HAMBURG"}, {"ninox": "150970", "sap": "2022290", "name": "REWE", "anschrift": "BARNERSTR. 44-46", "plz": "22765", "ort": "HAMBURG"}, {"ninox": "150978", "sap": "2025464", "name": "REWE", "anschrift": "TIBARG 32", "plz": "22459", "ort": "HAMBURG"}, {"ninox": "150984", "sap": "2028040", "name": "REWE", "anschrift": "VON-SAUER-STR. 11-13", "plz": "22761", "ort": "HAMBURG"}, {"ninox": "150993", "sap": "2032873", "name": "REWE Kim Ide oHG", "anschrift": "WESTERSTR. 34", "plz": "25336", "ort": "ELMSHORN"}, {"ninox": "150997", "sap": "2039027", "name": "REWE", "anschrift": "RUGENBARG 7", "plz": "22549", "ort": "HAMBURG"}, {"ninox": "151000", "sap": "2044436", "name": "REWE", "anschrift": "GLISSMANNWEG 4", "plz": "22457", "ort": "HAMBURG"}, {"ninox": "151019", "sap": "2066349", "name": "REWE CITY", "anschrift": "RATHAUSALLEE 31A", "plz": "22846", "ort": "NORDERSTEDT"}, {"ninox": "151022", "sap": "2071727", "name": "REWE MARKT GMBH", "anschrift": "TIBARG 41-43", "plz": "22459", "ort": "HAMBURG"}, {"ninox": "151039", "sap": "2119743", "name": "REWE Bliesmer & Glasmeyer", "anschrift": "KIEBITZWEG 2", "plz": "22869", "ort": "SCHENEFELD"}, {"ninox": "151041", "sap": "2167027", "name": "REWE", "anschrift": "SÜLLDORFER KIRCHENWEG 2", "plz": "22587", "ort": "HAMBURG"}, {"ninox": "152982", "sap": "2062763", "name": "REWE", "anschrift": "ALSTERDORFER STR. 255", "plz": "22297", "ort": "HAMBURG"}, {"ninox": "152985", "sap": "2068041", "name": "REWE CITY", "anschrift": "ALTONAER STR. 67", "plz": "20357", "ort": "HAMBURG"}, {"ninox": "152992", "sap": "2099671", "name": "REWE", "anschrift": "WITTSTOCKER STR. 5", "plz": "25436", "ort": "UETERSEN"}, {"ninox": "153979", "sap": "2015842", "name": "MARKANT", "anschrift": "FELDBEHNSTR. 35", "plz": "25451", "ort": "QUICKBORN"}, {"ninox": "153988", "sap": "2039997", "name": "FAMILA", "anschrift": "RISSENER STR. 105", "plz": "22880", "ort": "WEDEL"}, {"ninox": "153997", "sap": "2054050", "name": "FAMILA", "anschrift": "HANS-BÖCKLER-STR. 1", "plz": "25337", "ort": "ELMSHORN"}, {"ninox": "153998", "sap": "2054183", "name": "FAMILA", "anschrift": "GROSSER SAND 96-98", "plz": "25436", "ort": "UETERSEN"}, {"ninox": "153999", "sap": "2059185", "name": "FAMILA", "anschrift": "FLENSBURGER STRAßE 3", "plz": "25421", "ort": "PINNEBERG"}, {"ninox": "154005", "sap": "2069365", "name": "FAMILA", "anschrift": "WESTRING 6", "plz": "25421", "ort": "PINNEBERG"}, {"ninox": "154253", "sap": "2019624", "name": "REWE", "anschrift": "TROPLOWITZSTR. 2-8", "plz": "22529", "ort": "HAMBURG"}, {"ninox": "154270", "sap": "2043246", "name": "REWE", "anschrift": "NEUENBROOKER STR. 37", "plz": "25361", "ort": "KREMPE"}, {"ninox": "154281", "sap": "2056914", "name": "REWE Markt GmbH", "anschrift": "EDENDORFER STR. 35", "plz": "25524", "ort": "ITZEHOE"}, {"ninox": "154283", "sap": "2057664", "name": "REWE", "anschrift": "SÜDERSTR.  10", "plz": "25709", "ort": "MARNE"}, {"ninox": "154291", "sap": "2071566", "name": "REWE", "anschrift": "KOOGSTR. 67", "plz": "25718", "ort": "FRIEDRICHSKOOG"}, {"ninox": "154300", "sap": "2089182", "name": "REWE", "anschrift": "BREITE STR. 18 A", "plz": "25551", "ort": "HOHENLOCKSTEDT"}, {"ninox": "154593", "sap": "2401690", "name": "EDEKA HAYUNGA", "anschrift": "KOPPELDAMM 29", "plz": "25335", "ort": "ELMSHORN"}, {"ninox": "154594", "sap": "2401682", "name": "EDEKA CENTER  HAYUNGA", "anschrift": "WEDENKAMP 9A", "plz": "25335", "ort": "ELMSHORN"}, {"ninox": "154595", "sap": "2402788", "name": "EDEKA C.P. JENSEN", "anschrift": "METEORSTR. 1A", "plz": "25336", "ort": "ELMSHORN"}, {"ninox": "154817", "sap": "2425305", "name": "REWE", "anschrift": "KROONHORST 1 - 3", "plz": "22549", "ort": "HAMBURG"}, {"ninox": "155005", "sap": "2022792", "name": "REWE CENTER STANISLAWSKI & LAAS", "anschrift": "DOROTHEENSTR. 116", "plz": "22301", "ort": "HAMBURG"}, {"ninox": "155006", "sap": "2425073", "name": "REWE MARKT GMBH", "anschrift": "NORDALBINGERWEG 23", "plz": "22455", "ort": "HAMBURG"}, {"ninox": "155007", "sap": "2074597", "name": "REWE CENTER", "anschrift": "OSDORFER LANDSTR. 131", "plz": "22609", "ort": "HAMBURG"}, {"ninox": "155008", "sap": "2045755", "name": "REWE CENTER", "anschrift": "MAX-BRAUER-ALLEE 59", "plz": "22765", "ort": "HAMBURG"}, {"ninox": "155009", "sap": "2003287", "name": "REWE MARKT GMBH", "anschrift": "KIELER STR.  101", "plz": "22769", "ort": "HAMBURG"}, {"ninox": "155090", "sap": "2099213", "name": "KAUFLAND", "anschrift": "NEDDERFELD 70", "plz": "22529", "ort": "HAMBURG"}, {"ninox": "155095", "sap": "2420878", "name": "REWE Kim Ide oHG", "anschrift": "AN DER OST-WEST-BRÜCKE 3", "plz": "25335", "ort": "ELMSHORN"}, {"ninox": "155664", "sap": "2401763", "name": "EDEKA L.P.JENSEN", "anschrift": "AM MARIENHOF 3", "plz": "22880", "ort": "WEDEL"}, {"ninox": "155694", "sap": "2540450", "name": "E-Center A23 GmbH", "anschrift": "RAMSKAMP 102", "plz": "25337", "ort": "ELMSHORN"}, {"ninox": "155812", "sap": "2456453", "name": "EDEKA FRISCHEMARKT VOLKER KLEIN", "anschrift": "BAHNHOFSTRASSE 31", "plz": "22880", "ort": "WEDEL"}, {"ninox": "155816", "sap": "2401767", "name": "EDEKA STRUVE CENTER", "anschrift": "HÖRGENSWEG 5", "plz": "22523", "ort": "HAMBURG"}, {"ninox": "156103", "sap": "2413371", "name": "REWE FLEMKE NICOLE", "anschrift": "MARKTSTRAßE 2", "plz": "25355", "ort": "BARMSTEDT"}, {"ninox": "157510", "sap": "2061595", "name": "REWE GM", "anschrift": "ALSTERDORFER STR. 255", "plz": "22297", "ort": "HAMBURG"}, {"ninox": "157514", "sap": "2102945", "name": "REWE GETRÄNKEMARKT", "anschrift": "BORSTELER CHAUSSEE 17-25", "plz": "22453", "ort": "HAMBURG"}, {"ninox": "157515", "sap": "2011250", "name": "REWE GETRÄNKEMARKT", "anschrift": "GLISSMANNWEG 1", "plz": "22457", "ort": "HAMBURG"}, {"ninox": "157516", "sap": "2107603", "name": "REWE GETRÄNKEMARKT", "anschrift": "RUGENBARG 7", "plz": "22549", "ort": "HAMBURG"}, {"ninox": "157518", "sap": "2106364", "name": "REWE GETRÄNKEMARKT", "anschrift": "VON-SAUER-STRAßE 11-13", "plz": "22761", "ort": "HAMBURG"}, {"ninox": "157519", "sap": "2020103", "name": "REWE GETRÄNKEMARKT", "anschrift": "ULZBURGER STR. 330", "plz": "22846", "ort": "NORDERSTEDT"}, {"ninox": "157520", "sap": "2024753", "name": "REWE GETRÄNKEMARKT", "anschrift": "FRIEDRICH-EBERT-ALLEE 3-11", "plz": "22869", "ort": "SCHENEFELD"}, {"ninox": "157530", "sap": "2050024", "name": "FAMILA", "anschrift": "KISDORFER WEG 11", "plz": "24568", "ort": "KALTENKIRCHEN"}, {"ninox": "157531", "sap": "2077490", "name": "FAMILA", "anschrift": "LOHSTÜCKER WEG 16", "plz": "24576", "ort": "BAD BRAMSTEDT"}, {"ninox": "157532", "sap": "2055670", "name": "FAMILA GM", "anschrift": "FLENSBURGER STR. 3", "plz": "25421", "ort": "PINNEBERG"}, {"ninox": "157533", "sap": "2099653", "name": "REWE GM", "anschrift": "WITTSTOCKER STR. 5", "plz": "25436", "ort": "UETERSEN"}, {"ninox": "157534", "sap": "2056164", "name": "FAMILA", "anschrift": "PASCALSTRASSE 9", "plz": "25451", "ort": "QUICKBORN"}, {"ninox": "158038", "sap": "2046617", "name": "NAHKAUF ENGELBRECHT", "anschrift": "DORFSTR. 28", "plz": "25576", "ort": "BROKDORF"}, {"ninox": "158040", "sap": "2072329", "name": "Dorfladen Alveslohe eG", "anschrift": "LINDENSTRASSE 3", "plz": "25486", "ort": "ALVESLOHE"}, {"ninox": "158578", "sap": "2425189", "name": "REWE CITY", "anschrift": "ARMINIUSSTR. 2-4A/KIELERSTR. 2", "plz": "22525", "ort": "HAMBURG"}, {"ninox": "158604", "sap": "2424988", "name": "REWE CITY", "anschrift": "EPPENDORFER WEG 192", "plz": "20253", "ort": "HAMBURG"}, {"ninox": "158605", "sap": "2425308", "name": "REWE ERICHSEN PETER", "anschrift": "DORFSTR. 105", "plz": "25336", "ort": "KLEIN NORDENDE"}, {"ninox": "158620", "sap": "2431701", "name": "KAUFLAND", "anschrift": "ECKHOFFPLATZ 1", "plz": "22547", "ort": "HAMBURG"}, {"ninox": "159153", "sap": "2090318", "name": "EDEKA PETERSEN ARNE", "anschrift": "HAFENSTR. 124", "plz": "25718", "ort": "FRIEDRICHSKOOG"}, {"ninox": "159155", "sap": "2002521", "name": "EDEKA LENDER MATTHIAS", "anschrift": "RINGSTR. 11", "plz": "25368", "ort": "KIEBITZREIHE"}, {"ninox": "159157", "sap": "2440624", "name": "EDEKA  KLIESOW", "anschrift": "BAHNHOFSTRASSE 9", "plz": "25712", "ort": "BURG (DITHMARSCHEN)"}, {"ninox": "159164", "sap": "2088967", "name": "EDEKA PIGAREW", "anschrift": "ROMAN-ZELLER-PLATZ 8", "plz": "22457", "ort": "HAMBURG"}, {"ninox": "159167", "sap": "2013623", "name": "EDEKA TOEPFERT SVEN", "anschrift": "SEESTR. 161A", "plz": "25469", "ort": "HALSTENBEK"}, {"ninox": "159173", "sap": "2405291", "name": "EDEKA MEYER PETER", "anschrift": "EKEN 2", "plz": "25563", "ort": "WRIST"}, {"ninox": "159180", "sap": "2013595", "name": "EDEKA FRISCHEMARKT EISENMANN - FROMMHOLZ", "anschrift": "HEIDREHMEN 19", "plz": "22589", "ort": "HAMBURG"}, {"ninox": "159181", "sap": "2010469", "name": "EDEKA PAULSEN", "anschrift": "IM SANDE 2", "plz": "25488", "ort": "HOLM"}, {"ninox": "159430", "sap": "2010824", "name": "EDEKA BERND TÖPFERT", "anschrift": "STRESEMANNALLEE 12-16", "plz": "22529", "ort": "HAMBURG"}, {"ninox": "159562", "sap": "2076174", "name": "GM REWE STANISLAWSKI & LAAS", "anschrift": "DOROTHEENSTR. 116", "plz": "22301", "ort": "HAMBURG"}, {"ninox": "159800", "sap": "2425812", "name": "REWE MARKT GMBH", "anschrift": "WEDELER CHAUSSEE 43B", "plz": "25436", "ort": "MOORREGE"}, {"ninox": "159856", "sap": "2002371", "name": "EDEKA MARON", "anschrift": "STEINDAMM 11", "plz": "25554", "ort": "WILSTER"}, {"ninox": "159999", "sap": "2018909", "name": "EDEKA KROEGER", "anschrift": "BLANKENESER BAHNHOFSTR. 17", "plz": "22587", "ort": "HAMBURG"}, {"ninox": "160069", "sap": "2030819", "name": "EDEKA Anders e.K.", "anschrift": "GRINDELALLEE 126", "plz": "20146", "ort": "HAMBURG"}, {"ninox": "160109", "sap": "2039842", "name": "EDEKA WUCHERPFENNIG", "anschrift": "OSTERSTR. 185-187", "plz": "20255", "ort": "HAMBURG"}, {"ninox": "160146", "sap": "2050517", "name": "NAHKAUF TARHAN", "anschrift": "GLASHÜTTENSTR. 10", "plz": "20357", "ort": "HAMBURG"}, {"ninox": "160268", "sap": "2082764", "name": "EDEKA HENNINGS", "anschrift": "HORSTER VIERECK 1", "plz": "25358", "ort": "HORST (HOLSTEIN)"}, {"ninox": "160363", "sap": "2274699", "name": "EDEKA HEITMANN", "anschrift": "GROSSE BERGSTR. 152 -162", "plz": "22767", "ort": "HAMBURG"}, {"ninox": "160425", "sap": "2431722", "name": "KAUFLAND", "anschrift": "STRESEMANNSTRAßE 300", "plz": "22761", "ort": "HAMBURG-BAHRENFELD"}, {"ninox": "160645", "sap": "2002753", "name": "GLASMEYER & CO.", "anschrift": "KALCKREUTHWEG 90", "plz": "22607", "ort": "HAMBURG"}, {"ninox": "160709", "sap": "2009490", "name": "GLASMEYER & CO", "anschrift": "WAITZSTR. 3", "plz": "22607", "ort": "HAMBURG"}, {"ninox": "160770", "sap": "2015297", "name": "EDEKA MEYERS FRISCHECENTER", "anschrift": "KRÄHENWEG 19", "plz": "22459", "ort": "HAMBURG"}, {"ninox": "160802", "sap": "2021880", "name": "NAHKAUF HAUSCHILDT", "anschrift": "AM MARKT 6", "plz": "25361", "ort": "KREMPE"}, {"ninox": "160963", "sap": "2055406", "name": "EDEKA ECKS GABRIELE", "anschrift": "ALSTERDORFER MARKT 6", "plz": "22297", "ort": "HAMBURG"}, {"ninox": "161008", "sap": "2065030", "name": "EDEKA BANDELT", "anschrift": "OTTENSER HAUPTSTR. 10", "plz": "22765", "ort": "HAMBURG"}, {"ninox": "161069", "sap": "2077479", "name": "EDEKA STRUVE CENTER", "anschrift": "GASSTR. 4", "plz": "22761", "ort": "HAMBURG"}, {"ninox": "161076", "sap": "2078274", "name": "EDEKA WIEDNER", "anschrift": "STRESEMANNSTR. 161", "plz": "22769", "ort": "HAMBURG"}, {"ninox": "161101", "sap": "2443575", "name": "EDEKA STRUVE", "anschrift": "WEDELER LANDSTR. 52", "plz": "22559", "ort": "HAMBURG"}, {"ninox": "161157", "sap": "2097681", "name": "NAH & FRISCH KAYA", "anschrift": "HOLLÄNDISCHE REIHE 50", "plz": "22765", "ort": "HAMBURG"}, {"ninox": "161463", "sap": "2061445", "name": "KAYA FEINKOST", "anschrift": "FISCHERS ALLEE 35-37", "plz": "22763", "ort": "HAMBURG"}, {"ninox": "161853", "sap": "2401750", "name": "EDEKA Hayunga’s Rugenbarg GmbH", "anschrift": "RUGENBARG 19", "plz": "22848", "ort": "NORDERSTEDT"}, {"ninox": "162057", "sap": "2441132", "name": "EDEKA NIEMERSZEIN", "anschrift": "OSTERSTR. 120", "plz": "20255", "ort": "HAMBURG"}, {"ninox": "162058", "sap": "2441133", "name": "EDEKA NIEMERSZEIN", "anschrift": "HALLERSTR. 78", "plz": "20146", "ort": "HAMBURG"}, {"ninox": "162061", "sap": "2441131", "name": "EDEKA NIEMERSZEIN", "anschrift": "OSTERSTR. 86 -90", "plz": "20259", "ort": "HAMBURG"}, {"ninox": "162062", "sap": "2441129", "name": "EDEKA NIEMERSZEIN", "anschrift": "MILCHSTR. 1", "plz": "20148", "ort": "HAMBURG"}, {"ninox": "162063", "sap": "2441122", "name": "EDEKA STRUVE SCHLEMMERMARKT", "anschrift": "POSTSTR. 33", "plz": "20354", "ort": "HAMBURG"}, {"ninox": "162065", "sap": "2007125", "name": "STRUVE W. SCHLEMMERMARKT", "anschrift": "EPPENDORFER BAUM 35-37", "plz": "20249", "ort": "HAMBURG"}, {"ninox": "162066", "sap": "2441126", "name": "STRUVE W. SCHLEMMERMARKT", "anschrift": "EPPENDORFER LANDSTR. 41", "plz": "20249", "ort": "HAMBURG"}, {"ninox": "162067", "sap": "2441136", "name": "EDEKA STRUVE CENTER", "anschrift": "OSTERFELDSTR. 30-40", "plz": "22529", "ort": "HAMBURG"}, {"ninox": "162126", "sap": "2405305", "name": "EDEKA HOLST", "anschrift": "PAUL-ROOSEN-STR. 8", "plz": "22767", "ort": "HAMBURG"}, {"ninox": "162127", "sap": "2405296", "name": "Edeka Anders e.K.", "anschrift": "MAX-BRAUER-ALLEE 163", "plz": "22765", "ort": "HAMBURG"}, {"ninox": "162129", "sap": "2405336", "name": "EDEKA AKTIV MARKT HEITMANN", "anschrift": "HOHELUFTCHAUSSEE 52-54", "plz": "20253", "ort": "HAMBURG"}, {"ninox": "162130", "sap": "2405320", "name": "EDEKA KRAUS", "anschrift": "EPPENDORFER LANDSTR. 108-110", "plz": "20249", "ort": "HAMBURG"}, {"ninox": "162132", "sap": "2405337", "name": "EDEKA KLEIN", "anschrift": "JULIUS-BRECHT-STR. 5A", "plz": "22609", "ort": "HAMBURG"}, {"ninox": "162133", "sap": "2405322", "name": "EDEKA APPEL", "anschrift": "KRUPUNDER HEIDE 2A", "plz": "25462", "ort": "RELLINGEN"}, {"ninox": "162134", "sap": "2405282", "name": "Edeka Appel e.K.", "anschrift": "Waldhof 3", "plz": "25474", "ort": "Ellerbek"}, {"ninox": "162135", "sap": "2405276", "name": "EDEKA BÖGE", "anschrift": "HAUPTSTRAßE 37-43", "plz": "25469", "ort": "HALSTENBEK"}, {"ninox": "162137", "sap": "2405295", "name": "EDEKA BÖGE", "anschrift": "NIENHOEFENER STR. 19A", "plz": "25421", "ort": "PINNEBERG"}, {"ninox": "162172", "sap": "2405339", "name": "EDEKA LÄTSCH e.K.", "anschrift": "BERLINER DAMM 7", "plz": "25479", "ort": "ELLERAU"}, {"ninox": "162368", "sap": "2157195", "name": "NETTO", "anschrift": "WEDELER CHAUSSEE 14", "plz": "25492", "ort": "HEIST"}, {"ninox": "162390", "sap": "2103397", "name": "NETTO", "anschrift": "WESTERSTR. 98", "plz": "25336", "ort": "ELMSHORN"}, {"ninox": "162452", "sap": "2445431", "name": "NETTO", "anschrift": "TORNESCHER WEG 81", "plz": "25436", "ort": "UETERSEN"}, {"ninox": "162453", "sap": "2445730", "name": "NETTO", "anschrift": "ULZBURGER LANDSTRAßE 406", "plz": "25451", "ort": "QUICKBORN-HEIDE"}, {"ninox": "162456", "sap": "2445737", "name": "NETTO", "anschrift": "KIELER STRAßE 17", "plz": "25474", "ort": "HASLOH"}, {"ninox": "162576", "sap": "2408772", "name": "EDEKA MÖLLER", "anschrift": "HAMBURGER STR. 53", "plz": "24576", "ort": "BAD BRAMSTEDT"}, {"ninox": "162650", "sap": "2407745", "name": "EDEKA ARFF", "anschrift": "MARTINISTR. 64", "plz": "20251", "ort": "HAMBURG"}, {"ninox": "162758", "sap": "2419562", "name": "REWE CITY", "anschrift": "MOORFURTHWEG 15", "plz": "22301", "ort": "HAMBURG"}, {"ninox": "164811", "sap": "2442967", "name": "REWE GM", "anschrift": "MAX-BRAUER-ALLEE 59", "plz": "22765", "ort": "HAMBURG"}, {"ninox": "164932", "sap": "2446993", "name": "REWE CITY", "anschrift": "AM FELDE 58", "plz": "22765", "ort": "HAMBURG"}, {"ninox": "164963", "sap": "2447827", "name": "REWE CITY", "anschrift": "AM TARPENUFER 3-5", "plz": "22848", "ort": "NORDERSTEDT"}, {"ninox": "165135", "sap": "2454052", "name": "REWE GLASMEYER", "anschrift": "JÜRGEN-TÖPFER-STR, 18", "plz": "22763", "ort": "HAMBURG"}, {"ninox": "165170", "sap": "2455277", "name": "E-Center Frauen", "anschrift": "LANGER PETER 27B", "plz": "25524", "ort": "ITZEHOE"}, {"ninox": "165303", "sap": "2459544", "name": "KAUFLAND", "anschrift": "RUDOLF-DIESEL-STR. 1", "plz": "25524", "ort": "ITZEHOE"}, {"ninox": "165848", "sap": "2464977", "name": "EDEKA KRAUS", "anschrift": "MITTELWEG 161", "plz": "20148", "ort": "HAMBURG"}, {"ninox": "165916", "sap": "2467687", "name": "EDEKA HAPKE", "anschrift": "AN DER STÖR 2D", "plz": "25548", "ort": "KELLINGHUSEN"}, {"ninox": "165963", "sap": "2470034", "name": "REWE CITY", "anschrift": "FRIEDENSALLEE 9", "plz": "22765", "ort": "HAMBURG"}, {"ninox": "169229", "sap": "2473277", "name": "NAHKAUF Bernd Hauschildt", "anschrift": "THEEBERG 8", "plz": "25715", "ort": "EDDELAK"}, {"ninox": "169438", "sap": "2486294", "name": "NAHKAUF TARHAN", "anschrift": "FRUCHTALLEE 123", "plz": "20259", "ort": "HAMBURG"}, {"ninox": "169464", "sap": "2493135", "name": "ROSSMANN", "anschrift": "An Der StÖr 2b", "plz": "25548", "ort": "KELLINGHUSEN"}, {"ninox": "169696", "sap": "2079274", "name": "NAHKAUF KAROL", "anschrift": "OPN HAINHOLT 2B", "plz": "22589", "ort": "HAMBURG"}, {"ninox": "170206", "sap": "2492753", "name": "Bauzentrum Sandhack GmbH", "anschrift": "Osterbrooksweg 50", "plz": "22869", "ort": "Schenefeld"}, {"ninox": "170221", "sap": "2492068", "name": "Hagebaumarkt", "anschrift": "Emmy-Noether-Str. 2", "plz": "25524", "ort": "Itzehoe"}, {"ninox": "170908", "sap": "2495327", "name": "NAHKAUF IDE - K.I. Nahkauf GmbH", "anschrift": "AM MARKT 3", "plz": "25358", "ort": "HORST"}, {"ninox": "170909", "sap": "2495328", "name": "EDEKA C.P. JENSEN", "anschrift": "HAINHOLZER DAMM 5", "plz": "25337", "ort": "ELMSHORN"}, {"ninox": "171215", "sap": "2497949", "name": "TOOM BM", "anschrift": "LISE-MEITNER-STRASSE 2", "plz": "25337", "ort": "ELMSHORN"}, {"ninox": "171233", "sap": "2497942", "name": "REWE CITY EICHEMEYER", "anschrift": "ELBCHAUSSEE 576-578", "plz": "22587", "ort": "HAMBURG"}, {"ninox": "171307", "sap": "2503912", "name": "Edeka Frauen", "anschrift": "CHRISTIAN-IV-STRASSE 23", "plz": "25348", "ort": "GLÜCKSTADT"}, {"ninox": "171461", "sap": "2508776", "name": "Rewe To Go", "anschrift": "Paul Nevermann Platz 15/16", "plz": "22765", "ort": "Hamburg"}, {"ninox": "171905", "sap": "2511052", "name": "REWE Kai Prochazka oHG", "anschrift": "Wedeler Landstr. 16-18", "plz": "22559", "ort": "Hamburg"}, {"ninox": "172127", "sap": "2513150", "name": "Rewe Regie", "anschrift": "Kieler Str. 579", "plz": "22525", "ort": "Hamburg"}, {"ninox": "172185", "sap": "2513625", "name": "EDEKA HIRCHE", "anschrift": "Harkortstrasse 81c", "plz": "22765", "ort": "Hamburg"}, {"ninox": "172198", "sap": "2002260", "name": "EDEKA BOOST", "anschrift": "Steinstr. 2", "plz": "25364", "ort": "Brande-Hörnerkirchen"}, {"ninox": "172263", "sap": "2514458", "name": "Rewe Kim Ide oHG", "anschrift": "Esinger Str. 3", "plz": "25436", "ort": "Tornesch"}, {"ninox": "172291", "sap": "2514511", "name": "K.I. NAHKAUF GmbH", "anschrift": "Sibirien 4", "plz": "25335", "ort": "Elmshorn"}, {"ninox": "172293", "sap": "2514499", "name": "TOOM BAUMARKT", "anschrift": "Westring 10", "plz": "25421", "ort": "Pinneberg"}, {"ninox": "172295", "sap": "2514510", "name": "NAHKAUF Christoph Johannes Eggers e.K.", "anschrift": "Klinkerstrasse 89", "plz": "25436", "ort": "Moorrege"}, {"ninox": "172296", "sap": "2514514", "name": "NAHKAUF ENGELBRECHT", "anschrift": "Dorfstr. 8", "plz": "25599", "ort": "Wewelsfleth"}, {"ninox": "172406", "sap": "2515314", "name": "REWE Ahmad Ahad oHG", "anschrift": "Stresemannstr.197/Kieler Str.1", "plz": "22769", "ort": "Hamburg"}, {"ninox": "172667", "sap": "2516061", "name": "EDEKA MEYERS FRISCHECENTER", "anschrift": "Peiner Hag 1", "plz": "25497", "ort": "Prisdorf"}, {"ninox": "172726", "sap": "2521035", "name": "Edeka Tamme", "anschrift": "Paul-Nevermann-Platz 15", "plz": "22765", "ort": "Hamburg"}, {"ninox": "172727", "sap": "2521017", "name": "Edeka Klein", "anschrift": "Feldstraße 90", "plz": "22880", "ort": "Wedel"}, {"ninox": "172728", "sap": "2521026", "name": "Edeka Boldt", "anschrift": "Kaiser Friedrich Ufer 30", "plz": "20253", "ort": "Hamburg"}, {"ninox": "172798", "sap": "2520834", "name": "REWE Carsten Behrens oHG", "anschrift": "Kieler Str. 55-59", "plz": "25451", "ort": "Quickborn"}, {"ninox": "172801", "sap": "2088338", "name": "Edeka Böge Handels KG", "anschrift": "Hauptstr. 39", "plz": "25462", "ort": "Rellingen"}, {"ninox": "172803", "sap": "2521178", "name": "E-Center Frauen", "anschrift": "ROTENBROOK 4", "plz": "25524", "ort": "ITZEHOE"}, {"ninox": "172804", "sap": "2521172", "name": "E-Center Frauen", "anschrift": "KAUFHAUSSTR. 1", "plz": "25541", "ort": "BRUNSBÜTTEL"}, {"ninox": "172806", "sap": "2521169", "name": "Edeka Frauen", "anschrift": "HAFENSTR. 6", "plz": "25709", "ort": "MARNE"}, {"ninox": "172807", "sap": "2521180", "name": "E-Center Frauen", "anschrift": "FRITZ-LAU-PLATZ 3-5", "plz": "25348", "ort": "GLÜCKSTADT"}, {"ninox": "172808", "sap": "2521176", "name": "Edeka Frauen", "anschrift": "KOOGSTR. 75", "plz": "25541", "ort": "BRUNSBÜTTEL"}, {"ninox": "173046", "sap": "2082611", "name": "Lebensmittel+Feinkost Sarikaya", "anschrift": "Parkallee 15", "plz": "20144", "ort": "Hamburg"}, {"ninox": "173078", "sap": "2525389", "name": "EDEKA Frischemarkt Smedje", "anschrift": "Dorfstr. 19", "plz": "25572", "ort": "Sankt Margarethen"}, {"ninox": "173149", "sap": "2525678", "name": "EDEKA HIRCHE", "anschrift": "Eimsbüttler Chaussee 17", "plz": "20259", "ort": "Hamburg"}, {"ninox": "173367", "sap": "2530205", "name": "Rossmann", "anschrift": "Jungfernstieg 38", "plz": "20354", "ort": "Hamburg"}, {"ninox": "173435", "sap": "2527417", "name": "Edeka Christian Berndt", "anschrift": "Koppelstr. 47-49", "plz": "22529", "ort": "Hamburg"}, {"ninox": "173529", "sap": "2527161", "name": "GLOBUS", "anschrift": "Grandkuhlenweg 11", "plz": "22549", "ort": "Hamburg"}, {"ninox": "173892", "sap": "2498928", "name": "Penny Thesdorfer Weg", "anschrift": "THESDORFER WEG 3", "plz": "25421", "ort": "PINNEBERG"}, {"ninox": "173912", "sap": "2498964", "name": "Penny Ulzburger Meile", "anschrift": "ULZBURGER STR. 308-310", "plz": "22846", "ort": "NORDERSTEDT"}, {"ninox": "173956", "sap": "2499038", "name": "Penny Friedensallee", "anschrift": "FRIEDENSALLEE 98", "plz": "22763", "ort": "HAMBURG"}, {"ninox": "174058", "sap": "2499224", "name": "Penny Hindenburg", "anschrift": "HINDENBURGSTR. 54", "plz": "22297", "ort": "HAMBURG"}, {"ninox": "174128", "sap": "2499353", "name": "Penny Am Marktplatz", "anschrift": "Elbgaustr./Ekenknick 9", "plz": "22523", "ort": "Hamburg/Eidelstedt"}, {"ninox": "174198", "sap": "2499514", "name": "Penny Heussweg", "anschrift": "HEUSSWEG 52-54", "plz": "20255", "ort": "HAMBURG"}, {"ninox": "174277", "sap": "2499673", "name": "Penny Kieler Str.", "anschrift": "KIELER STR. 236", "plz": "22525", "ort": "HAMBURG"}, {"ninox": "174402", "sap": "2499902", "name": "Penny Wilster", "anschrift": "MÜHLENSTR. 5", "plz": "25554", "ort": "WILSTER"}, {"ninox": "174431", "sap": "2499961", "name": "Penny Friedrich-Ebert-Str.", "anschrift": "FRIEDRICH-EBERT-STR. 2", "plz": "25421", "ort": "PINNEBERG"}, {"ninox": "174473", "sap": "2500037", "name": "Penny Schnelsen", "anschrift": "HOLSTEINER CHAUSSEE 274", "plz": "22457", "ort": "HAMBURG"}, {"ninox": "174542", "sap": "2500160", "name": "Penny U-Christuskirche", "anschrift": "SCHÄFERKAMPSALLEE 56", "plz": "20357", "ort": "HAMBURG"}, {"ninox": "174543", "sap": "2500161", "name": "Penny Erikastr.", "anschrift": "ERIKASTR. 62", "plz": "20251", "ort": "HAMBURG"}, {"ninox": "174592", "sap": "2500247", "name": "Penny Friedrich-Ebert-Allee 23", "anschrift": "FRIEDRICH-EBERT-ALLEE 23", "plz": "22869", "ort": "SCHENEFELD"}, {"ninox": "174693", "sap": "2500416", "name": "Penny Alsterdorf", "anschrift": "ALSTERDORFER STR. 63-65", "plz": "22299", "ort": "HAMBURG"}, {"ninox": "174726", "sap": "2500464", "name": "Penny St. Pauli", "anschrift": "NOBISTOR 27", "plz": "22767", "ort": "HAMBURG"}, {"ninox": "174791", "sap": "2500565", "name": "Penny Happy Town", "anschrift": "MOLENKIEKERGANG 1", "plz": "25348", "ort": "GLÜCKSTADT"}, {"ninox": "174827", "sap": "2500636", "name": "Penny Wedel", "anschrift": "BAHNHOFSTR. 50-52", "plz": "22880", "ort": "WEDEL"}, {"ninox": "175027", "sap": "2501017", "name": "Penny Am Kaifu", "anschrift": "EPPENDORFER WEG 111", "plz": "20259", "ort": "HAMBURG"}, {"ninox": "175057", "sap": "2501074", "name": "Penny An der A23", "anschrift": "LINDENSTR. 196 A", "plz": "25524", "ort": "ITZEHOE"}, {"ninox": "175067", "sap": "2501092", "name": "Penny Am Stadtzentrum", "anschrift": "ALTONAER CHAUSSEE 81-83", "plz": "22869", "ort": "SCHENEFELD"}, {"ninox": "175074", "sap": "2501104", "name": "Penny Holo", "anschrift": "BREITE STR. 4", "plz": "25551", "ort": "HOHENLOCKSTEDT"}, {"ninox": "175079", "sap": "2501109", "name": "Penny Adenauerdamm", "anschrift": "ADENAUERDAMM 77", "plz": "25337", "ort": "ELMSHORN"}, {"ninox": "175086", "sap": "2501117", "name": "Penny Niendorf", "anschrift": "NORDALBINGERWEG 11", "plz": "22455", "ort": "HAMBURG"}, {"ninox": "175087", "sap": "2501118", "name": "Penny Lurup", "anschrift": "ELBGAUSTR. 122", "plz": "22547", "ort": "HAMBURG"}, {"ninox": "175092", "sap": "2501125", "name": "Penny Tornesch", "anschrift": "OHLENHOFF 2", "plz": "25436", "ort": "TORNESCH"}, {"ninox": "175097", "sap": "2501131", "name": "Penny Kieler Straße", "anschrift": "KIELER STR. 57", "plz": "24568", "ort": "KALTENKIRCHEN"}, {"ninox": "175100", "sap": "2501134", "name": "Penny Krähenweg", "anschrift": "KRÄHENWEG 4", "plz": "22459", "ort": "HAMBURG"}, {"ninox": "175107", "sap": "2501170", "name": "Penny Am Kretelmoor", "anschrift": "AM KRETELMOOR 42", "plz": "24568", "ort": "KALTENKIRCHEN"}, {"ninox": "175110", "sap": "2501178", "name": "Penny Zentrum", "anschrift": "SCHULSTR. 9A", "plz": "24568", "ort": "KALTENKIRCHEN"}, {"ninox": "175117", "sap": "2501204", "name": "Penny Hoheluft", "anschrift": "EPPENDORFER WEG 261", "plz": "20251", "ort": "HAMBURG"}, {"ninox": "175156", "sap": "2501264", "name": "Penny Rugenbarg", "anschrift": "RUGENBARG 85-87", "plz": "22549", "ort": "HAMBURG"}, {"ninox": "175178", "sap": "2501300", "name": "Penny Eimsbüttel", "anschrift": "LANGENFELDER DAMM 29-31", "plz": "20257", "ort": "HAMBURG"}, {"ninox": "175205", "sap": "2501387", "name": "Penny Osdorf", "anschrift": "OSDORFER LANDSTR. 118", "plz": "22549", "ort": "HAMBURG"}, {"ninox": "175223", "sap": "2501480", "name": "Penny Quellental", "anschrift": "RICHARD-KÖHN-STR. 2", "plz": "25421", "ort": "PINNEBERG"}, {"ninox": "175234", "sap": "2501509", "name": "Penny Garten Eden", "anschrift": "EDENDORFER STR. 72", "plz": "25524", "ort": "ITZEHOE"}, {"ninox": "175245", "sap": "2501542", "name": "Penny Troplo", "anschrift": "TROPLOWITZSTR. 7", "plz": "22529", "ort": "HAMBURG"}, {"ninox": "175257", "sap": "2501592", "name": "Penny Uetersen", "anschrift": "LIENAUS ALLEE 2", "plz": "25436", "ort": "UETERSEN"}, {"ninox": "175258", "sap": "2501594", "name": "Penny Köllner Chaussee", "anschrift": "KÖLLNER CHAUSSEE 68", "plz": "25337", "ort": "ELMSHORN"}, {"ninox": "175307", "sap": "2501710", "name": "Penny Rissen", "anschrift": "RISSENER DORFSTR. 51", "plz": "22559", "ort": "HAMBURG"}, {"ninox": "175681", "sap": "2502829", "name": "Penny Ackerviertel", "anschrift": "PINNEBERGER CHAUSSEE 114", "plz": "22523", "ort": "HAMBURG"}, {"ninox": "175690", "sap": "2502851", "name": "Penny Paaschburg", "anschrift": "GROSSE PAASCHBURG 43-47", "plz": "25524", "ort": "ITZEHOE"}, {"ninox": "175853", "sap": "2530381", "name": "Penny", "anschrift": "Küsterkamp 5", "plz": "25355", "ort": "Barmstedt"}, {"ninox": "175879", "sap": "2530469", "name": "Penny", "anschrift": "Schulterblatt 49", "plz": "20357", "ort": "Hamburg"}, {"ninox": "176083", "sap": "2533048", "name": "EDEKA MEYERS FRISCHECENTER", "anschrift": "Friedrich-Ebert-Straße 38-42", "plz": "25421", "ort": "Pinneberg"}, {"ninox": "176099", "sap": "2533112", "name": "Edeka Meyers Frischecenter", "anschrift": "Saarlandstraße 65", "plz": "25421", "ort": "Pinneberg"}, {"ninox": "191853", "sap": "2544573", "name": "REWE Jörg Kühne oHG", "anschrift": "Landweg 17-21", "plz": "24576", "ort": "Bad Bramstedt"}, {"ninox": "192055", "sap": "2539411", "name": "Edeka Jensen e.K.", "anschrift": "Gerberstraße 3", "plz": "25436", "ort": "Uetersen"}, {"ninox": "192068", "sap": "2546634", "name": "Frischemarkt Jurgeleit e.K.", "anschrift": "Sophie-Rahel-Jansen-Straße 100", "plz": "22609", "ort": "Hamburg"}, {"ninox": "192165", "sap": "2547406", "name": "Netto Marken-Discount", "anschrift": "Emil-von-Behring-Straße", "plz": "25541", "ort": "Brunsbüttel"}, {"ninox": "192243", "sap": "2547272", "name": "Getränke Hoffmann Knob", "anschrift": "Frohmestr. 102-106", "plz": "22459", "ort": "Hamburg"}, {"ninox": "192263", "sap": "2547051", "name": "Getränke Hoffmann Zander", "anschrift": "Hamburger Str. 46", "plz": "24576", "ort": "Bad Bramstedt"}, {"ninox": "192266", "sap": "2547222", "name": "Getränke Hoffmann Youssef", "anschrift": "Hamburger Str. 22", "plz": "24568", "ort": "Kaltenkirchen"}, {"ninox": "192308", "sap": "2547157", "name": "Getränke Hoffmann", "anschrift": "Güttloh 1-5", "plz": "25451", "ort": "Quickborn"}, {"ninox": "192322", "sap": "2547210", "name": "Getränke Hoffmann Holm", "anschrift": "Schenefelder Chaussee 80", "plz": "25524", "ort": "Itzehoe"}, {"ninox": "192329", "sap": "2547072", "name": "Getränke Hoffmann Rieper", "anschrift": "Hauptstr. 105", "plz": "25462", "ort": "Rellingen"}, {"ninox": "192336", "sap": "2547055", "name": "Getränke Hoffmann Hysenaj", "anschrift": "Hindenburgstr. 173", "plz": "22297", "ort": "Hamburg"}, {"ninox": "192375", "sap": "2547052", "name": "Getränke Hoffmann Hermann", "anschrift": "Elmshorner Str. 181-189", "plz": "25421", "ort": "Pinneberg"}, {"ninox": "192438", "sap": "2547362", "name": "Getränke Hoffmann Schmielau", "anschrift": "Rolandstr. 25", "plz": "22880", "ort": "Wedel"}, {"ninox": "192467", "sap": "2547295", "name": "Getränke Hoffmann Hermann", "anschrift": "Ohlenhoff 4", "plz": "25436", "ort": "Tornesch"}, {"ninox": "192481", "sap": "2547343", "name": "Getränke Hoffmann Plath", "anschrift": "Königstr. 63", "plz": "25709", "ort": "Marne"}, {"ninox": "192619", "sap": "2547993", "name": "Edeka Anders e.K.", "anschrift": "Grindelallee 126", "plz": "20146", "ort": "Hamburg"}, {"ninox": "192944", "sap": "2551150", "name": "REWE Philipp Menz oHG", "anschrift": "Grindelallee 40-44", "plz": "20146", "ort": "Hamburg"}, {"ninox": "192947", "sap": "2551146", "name": "REWE Ahmad Ahad oHG", "anschrift": "Eppendorfer Landstr. 77", "plz": "20249", "ort": "Hamburg"}, {"ninox": "192966", "sap": "2551181", "name": "REWE Getränkemarkt", "anschrift": "Wedeler Chaussee 43b", "plz": "25436", "ort": "Moorrege"}, {"ninox": "192967", "sap": "2551192", "name": "REWE", "anschrift": "Kamper Weg 92", "plz": "25524", "ort": "Itzehoe"}, {"ninox": "197876", "sap": "2560969", "name": "Frischemarkt Sükmen", "anschrift": "Brahmsallee 32", "plz": "20144", "ort": "Hamburg"}, {"ninox": "197979", "sap": "2560968", "name": "REWE Carsten Krage oHG", "anschrift": "Hamburger Str. 53-59", "plz": "24568", "ort": "Kaltenkirchen"}, {"ninox": "197982", "sap": "2561308", "name": "Rewe Nicole Strunskus ohG", "anschrift": "Johannßenstr. 17", "plz": "25693", "ort": "St. Michaelisdonn"}, {"ninox": "198038", "sap": "2561316", "name": "Nahkauf Nouri", "anschrift": "Harksheiderweg 107", "plz": "25451", "ort": "Quickborn"}, {"ninox": "198073", "sap": "2562072", "name": "Rewe Denis Poellath oHG", "anschrift": "Lise-Meitner-Str. 16", "plz": "25524", "ort": "Itzehoe"}, {"ninox": "198196", "sap": "2564167", "name": "Edeka Beese Frischmarkt e.K.", "anschrift": "Tibarg 44-48", "plz": "22459", "ort": "Hamburg"}, {"ninox": "198347", "sap": "2564165", "name": "Edeka Radtke e.K.", "anschrift": "Ulzburger Str. 585", "plz": "22844", "ort": "Norderstedt"}, {"ninox": "198503", "sap": "2565610", "name": "Edeka Am Lüttensee", "anschrift": "Ohlenhoff 3", "plz": "25436", "ort": "Tornesch"}, {"ninox": "198521", "sap": "2565596", "name": "Rewe Carsten Krage oHG GM", "anschrift": "Flottkamp 22 - 26", "plz": "24568", "ort": "Kaltenkirchen"}, {"ninox": "198522", "sap": "2565934", "name": "Rewe Carsten Krage oHG", "anschrift": "Flottkamp 22 - 26", "plz": "24568", "ort": "Kaltenkirchen"}, {"ninox": "198546", "sap": "2565958", "name": "Edeka André Bandelt e.K.", "anschrift": "Elbgaustr. 118a", "plz": "22547", "ort": "Hamburg"}, {"ninox": "198558", "sap": "2565941", "name": "Edeka Regie", "anschrift": "Winterhuder Marktplatz 18", "plz": "22299", "ort": "Hamburg"}, {"ninox": "198579", "sap": "2565921", "name": "Edeka Henning e.K.", "anschrift": "Jarrestraße 2-6", "plz": "22303", "ort": "Hamburg"}, {"ninox": "198582", "sap": "2566765", "name": "Edeka Pigarew e.K.", "anschrift": "Borsteler Chaussee 136 - 138", "plz": "22453", "ort": "Hamburg"}, {"ninox": "198947", "sap": "2571360", "name": "Edeka Patrick Gehrke e.K.", "anschrift": "Bahnhofsstr. 102", "plz": "25451", "ort": "Quickborn"}, {"ninox": "199033", "sap": "2571367", "name": "Edeka Yvonne Hebig e.K.", "anschrift": "Rathausallee 35 - 39", "plz": "22846", "ort": "Norderstedt"}, {"ninox": "199084", "sap": "2571117", "name": "Famila", "anschrift": "Vor dem Delftor 10", "plz": "25524", "ort": "Itzehoe"}];
+
 
 
 // Hamburger menu
@@ -181,12 +207,144 @@ function escapeHTML(s){ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;"
 function formatKm(km){ return Number.isFinite(km)?km.toFixed(1).replace(".", ","):"—"; }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
+function setTourGateVisible(on){
+  const gate = document.getElementById("tourGate");
+  if(!gate) return;
+  gate.classList.toggle("hidden", !on);
+}
+function setUiLocked(on){
+  // lock buttons that should not be usable while auto-geotagging runs
+  const ids = [
+    "menuBtn","btnAddMarket","btnImport","btnGeocode","btnFahrdaten","btnClearAll",
+    "btnFind","btnFit","sapSearch",
+    "btnFinalize","btnStartMaps","btnResetRoute","chkReturn"
+  ];
+  for(const id of ids){
+    const el = document.getElementById(id);
+    if(!el) continue;
+    el.disabled = !!on;
+  }
+}
+
+let __geoStopRequested = false;
+function showGeoPanel(show){
+  const p = document.getElementById("geoPanel");
+  if(!p) return;
+  p.hidden = !show;
+}
+function updateGeoStatus({title, text, progress01}){
+  const t = document.getElementById("geoTitle");
+  const x = document.getElementById("geoText");
+  const fill = document.getElementById("geoBarFill");
+  if(t && title != null) t.textContent = title;
+  if(x && text != null) x.textContent = text;
+  if(fill && typeof progress01 === "number"){
+    const pct = Math.max(0, Math.min(1, progress01)) * 100;
+    fill.style.width = pct.toFixed(1) + "%";
+  }
+}
+
+async function runGeocoding({auto=false, lock=true, loop=false} = {}){
+  if(!markets.length) return;
+  __geoStopRequested = false;
+  showGeoPanel(true);
+  if(lock) setUiLocked(true);
+
+  // We retry until either everything is tagged, or user presses stop.
+  let pass = 0;
+  while(true){
+    pass++;
+    const missing = markets.filter(m=>!(isNum(m.lat)&&isNum(m.lng)));
+    if(!missing.length){
+      updateGeoStatus({title:"✅ Geotagging fertig", text:`Alle Märkte sind geotaggt.`, progress01:1});
+      break;
+    }
+    updateGeoStatus({title:"🧭 Geotagging läuft…", text:`Fehlend: ${missing.length} Märkte (Pass ${pass})`, progress01:0});
+    let found=0;
+    for(let i=0;i<missing.length;i++){
+      if(__geoStopRequested) break;
+      const m=missing[i];
+      const q1 = `${marketAddr(m)}, Deutschland`;
+      const q2 = `${m.anschrift||""}, ${m.plz||""} ${m.ort||""}, Deutschland`;
+      let geo = await nominatimGeocode(q1);
+      if(!geo) geo = await nominatimGeocode(q2);
+      if(geo){ m.lat=geo.lat; m.lng=geo.lng; found++; save(STORE.markets, markets); }
+      if((i+1)%10===0) renderMarkers();
+      const done = i+1;
+      const total = missing.length;
+      updateGeoStatus({
+        title:"🧭 Geotagging läuft…",
+        text:`${done}/${total} • Gefunden: ${found} • Aktuell: ${m.name||"Markt"} (${m.sap||"—"})`,
+        progress01: total ? (done/total) : 0
+      });
+      await sleep(1100);
+    }
+    save(STORE.markets, markets);
+    renderMarkers();
+    fitAll();
+
+    if(__geoStopRequested){
+      updateGeoStatus({title:"⏸️ Geotagging pausiert", text:"Abgebrochen. Du kannst jederzeit erneut starten.", progress01:0});
+      break;
+    }
+
+    const stillMissing = markets.filter(m=>!(isNum(m.lat)&&isNum(m.lng))).length;
+    if(!stillMissing){
+      updateGeoStatus({title:"✅ Geotagging fertig", text:`Gefunden in Pass ${pass}.`, progress01:1});
+      break;
+    }
+    updateGeoStatus({title:"⚠️ Nicht alle gefunden", text:`Noch fehlend: ${stillMissing}. ${loop ? "Neuer Versuch startet gleich…" : "Bitte erneut starten."}`, progress01:0});
+    if(!loop) break;
+    await sleep(2500);
+  }
+
+  if(lock) setUiLocked(false);
+  // keep panel visible for a moment in auto mode
+  if(auto){
+    await sleep(800);
+  }
+}
+
+function setupGate(){
+  const gate = document.getElementById("tourGate");
+  const input = document.getElementById("tourPass");
+  const btn = document.getElementById("btnUnlock");
+  const hint = document.getElementById("authHint");
+
+  if(!gate || !input || !btn) return;
+
+  // Pre-fill with last used account password for convenience (Franco-friendly)
+  const last = localStorage.getItem("sellence_tour_account_v1") || "sellence";
+  input.value = (last === "franco") ? "franco" : "sellence";
+
+  const applyVisibility = ()=>{
+    setTourGateVisible(!isUnlocked());
+  };
+  applyVisibility();
+
+  btn.addEventListener("click", ()=>{
+    const val = (input.value || "").trim().toLowerCase();
+    let acc = null;
+    if(val === AUTH_PASSWORDS.sellence) acc = "sellence";
+    if(val === AUTH_PASSWORDS.franco) acc = "franco";
+    if(!acc){
+      if(hint) hint.textContent = "Falsches Passwort. Bitte 'sellence' oder 'franco' eingeben.";
+      input.focus();
+      input.select();
+      return;
+    }
+    localStorage.setItem("sellence_tour_account_v1", acc);
+    sessionStorage.setItem(SESSION_UNLOCK_KEY, "1");
+    // reload so the correct storage keys + filters are applied cleanly
+    location.reload();
+  });
+}
+
+
 let markets = load(STORE.markets, []);
 let routeIds = load(STORE.route, []);
 let myPos = load(STORE.myPos, null); // {lat,lng}
 let lastLinks = load(STORE.lastLinks, []);
-let navPlan = load(STORE.navPlan, []); // ordered points for stop-by-stop navigation
-let navIdx = load(STORE.navIdx, 0);
 
 function setStartEnabled(on){
   const b = document.getElementById("btnStartMaps");
@@ -199,92 +357,6 @@ function setStatus(msg=""){
   if(!el) return;
   el.textContent = msg;
   el.classList.toggle("show", !!msg);
-}
-
-// ---------- Stop-by-stop Navigation ----------
-function isReturnStop(p){ return !!p?.__return; }
-
-function pointTitle(p){
-  if(!p) return "—";
-  if(isReturnStop(p)) return "🏠 Rückfahrt / Zuhause";
-  return p.name || p.title || p.market || "Markt";
-}
-function pointAddress(p){
-  if(!p) return "—";
-  if(isReturnStop(p)) return "Zum Startpunkt zurück";
-  // Support app's market fields (anschrift/plz/ort)
-  if(p.anschrift || p.plz || p.ort){
-    const parts=[];
-    if(p.anschrift) parts.push(String(p.anschrift).trim());
-    const line2=[p.plz, p.ort].filter(Boolean).join(" ").trim();
-    if(line2) parts.push(line2);
-    if(parts.length) return parts.join(", ");
-  }
-  // Prefer structured fields
-  const parts = [];
-  if(p.street) parts.push(p.street);
-  if(p.zip || p.city){
-    const zc = [p.zip, p.city].filter(Boolean).join(" ");
-    if(zc) parts.push(zc);
-  }
-  if(parts.length) return parts.join(", ");
-  // Fallback to any free-text address
-  return p.address || p.addr || "";
-}
-
-function mapsLinkForPoint(p){
-  if(!p) return null;
-  const params = new URLSearchParams();
-  params.set("api","1");
-  params.set("travelmode","driving");
-  const dest = (isNum(p.lat) && isNum(p.lng)) ? `${p.lat},${p.lng}` : (pointAddress(p) || p.name || "");
-  if(!dest) return null;
-  params.set("destination", dest);
-  // origin intentionally omitted -> Google uses current location
-  return `https://www.google.com/maps/dir/?${params.toString()}`;
-}
-
-function showNavCard(show){
-  const card = document.getElementById("navCard");
-  if(!card) return;
-  card.hidden = !show;
-}
-
-function renderNav(){
-  const titleEl = document.getElementById("navTitle");
-  const addrEl  = document.getElementById("navAddr");
-  const counterEl = document.getElementById("navCounter");
-  const btnPrev = document.getElementById("btnPrevStop");
-  const btnArr = document.getElementById("btnArrived");
-  const btnNext = document.getElementById("btnNextStop");
-  const btnOpen = document.getElementById("btnOpenMaps");
-
-  const pts = Array.isArray(navPlan) ? navPlan : [];
-  const total = pts.length;
-
-  if(!total){
-    showNavCard(false);
-    return;
-  }
-
-  navIdx = Math.max(0, Math.min(navIdx || 0, total-1));
-  const p = pts[navIdx];
-
-  if(titleEl) titleEl.textContent = pointTitle(p);
-  if(addrEl)  addrEl.textContent  = pointAddress(p);
-  if(counterEl) counterEl.textContent = `${navIdx+1} / ${total}`;
-
-  if(btnPrev) btnPrev.disabled = (navIdx<=0);
-  if(btnArr) btnArr.disabled = (navIdx>=total-1);
-  if(btnNext) btnNext.disabled = (navIdx>=total-1);
-
-  const link = mapsLinkForPoint(p);
-  if(btnOpen){
-    btnOpen.disabled = !link;
-    btnOpen.dataset.href = link || "";
-  }
-
-  showNavCard(true);
 }
 
 // "So funktioniert's" collapse
@@ -407,11 +479,6 @@ function deleteMarket(id){
   // invalidate previous Google Maps links
   lastLinks = [];
   save(STORE.lastLinks, lastLinks);
-  navPlan = [];
-  save(STORE.navPlan, navPlan);
-  navIdx = 0;
-  save(STORE.navIdx, navIdx);
-  showNavCard(false);
   clearRouteLine();
   renderRoute();
   renderMarkers();
@@ -510,11 +577,6 @@ function toggleRoute(id){
   // Any change invalidates previous Google Maps links
   lastLinks = [];
   save(STORE.lastLinks, lastLinks);
-  navPlan = [];
-  save(STORE.navPlan, navPlan);
-  navIdx = 0;
-  save(STORE.navIdx, navIdx);
-  showNavCard(false);
   setStartEnabled(false);
   clearRouteLine();
 }
@@ -562,83 +624,18 @@ function findBySAP(sap){
   if(!s) return null;
   return markets.find(m=>String(m.sap||"").trim()===s) || null;
 }
-function parseSapList(input){
-  const raw = String(input||"").trim();
-  if(!raw) return [];
-  // split by comma, semicolon, whitespace, or newlines
-  return raw
-    .split(/[\s,;\n\r\t]+/g)
-    .map(s=>s.trim())
-    .filter(Boolean);
-}
-
-function addMarketsToRouteBySap(saps){
-  const missing = [];
-  let added = 0;
-  let already = 0;
-  const foundIds = [];
-
-  for(const sap of saps){
-    const m = findBySAP(sap);
-    if(!m){ missing.push(sap); continue; }
-    foundIds.push(m.id);
-    if(routeIds.includes(m.id)){ already++; continue; }
-    routeIds.push(m.id);
-    added++;
-  }
-
-  save(STORE.route, routeIds);
-  clearRouteLine();
-  renderRoute();
-  renderMarkers();
-
-  // focus first found marker if possible
-  const first = markets.find(x=>x.id===foundIds[0]);
-  if(first && isNum(first.lat) && isNum(first.lng)){
-    map.setView([first.lat, first.lng], Math.max(map.getZoom(), 14));
-    renderMarkers(first.id);
-  }
-
-  return {added, already, missing};
-}
-
 $("btnFind").addEventListener("click", ()=>{
-  const raw = $("sapSearch").value;
-  const saps = parseSapList(raw);
-  if(!saps.length){
-    alert("Bitte SAP‑Nummer(n) eingeben.");
-    return;
-  }
-
-  // Bulk mode
-  if(saps.length > 1){
-    const res = addMarketsToRouteBySap(saps);
-    const lines = [
-      `Übernommen ✅`,
-      `Neu in Planung: ${res.added}`,
-      `Schon drin: ${res.already}`,
-    ];
-    if(res.missing.length) lines.push(`Nicht gefunden: ${res.missing.slice(0,12).join(", ")}${res.missing.length>12?" …":""}`);
-    alert(lines.join("\n"));
-    return;
-  }
-
-  // Single SAP: direkt in Planung + auf Karte zentrieren
-  const sap = saps[0];
-  const m = findBySAP(sap);
+  const m=findBySAP($("sapSearch").value);
   if(!m){ alert("SAP-Nr. nicht gefunden."); return; }
-  if(!routeIds.includes(m.id)){
-    routeIds.push(m.id);
-    save(STORE.route, routeIds);
-    clearRouteLine();
-    renderRoute();
-  }
-  // focus / highlight marker
   if(isNum(m.lat)&&isNum(m.lng)){
     map.setView([m.lat,m.lng], Math.max(map.getZoom(), 14));
     renderMarkers(m.id);
   } else {
-    renderMarkers();
+    if(confirm(`Markt gefunden:\n${m.name}\n${marketAddr(m)}\n\nIn Route aufnehmen?`)){
+      toggleRoute(m.id);
+      renderRoute();
+      renderMarkers();
+    }
   }
 });
 $("sapSearch").addEventListener("keydown",(e)=>{ if(e.key==="Enter"){ e.preventDefault(); $("btnFind").click(); } });
@@ -674,8 +671,14 @@ $("fileInput").addEventListener("change", async (e)=>{
     renderRoute();
     renderMarkers();
     fitAll();
-    alert(`Import fertig.\nNeu: ${res.added}\nAktualisiert: ${res.updated}\nGesamt: ${markets.length}`);
-  } catch(err){
+    setStatus("Import fertig. 🧭 Geotagging startet automatisch…");
+    await runGeocoding({auto:true, lock:true, loop:false});
+    alert(`Import + Geotagging fertig.
+Neu: ${res.added}
+Aktualisiert: ${res.updated}
+Gesamt: ${markets.length}`);
+    setStatus("");
+    } catch(err){
     console.error(err);
     alert("Import fehlgeschlagen. Bitte prüfe die Datei.");
   } finally { e.target.value=""; }
@@ -802,24 +805,13 @@ $("btnGeocode").addEventListener("click", async ()=>{
   if(!markets.length){ alert("Bitte erst Excel importieren."); return; }
   const missing = markets.filter(m=>!(isNum(m.lat)&&isNum(m.lng)));
   if(!missing.length){ alert("Alle Märkte haben schon Koordinaten."); return; }
-  const ok=confirm(`Es fehlen Koordinaten bei ${missing.length} Märkten.\nGeocoding startet jetzt (mit Pausen).\nWeiter?`);
+  const ok=confirm(`Es fehlen Koordinaten bei ${missing.length} Märkten.\nGeotagging startet jetzt automatisch.\nWeiter?`);
   if(!ok) return;
-  $("btnGeocode").disabled=true;
-  let found=0;
-  for(let i=0;i<missing.length;i++){
-    const m=missing[i];
-    const q=`${marketAddr(m)}, Deutschland`;
-    const geo=await nominatimGeocode(q);
-    if(geo){ m.lat=geo.lat; m.lng=geo.lng; found++; save(STORE.markets, markets); }
-    if((i+1)%10===0) renderMarkers();
-    await sleep(1100); // polite delay
-  }
-  save(STORE.markets, markets);
-  $("btnGeocode").disabled=false;
-  renderMarkers();
-  fitAll();
-  alert(`Geotagging fertig.\nGefunden: ${found}/${missing.length}\nNicht gefunden: ${missing.length-found}\n\nTipp: Danach „Aktualisieren“ drücken.`);
+  await runGeocoding({auto:false, lock:true, loop:false});
 });
+
+const __geoStopBtn = document.getElementById("btnGeoStop");
+if(__geoStopBtn){ __geoStopBtn.addEventListener("click", ()=>{ __geoStopRequested = true; }); }
 
 // ---------- OSRM Optimize ----------
 function coordStr(lat,lng){ return `${lng.toFixed(6)},${lat.toFixed(6)}`; } // OSRM expects lon,lat
@@ -935,17 +927,12 @@ if(__btnFinalize){
         ? pts.concat([{lat:myPos.lat, lng:myPos.lng, __return:true}])
         : pts;
 
-      // Stop-für-Stop: wir speichern die geplante Reihenfolge als Punkte
-      navPlan = ptsForMaps;
-      save(STORE.navPlan, navPlan);
-      navIdx = 0;
-      save(STORE.navIdx, navIdx);
-      // legacy: invalidate old multi-stop links
-      lastLinks = [];
+      const links = buildMapsLinks(ptsForMaps, myPos);
+      if(!links.length) throw new Error("Konnte keinen Maps-Link bauen.");
+      lastLinks = links;
       save(STORE.lastLinks, lastLinks);
-
       setStartEnabled(true);
-      setStatus("Bereit: Kilometer berechnet. Du kannst jetzt „Starten (Stop für Stop)“ drücken.");
+      setStatus("Bereit: Kilometer berechnet. Du kannst jetzt „Starten (Google Maps)“ drücken.");
     } catch(err){
       console.error(err);
       setStatus(err?.message || "Planung fehlgeschlagen.");
@@ -955,58 +942,111 @@ if(__btnFinalize){
   });
 }
 
-// ---------- Start (Stop-by-stop) ----------
+// ---------- Start (Stop für Stop) ----------
 const __btnStart = document.getElementById("btnStartMaps");
-if(__btnStart){
-  __btnStart.addEventListener("click", ()=>{
-    // Speichere Tour (Datum/Uhrzeit + Stops + km)
-    try{ recordTourStart(); }catch(e){}
+let __navStops = [];
+let __navIndex = 0;
 
-    const pts = Array.isArray(navPlan) ? navPlan : [];
-    if(!pts.length){
-      setStatus("Bitte zuerst „Planung fertigstellen“ drücken.");
-      return;
-    }
-    navIdx = 0;
-    save(STORE.navIdx, navIdx);
-    renderNav();
-    setStatus("Stop 1 ist bereit. Tippe auf „Öffnen in Google Maps“ (oder wechsel mit Zurück/Weiter).");
-  });
+function formatAddr(m){
+  const a = [m.anschrift, `${m.plz||""} ${m.ort||""}`.trim()].filter(Boolean).join(", ");
+  return a || "—";
+}
+function stopTitle(m){
+  const parts = [];
+  if(m.name) parts.push(m.name);
+  if(m.sap) parts.push(`#${m.sap}`);
+  return parts.join(" ") || "Stopp";
+}
+function buildSingleStopLink(stop){
+  // Use device's current location as origin when possible (Google Maps will infer origin if omitted)
+  const dest = (isNum(stop.lat) && isNum(stop.lng))
+    ? `${stop.lat},${stop.lng}`
+    : encodeURIComponent(`${stopTitle(stop)} ${formatAddr(stop)}`);
+  if(isNum(stop.lat) && isNum(stop.lng)){
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving`;
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${dest}`;
+}
+function showNavCard(show){
+  const card = document.getElementById("navCard");
+  if(!card) return;
+  card.hidden = !show;
+}
+function updateNavUi(){
+  const card = document.getElementById("navCard");
+  if(!card) return;
+  const total = __navStops.length;
+  const idx = Math.max(0, Math.min(__navIndex, Math.max(0,total-1)));
+  __navIndex = idx;
+  const s = __navStops[idx];
+  document.getElementById("navTitle").textContent = stopTitle(s);
+  document.getElementById("navAddr").textContent = formatAddr(s);
+  document.getElementById("navCounter").textContent = `${total? (idx+1):0} / ${total}`;
+  // enable/disable prev/next
+  const bPrev = document.getElementById("btnPrevStop");
+  const bNext = document.getElementById("btnNextStop");
+  if(bPrev) bPrev.disabled = idx<=0;
+  if(bNext) bNext.disabled = idx>=total-1;
 }
 
-// ---------- Navigation buttons ----------
-document.getElementById("btnOpenMaps")?.addEventListener("click", ()=>{
-  const href = document.getElementById("btnOpenMaps")?.dataset?.href;
-  if(href) window.open(href, "_blank");
-});
-document.getElementById("btnPrevStop")?.addEventListener("click", ()=>{
-  const pts = Array.isArray(navPlan) ? navPlan : [];
-  if(!pts.length) return;
-  navIdx = Math.max(0, (navIdx||0) - 1);
-  save(STORE.navIdx, navIdx);
-  renderNav();
-});
+function startStopMode(){
+  // Speichere Tour (Datum/Uhrzeit + Stops + km)
+  try{ recordTourStart(); }catch(e){}
 
-document.getElementById("btnArrived")?.addEventListener("click", ()=>{
-  const pts = Array.isArray(navPlan) ? navPlan : [];
-  if(!pts.length) return;
-  if((navIdx||0) >= pts.length-1){
-    setStatus("Letzter Stopp erreicht ✅");
-    renderNav();
+  const pts = routePoints();
+  if(!pts.length){
+    setStatus("Bitte zuerst „Planung fertigstellen“ drücken.");
     return;
   }
-  navIdx = Math.min(pts.length-1, (navIdx||0) + 1);
-  save(STORE.navIdx, navIdx);
-  renderNav();
-  setStatus(`Nächster Stopp bereit: ${pointTitle(pts[navIdx])}`);
+
+  // Optional return to start (if enabled + start position known)
+  const chk = document.getElementById("chkReturn");
+  const includeReturn = !!(chk && chk.checked);
+  __navStops = pts.slice();
+
+  if(includeReturn && myPos && isNum(myPos.lat) && isNum(myPos.lng)){
+    __navStops.push({ name:"Startpunkt (Rückfahrt)", anschrift:"", plz:"", ort:"", sap:"", lat:myPos.lat, lng:myPos.lng, __return:true });
+  }
+
+  __navIndex = 0;
+  showNavCard(true);
+  updateNavUi();
+  // Open first stop immediately
+  const link = buildSingleStopLink(__navStops[__navIndex]);
+  window.open(link, "_blank");
+}
+
+if(__btnStart){
+  __btnStart.addEventListener("click", startStopMode);
+}
+
+// Stop navigation buttons
+document.getElementById("btnOpenMaps")?.addEventListener("click", ()=>{
+  if(!__navStops.length) return;
+  window.open(buildSingleStopLink(__navStops[__navIndex]), "_blank");
+});
+document.getElementById("btnPrevStop")?.addEventListener("click", ()=>{
+  if(!__navStops.length) return;
+  __navIndex = Math.max(0, __navIndex-1);
+  updateNavUi();
 });
 document.getElementById("btnNextStop")?.addEventListener("click", ()=>{
-  const pts = Array.isArray(navPlan) ? navPlan : [];
-  if(!pts.length) return;
-  navIdx = Math.min(pts.length-1, (navIdx||0) + 1);
-  save(STORE.navIdx, navIdx);
-  renderNav();
+  if(!__navStops.length) return;
+  __navIndex = Math.min(__navStops.length-1, __navIndex+1);
+  updateNavUi();
 });
+document.getElementById("btnArrived")?.addEventListener("click", ()=>{
+  if(!__navStops.length) return;
+  if(__navIndex >= __navStops.length-1){
+    setStatus("✅ Tour fertig. Gute Heimfahrt!");
+    showNavCard(false);
+    return;
+  }
+  __navIndex++;
+  updateNavUi();
+  window.open(buildSingleStopLink(__navStops[__navIndex]), "_blank");
+});
+
 
 // ---------- Reload ----------
 $("btnReload")?.addEventListener("click", ()=>location.reload());
@@ -1018,11 +1058,6 @@ function resetRouteOnly(){
   save(STORE.route, routeIds);
   lastLinks = [];
   save(STORE.lastLinks, lastLinks);
-  navPlan = [];
-  save(STORE.navPlan, navPlan);
-  navIdx = 0;
-  save(STORE.navIdx, navIdx);
-  showNavCard(false);
   setStartEnabled(false);
   clearRouteLine();
   renderRoute();
@@ -1039,16 +1074,40 @@ if(__btnReset){
 }
 
 // ---------- init ----------
+setupGate();
+
+// Account-specific data / filters
+if(ACCOUNT === "franco"){
+  IGNORE_MARKETS = IGNORE_MARKETS_FRANCO;
+  if(!markets || !markets.length){
+    markets = PRELOADED_FRANCO_MARKETS.slice();
+    save(STORE.markets, markets);
+  }
+} else {
+  IGNORE_MARKETS = IGNORE_MARKETS_SELLENCE;
+}
+
 $("marketCount").textContent = String(markets.length);
-setStartEnabled(Array.isArray(navPlan) && navPlan.length>0);
+setStartEnabled(Array.isArray(lastLinks) && lastLinks.length>0);
 initMap();
 renderRoute();
 renderMarkers();
 fitAll();
 
-setStartEnabled(Array.isArray(navPlan) && navPlan.length>0);
+// Lock the tour planner area until password is entered (gate overlay blocks clicks)
+setTourGateVisible(!isUnlocked());
 
-setStartEnabled(Array.isArray(navPlan) && navPlan.length>0);
+// Franco: run geotagging automatically, and keep retrying until all markets have coords
+(async ()=>{
+  if(ACCOUNT === "franco"){
+    const missing = markets.filter(m=>!(isNum(m.lat)&&isNum(m.lng))).length;
+    if(missing){
+      await runGeocoding({auto:true, lock:true, loop:true});
+      renderMarkers();
+      fitAll();
+    }
+  }
+})();
 
 if("serviceWorker" in navigator){
   window.addEventListener("load", ()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));

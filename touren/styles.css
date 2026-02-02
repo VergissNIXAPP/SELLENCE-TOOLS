@@ -52,7 +52,8 @@ body{
 .grid{display:grid;gap:14px;}
 @media(min-width:980px){.grid.two{grid-template-columns:1.2fr .8fr;}}
 .card{
-  border-radius:var(--radius);
+    position:relative;
+border-radius:var(--radius);
   border:1px solid rgba(255,255,255,.10);
   background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
   box-shadow:var(--shadow);
@@ -67,12 +68,6 @@ h2{margin:0;font-size:16px;letter-spacing:.02em;}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
 .field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px;}
 .field span{font-size:12px;color:rgba(255,255,255,.70);font-weight:900;letter-spacing:.02em;}
-.field .hint{
-  margin-top:2px;
-  font-size:11px;
-  line-height:1.25;
-  color:rgba(255,255,255,.55);
-}
 input{
   appearance:none;width:100%;
   padding:12px 12px;border-radius:14px;
@@ -395,74 +390,91 @@ input:focus{border-color:rgba(91,46,255,.55);box-shadow:0 0 0 4px rgba(91,46,255
 }
 
 
-/* Stop-für-Stop Navigation */
+/* --- Franco/Sellence Gate + Geotagging Live Status --- */
+.authGate{
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 18px;
+  background: rgba(10,12,20,.62);
+  backdrop-filter: blur(10px);
+}
+.authGate.hidden{ display:none; }
+.authBox{
+  width: min(460px, 100%);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(18,20,32,.92);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 18px 45px rgba(0,0,0,.35);
+}
+.authTitle{
+  font-weight: 800;
+  letter-spacing: .3px;
+  font-size: 18px;
+}
+.authInput{
+  flex: 1;
+  min-width: 140px;
+}
+
+.geoPanel{
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+}
+.geoHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.geoBar{
+  height: 10px;
+  border-radius: 999px;
+  overflow:hidden;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.12);
+}
+.geoBarFill{
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(91,46,255,.95), rgba(173,125,255,.95));
+}
+
+
+
+/* --- Stop für Stop (Nav Card) --- */
 .navCard{
   margin-top:12px;
-  padding:14px;
+  padding:12px;
   border-radius:18px;
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
-  border:1px solid rgba(255,255,255,.12);
-  box-shadow: 0 10px 30px rgba(0,0,0,.28);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
 }
-.navTop{
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-  justify-content:space-between;
-}
-.navKicker{
-  font-size:12px;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  color: rgba(255,255,255,.65);
-}
-.navTitle{
-  font-size:16px;
-  font-weight:800;
-  line-height:1.15;
-  margin-top:4px;
-}
-.navAddr{
-  margin-top:6px;
-  color: rgba(255,255,255,.72);
-  font-size:13px;
-  line-height:1.25;
-}
+.navTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.navKicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.navTitle{font-size:18px;font-weight:800;line-height:1.15;margin-top:2px}
+.navAddr{opacity:.85;font-size:13px;margin-top:3px}
 .navCounter{
-  font-variant-numeric: tabular-nums;
-  font-weight:800;
-  font-size:14px;
-  line-height:1;
-  white-space:nowrap;
+  min-width:78px;
+  text-align:center;
   padding:8px 10px;
   border-radius:999px;
-  background: rgba(91,46,255,.22);
-  border:1px solid rgba(91,46,255,.35);
+  font-weight:800;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.14);
 }
-
-.hint{
-  display:block;
-  margin-top:6px;
-  color: rgba(255,255,255,.55);
-  font-size:12px;
-  line-height:1.2;
+.navBtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.navBtns .btn{flex:1 1 160px}
+@media (min-width: 980px){
+  .navBtns .btn{flex:0 0 auto}
 }
-.navBtns{
-  display:grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap:10px;
-  margin-top:12px;
-}
-.navBtns #btnOpenMaps{
-  grid-column: 1 / -1;
-}
-@media (max-width:520px){
-  .navBtns{ grid-template-columns: 1fr 1fr; }
-  .navBtns #btnOpenMaps{ grid-column: 1 / -1; }
-}
-
-.btn.ok{
-  border-color: rgba(58, 220, 155, .35);
-  background: rgba(58, 220, 155, .10);
-}
-.btn.ok:hover{ filter: brightness(1.06); }
