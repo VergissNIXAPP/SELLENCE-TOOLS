@@ -52,8 +52,7 @@ body{
 .grid{display:grid;gap:14px;}
 @media(min-width:980px){.grid.two{grid-template-columns:1.2fr .8fr;}}
 .card{
-    position:relative;
-border-radius:var(--radius);
+  border-radius:var(--radius);
   border:1px solid rgba(255,255,255,.10);
   background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
   box-shadow:var(--shadow);
@@ -390,91 +389,87 @@ input:focus{border-color:rgba(91,46,255,.55);box-shadow:0 0 0 4px rgba(91,46,255
 }
 
 
-/* --- Franco/Sellence Gate + Geotagging Live Status --- */
-.authGate{
-  position: absolute;
-  inset: 0;
-  z-index: 30;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* ---------- Login Overlay ---------- */
+.overlay{
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background: rgba(10, 12, 28, 0.72);
+  backdrop-filter: blur(12px);
+  z-index: 9999;
   padding: 18px;
-  background: rgba(10,12,20,.62);
-  backdrop-filter: blur(10px);
 }
-.authGate.hidden{ display:none; }
-.authBox{
-  width: min(460px, 100%);
-  border-radius: 18px;
-  padding: 16px;
-  background: rgba(18,20,32,.92);
-  border: 1px solid rgba(255,255,255,.12);
-  box-shadow: 0 18px 45px rgba(0,0,0,.35);
+.loginCard{
+  width: min(520px, 100%);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 22px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.45);
+  padding: 18px 16px 16px;
 }
-.authTitle{
+.loginTitle{
   font-weight: 800;
-  letter-spacing: .3px;
+  letter-spacing: 0.4px;
   font-size: 18px;
 }
-.authInput{
-  flex: 1;
-  min-width: 140px;
-}
-
-.geoPanel{
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.05);
-}
-.geoHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 10px;
+.loginSub{
+  margin-top: 4px;
   margin-bottom: 10px;
+  opacity: 0.86;
+  font-size: 13px;
 }
-.geoBar{
+.fieldLabel{
+  display:block;
+  font-size: 12px;
+  opacity: 0.85;
+  margin: 10px 0 6px;
+}
+.sep{
+  height:1px;
+  background: rgba(255,255,255,0.14);
+  margin: 14px 0;
+}
+.row{ display:flex; gap:10px; align-items:center; }
+
+
+/* ---------- Geotagging Progress ---------- */
+.progressBar{
+  width:100%;
   height: 10px;
   border-radius: 999px;
+  background: rgba(255,255,255,0.12);
   overflow:hidden;
-  background: rgba(255,255,255,.10);
-  border: 1px solid rgba(255,255,255,.12);
 }
-.geoBarFill{
+.progressFill{
   height: 100%;
-  width: 0%;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(91,46,255,.95), rgba(173,125,255,.95));
+  background: linear-gradient(90deg, rgba(91,46,255,0.95), rgba(49,231,166,0.95));
 }
 
-
-
-/* --- Stop für Stop (Nav Card) --- */
-.navCard{
-  margin-top:12px;
-  padding:12px;
-  border-radius:18px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.14);
-  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+/* ---------- Tour Navigator (Stop-by-Stop) ---------- */
+.tourNav{
+  padding: 14px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  margin-bottom: 12px;
 }
-.navTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
-.navKicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
-.navTitle{font-size:18px;font-weight:800;line-height:1.15;margin-top:2px}
-.navAddr{opacity:.85;font-size:13px;margin-top:3px}
-.navCounter{
-  min-width:78px;
-  text-align:center;
-  padding:8px 10px;
-  border-radius:999px;
-  font-weight:800;
-  background: rgba(255,255,255,.10);
-  border: 1px solid rgba(255,255,255,.14);
+.tourNavGrid{
+  display:flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
-.navBtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.navBtns .btn{flex:1 1 160px}
-@media (min-width: 980px){
-  .navBtns .btn{flex:0 0 auto}
+.tourNavInfo{ min-width: 220px; flex: 1 1 320px; }
+.tourNavTitle{ font-size: 18px; font-weight: 800; letter-spacing: 0.2px; margin-top: 2px; }
+.tourNavSub{ opacity: 0.85; margin-top: 2px; }
+.tourNavBtns{
+  display:flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
 }
+.tourNavBtns .btn{ min-width: 52px; }

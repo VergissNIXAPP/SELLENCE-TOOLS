@@ -1,271 +1,276 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>SELLENCE-TOURENPLANER</title>
-  <meta name="theme-color" content="#5B2EFF" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
-  <link rel="icon" href="./icons/icon-192.png" />
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <link rel="stylesheet" href="./styles.css" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>SELLENCE-TOURENPLANER</title>
+<meta content="#5B2EFF" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<link href="./manifest.json" rel="manifest"/>
+<link href="./icons/icon-192.png" rel="apple-touch-icon"/>
+<link href="./icons/icon-192.png" rel="icon"/>
+<link crossorigin="" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" rel="stylesheet"/>
+<link href="./styles.css" rel="stylesheet"/>
 </head>
 <body>
-  <div class="bg-orb orb1"></div>
-  <div class="bg-orb orb2"></div>
-  <div class="bg-orb orb3"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<div class="bg-orb orb3"></div>
+<div class="overlay" id="loginOverlay" style="display:none">
+<div class="loginCard">
+  <div class="loginTitle">SELLENCE-TOURENPLANER</div>
+  <div class="loginSub">Passcode eingeben</div>
 
-  <header class="topbar">
-    
-    <a class="backBtn backBtn--icon" href="../index.html" title="Zurück zu SELLENCE Tools"><span class="backIcon">←</span></a>
+  <label class="fieldLabel" for="loginCode">Passcode</label>
+  <input autocomplete="current-password" class="input" id="loginCode" placeholder="z.B. franco" type="password"/>
+
+  <div class="row">
+    <button class="btn primary" id="btnLogin" style="flex:1">Weiter</button>
+    <button class="btn" id="btnClearCode" style="flex:0 0 auto">Löschen</button>
+  </div>
+
+  <div class="muted tiny" id="loginStatus" style="min-height:18px;margin-top:6px"></div>
+
+  <div id="adminPanel" style="display:none">
+    <div class="sep"></div>
+    <div class="loginSub" style="margin-top:0">Admin · Account anlegen</div>
+
+    <label class="fieldLabel" for="newUser">Nutzername</label>
+    <input autocomplete="off" class="input" id="newUser" placeholder="z.B. Franco" type="text"/>
+
+    <label class="fieldLabel" for="newPass">Passwort</label>
+    <input autocomplete="new-password" class="input" id="newPass" placeholder="Passwort" type="password"/>
+
+    <label class="fieldLabel" for="newExcel">Excel Liste (optional)</label>
+    <input accept=".xlsx,.xls" class="input" id="newExcel" type="file"/>
+
+    <button class="btn" id="btnCreateAccount" style="width:100%;margin-top:10px">Account erstellen</button>
+
+    <div class="muted tiny" style="margin-top:8px;line-height:1.3">
+      Hinweis: Ohne Server (z.B. GitHub Pages) wird das Speichern im Browser (LocalStorage) gemacht.
+    </div>
+
+    <div class="sep"></div>
+    <div class="loginSub" style="margin-top:0">Vorhandene Accounts</div>
+    <div id="adminAccountList" class="muted tiny" style="line-height:1.4"></div>
+
+    <button class="btn" id="btnAdminExit" style="width:100%;margin-top:10px">Admin verlassen</button>
+  </div>
+</div>
+</div>
+</div>
+<header class="topbar">
+<a class="backBtn backBtn--icon" href="../index.html" title="Zurück zu SELLENCE Tools"><span class="backIcon">←</span></a>
 <div class="brand">
-      <div class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 64 64" fill="none">
-          <path d="M12 40c10-18 26-16 40-28" stroke="rgba(255,255,255,.92)" stroke-width="6" stroke-linecap="round"/>
-          <path d="M30 46c7-8 15-12 26-16" stroke="rgba(255,255,255,.62)" stroke-width="6" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div>
-        <div class="brand-title">SELLENCE</div>
-        <div class="brand-sub">TOURENPLANER</div>
-      </div>
-    </div>
-    
-    <div class="top-actions">
-      <button class="btn" id="menuBtn" aria-label="Menü" title="Menü">☰</button>
-      <div class="menu" id="menuPanel" aria-hidden="true">
-        <button class="btn" id="btnAddMarket">➕ Markt hinzufügen</button>
-        <button class="btn" id="btnImport">📥 Excel Import</button>
-        <button class="btn" id="btnGeocode" title="Adressen → Koordinaten (OpenStreetMap)">🧭 Geocoding</button>
-        <button class="btn" id="btnFahrdaten">📊 Fahrdaten</button>
-        <button class="btn danger" id="btnClearAll">Alles löschen</button>
-      </div>
-      <input type="file" id="fileInput" accept=".xlsx,.xls" hidden />
-    </div>
-
-  </header>
-
-  <main class="shell">
-    <div class="grid two">
-      <section class="card">
-        <div class="card-h">
-          <div>
-            <h2>Karte / Märkte</h2>
-          </div>
-          <div class="pill" id="marketCount">0</div>
-        </div>
-
-        <div class="row">
-          <label class="field" style="min-width:260px;flex:2">
-            <span>SAP-Nr. Suche</span>
-            <input id="sapSearch" placeholder="z.B. 2011556" inputmode="numeric" autocomplete="off" />
-          </label>
-          <button class="btn primary" id="btnFind">Suchen</button>
-          <button class="btn" id="btnFit">↔︎ Alles anzeigen</button>
-        </div>
-
-        <div class="how" style="margin-top:10px">
-          <button class="btn" id="btnHow" type="button">So funktioniert’s</button>
-          <div class="note how-panel" id="howPanel" hidden>
-            <ol style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px">
-              <li><b>Excel-Import</b>: Kundenliste hochladen.</li>
-              <li><b>Geotagging</b>: „Geocoding“ starten (kann je nach Anzahl etwas dauern).</li>
-              <li><b>Aktualisieren</b>: Seite neu laden – danach siehst du alle Märkte als Marker auf der Karte.</li>
-              <li><b>Planung</b>: SAP‑Nummer suchen (wie in Ninox geplant) → Marker anklicken → <b>„In Route +“</b>.</li>
-              <li><b>Fertigstellen</b>: „Planung fertigstellen“ → Route wird automatisch optimiert und ist bereit für Google Maps.</li>
-            </ol>
-          </div>
-        </div>
-
-
-<div class="geoPanel" id="geoPanel" hidden>
-  <div class="geoHead">
-    <div id="geoTitle">🧭 Geotagging</div>
-    <button class="btn" id="btnGeoStop" type="button">Stop</button>
-  </div>
-  <div class="geoBar" aria-hidden="true"><div class="geoBarFill" id="geoBarFill"></div></div>
-  <div class="muted tiny" id="geoText">—</div>
+<div aria-hidden="true" class="brand-mark">
+<svg fill="none" viewbox="0 0 64 64">
+<path d="M12 40c10-18 26-16 40-28" stroke="rgba(255,255,255,.92)" stroke-linecap="round" stroke-width="6"></path>
+<path d="M30 46c7-8 15-12 26-16" stroke="rgba(255,255,255,.62)" stroke-linecap="round" stroke-width="6"></path>
+</svg>
 </div>
-
-        <div class="hr"></div>
-        <div id="map" class="map"></div>
-      </section>
-
-      <section class="card">
-
-<div class="authGate" id="tourGate">
-  <div class="authBox">
-    <div class="authTitle">🔒 Touren freischalten</div>
-    <div class="muted tiny">Passwort eingeben (standard: sellence)</div>
-    <div class="row" style="margin-top:10px">
-      <input id="tourPass" class="authInput" value="sellence" autocomplete="off" />
-      <button class="btn primary" id="btnUnlock" type="button">Freischalten</button>
-    </div>
-    <div class="muted tiny" id="authHint" style="margin-top:8px"></div>
-  </div>
+<div>
+<div class="brand-title">SELLENCE</div>
+<div class="brand-sub">TOURENPLANER</div>
 </div>
-        <div class="card-h">
-          <div>
-            <h2>Routenplaner mit allen Märkten</h2>
-          </div>
-        </div>
-
-        <div class="row">
-          <button class="btn primary" id="btnFinalize">✅ Planung fertigstellen</button>
-          <button class="btn primary" id="btnStartMaps" disabled>▶️ Starten (Stop für Stop)</button>
-          <button class="btn" id="btnResetRoute">↩︎ Zurücksetzen</button>
-        
-        <div class="navCard" id="navCard" hidden>
-          <div class="navTop">
-            <div>
-              <div class="navKicker">Aktueller Stopp</div>
-              <div class="navTitle" id="navTitle">—</div>
-              <div class="navAddr" id="navAddr">—</div>
-            </div>
-            <div class="navCounter" id="navCounter">0 / 0</div>
-          </div>
-
-          <div class="navBtns">
-            <button class="btn primary" id="btnOpenMaps">🗺️ Öffnen in Google Maps</button>
-            <button class="btn" id="btnPrevStop">← Zurück</button>
-            <button class="btn ok" id="btnArrived">✅ Angekommen</button>
-            <button class="btn" id="btnNextStop">Weiter →</button>
-          </div>
-
-          <div class="muted tiny" id="navHint" style="margin-top:6px">
-            Tipp: Du kannst die Reihenfolge flexibel ändern – erst in der Liste, oder hier mit Zurück/Weiter.
-          </div>
-        </div>
 </div>
-
-        <label class="check" for="chkReturn" style="margin-top:8px">
-          <input type="checkbox" id="chkReturn" checked />
-          <span class="checkDot" aria-hidden="true"></span>
-          <span class="checkText">Startpunkt als letzten Stopp hinzufügen (Rückfahrt)</span>
-        </label>
-        <div class="muted tiny" id="returnHint" style="margin-top:4px">
+<div class="top-actions">
+<button aria-label="Menü" class="btn" id="menuBtn" title="Menü">☰</button>
+<div aria-hidden="true" class="menu" id="menuPanel">
+<button class="btn" id="btnAddMarket">➕ Markt hinzufügen</button>
+<button class="btn" id="btnImport">📥 Excel Import</button>
+<button class="btn" id="btnGeocode" title="Adressen → Koordinaten (OpenStreetMap)">🧭 Geocoding</button><button class="btn" id="btnAccount">👤 Account wechseln</button>
+<button class="btn" id="btnFahrdaten">📊 Fahrdaten</button>
+<button class="btn danger" id="btnClearAll">Alles löschen</button>
+</div>
+<input accept=".xlsx,.xls" hidden="" id="fileInput" type="file"/>
+</div>
+</header>
+<main class="shell">
+<div class="grid two">
+<section class="card">
+<div class="card-h">
+<div>
+<h2>Karte / Märkte</h2>
+</div>
+<div class="pill" id="marketCount">0</div>
+</div>
+<div class="row">
+<label class="field" style="min-width:260px;flex:2">
+<span>SAP-Nr. Suche</span>
+<input autocomplete="off" id="sapSearch" inputmode="numeric" placeholder="z.B. 2011556 2011557-2011558"/>
+</label>
+<button class="btn primary" id="btnFind">Suchen</button>
+<button class="btn" id="btnFit">↔︎ Alles anzeigen</button>
+</div>
+<div class="how" style="margin-top:10px">
+<button class="btn" id="btnHow" type="button">So funktioniert’s</button>
+<div class="note how-panel" hidden="" id="howPanel">
+<ol style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px">
+<li><b>Excel-Import</b>: Kundenliste hochladen.</li>
+<li><b>Geotagging</b>: „Geocoding“ starten (kann je nach Anzahl etwas dauern).</li>
+<li><b>Aktualisieren</b>: Seite neu laden – danach siehst du alle Märkte als Marker auf der Karte.</li>
+<li><b>Planung</b>: SAP‑Nummer suchen (wie in Ninox geplant) → Marker anklicken → <b>„In Route +“</b>.</li>
+<li><b>Fertigstellen</b>: „Planung fertigstellen“ → Route wird automatisch optimiert und ist bereit für Google Maps.</li>
+</ol>
+</div>
+</div>
+<div class="hr"></div>
+<div class="map" id="map"></div>
+</section>
+<section class="card">
+<div class="card-h">
+<div>
+<h2>Routenplaner mit allen Märkten</h2>
+</div>
+</div>
+<div class="row">
+<button class="btn primary" id="btnFinalize">✅ Planung fertigstellen</button>
+<button class="btn primary" disabled="" id="btnStartMaps">🧭 Starten (1. Stop)</button>
+<button class="btn" id="btnResetRoute">↩︎ Zurücksetzen</button>
+</div>
+<label class="check" for="chkReturn" style="margin-top:8px">
+<input checked="" id="chkReturn" type="checkbox"/>
+<span aria-hidden="true" class="checkDot"></span>
+<span class="checkText">Startpunkt als letzten Stopp hinzufügen (Rückfahrt)</span>
+</label>
+<div class="muted tiny" id="returnHint" style="margin-top:4px">
           Aktiv: Die Tour endet wieder am Startpunkt.
         </div>
-
-        <div class="status" id="status" aria-live="polite"></div>
-
-        <div class="kpi">
-          <div class="box"><div class="muted tiny">Stops</div><div class="v" id="kStops">0</div></div>
-          <div class="box"><div class="muted tiny">Tour km</div><div class="v" id="kKm">—</div></div>
-        </div>
-
-        <div class="hr"></div>
-        <div class="list" id="routeList"></div>
-
-        <div class="note" style="margin-top:12px">
-          <b>Tipp:</b> Einmal „Geocoding“ laufen lassen, dann sind alle Marker & die Optimierung stabil.
-        </div>
-      </section>
+<div aria-live="polite" class="status" id="status"></div>
+<div class="kpi">
+<div class="box"><div class="muted tiny">Stops</div><div class="v" id="kStops">0</div></div>
+<div class="box"><div class="muted tiny">Tour km</div><div class="v" id="kKm">—</div></div>
+</div>
+<div class="hr"></div>
+<div class="tourNav" id="tourNav" hidden>
+  <div class="tourNavGrid">
+    <div class="tourNavInfo">
+      <div class="muted tiny">Aktueller Stop</div>
+      <div class="tourNavTitle" id="tourNavTitle">—</div>
+      <div class="tourNavSub" id="tourNavSub">—</div>
+      <div class="badges" style="margin-top:8px">
+        <span class="badge" id="tourNavSap">SAP?</span>
+        <span class="badge" id="tourNavIdx">0/0</span>
+      </div>
     </div>
-  </main>
-
-  <!-- Defer scripts so DOM (incl. modal) exists before app.js wires event listeners -->
-  <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script defer src="./app.js"></script>
-
-  <!-- Modal: Markt hinzufügen -->
-  <div class="modal" id="addMarketModal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="modalCard" role="document">
-      <div class="modalHead">
-        <div>
-          <div class="modalTitle">Markt hinzufügen</div>
-          <div class="muted tiny">Name, Adresse & SAP‑Nummer eintragen – Geocoding läuft automatisch.</div>
-        </div>
-        <button class="btn" id="btnAddMarketClose" aria-label="Schließen">✕</button>
-      </div>
-
-      <div class="modalBody">
-        <label class="field">
-          <span>Marktname</span>
-          <input id="amName" placeholder="z.B. EDEKA Jürgensen" autocomplete="off" />
-        </label>
-        <label class="field">
-          <span>Adresse</span>
-          <input id="amAddr" placeholder="Straße, PLZ Ort" autocomplete="off" />
-        </label>
-        <label class="field">
-          <span>SAP‑Nummer</span>
-          <input id="amSap" placeholder="z.B. 2011556" inputmode="numeric" autocomplete="off" />
-        </label>
-      </div>
-
-      <div class="modalActions">
-        <button class="btn" id="btnAddMarketCancel">Abbrechen</button>
-        <button class="btn primary" id="btnAddMarketSave">Speichern</button>
-      </div>
-
-      <div class="status" id="addMarketStatus" aria-live="polite"></div>
+    <div class="tourNavBtns">
+      <button class="btn" id="tourPrev" type="button">◀️</button>
+      <button class="btn" id="tourNext" type="button">▶️</button>
+      <button class="btn primary" id="tourArrived" type="button">✅ Angekommen</button>
+      <button class="btn" id="tourGoogle" type="button" title="Google Maps">🗺️</button>
+      <button class="btn" id="tourApple" type="button" title="Apple Karten">🍎</button>
     </div>
   </div>
+  <div class="muted tiny" id="tourNavHint" style="margin-top:8px">Tipp: Du kannst auch auf einen Stop in der Liste tippen, um ihn als aktuellen Stop zu setzen.</div>
+</div>
+<div class="list" id="routeList"></div>
+<div class="note" style="margin-top:12px">
+<b>Tipp:</b> Einmal „Geocoding“ laufen lassen, dann sind alle Marker &amp; die Optimierung stabil.
+        </div>
+</section>
+</div>
+</main>
+<!-- Defer scripts so DOM (incl. modal) exists before app.js wires event listeners -->
+<script defer="" src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script crossorigin="" defer="" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script defer="" src="./app.js"></script>
+<!-- Modal: Markt hinzufügen -->
+<div aria-hidden="true" aria-modal="true" class="modal" id="addMarketModal" role="dialog">
+<div class="modalCard" role="document">
+<div class="modalHead">
+<div>
+<div class="modalTitle">Markt hinzufügen</div>
+<div class="muted tiny">Name, Adresse &amp; SAP‑Nummer eintragen – Geocoding läuft automatisch.</div>
+</div>
+<button aria-label="Schließen" class="btn" id="btnAddMarketClose">✕</button>
+</div>
+<div class="modalBody">
+<label class="field">
+<span>Marktname</span>
+<input autocomplete="off" id="amName" placeholder="z.B. EDEKA Jürgensen"/>
+</label>
+<label class="field">
+<span>Adresse</span>
+<input autocomplete="off" id="amAddr" placeholder="Straße, PLZ Ort"/>
+</label>
+<label class="field">
+<span>SAP‑Nummer</span>
+<input autocomplete="off" id="amSap" inputmode="numeric" placeholder="z.B. 2011556"/>
+</label>
+</div>
+<div class="modalActions">
+<button class="btn" id="btnAddMarketCancel">Abbrechen</button>
+<button class="btn primary" id="btnAddMarketSave">Speichern</button>
+</div>
+<div aria-live="polite" class="status" id="addMarketStatus"></div>
+</div>
+</div>
+<div class="overlay" id="geoOverlay" style="display:none">
+<div class="loginCard">
+<div class="loginTitle">Geotagging läuft…</div>
+<div class="muted tiny" id="geoText" style="margin-top:6px">0 / 0</div>
+<div class="progressBar" style="margin-top:10px">
+<div class="progressFill" id="geoBar" style="width:0%"></div>
+</div>
+<div class="row" style="margin-top:12px">
+<button class="btn danger" id="btnGeoStop" style="flex:1">Stop</button>
+<button class="btn" id="btnGeoHide" style="flex:1">Ausblenden</button>
+</div>
+<div class="muted tiny" style="margin-top:10px;line-height:1.35">
+        Stop bricht das aktuelle Geotagging ab. Ausblenden lässt es im Hintergrund weiterlaufen.
+      </div>
+</div>
+</div>
 </body>
 </html>
-
-
-        <!-- =======================
+<!-- =======================
              Tour-Historie
         ======================== -->
-        <section class="card" id="historyCard" style="margin-top:14px">
-          <div class="card-head">
-            <h2>📚 Tour‑Historie</h2>
-            <p class="muted">Wird automatisch gespeichert, sobald du auf „Starten“ drückst.</p>
-          </div>
-
-          <div class="history-controls">
-            <div class="field">
-              <label for="hFrom">Von</label>
-              <input type="date" id="hFrom" />
-            </div>
-            <div class="field">
-              <label for="hTo">Bis</label>
-              <input type="date" id="hTo" />
-            </div>
-
-            <div class="history-actions">
-              <button class="btn" id="btnRangeToday">Heute</button>
-              <button class="btn" id="btnRangeWeek">Woche</button>
-              <button class="btn" id="btnRangeMonth">Monat</button>
-              <button class="btn" id="btnExportCsv">CSV export</button>
-              <button class="btn" id="btnPrintHistory">Drucken</button>
-              <button class="btn danger" id="btnClearHistory" title="Löscht nur die Historie auf diesem Gerät">Historie löschen</button>
-            </div>
-          </div>
-
-          <div class="history-summary">
-            <div><b>Gefahrene Kilometer:</b> <span id="hKm">—</span></div>
-            <div><b>Gespeicherte Touren:</b> <span id="hTours">0</span></div>
-          </div>
-
-          <div id="historyList" class="history-list"></div>
-        </section>
-
-
-<!-- Fahrdaten Drawer -->
-<div id="fahrdatenDrawer" class="drawer" aria-hidden="true">
-  <div class="drawer-head">
-    <h2>📊 Fahrdaten</h2>
-    <button class="drawer-close" id="closeFahrdaten" aria-label="Schließen">✕</button>
-  </div>
-  <div class="drawer-body" id="fahrdatenBody"></div>
+<section class="card" id="historyCard" style="margin-top:14px">
+<div class="card-head">
+<h2>📚 Tour‑Historie</h2>
+<p class="muted">Wird automatisch gespeichert, sobald du auf „Starten“ drückst.</p>
 </div>
-
+<div class="history-controls">
+<div class="field">
+<label for="hFrom">Von</label>
+<input id="hFrom" type="date"/>
+</div>
+<div class="field">
+<label for="hTo">Bis</label>
+<input id="hTo" type="date"/>
+</div>
+<div class="history-actions">
+<button class="btn" id="btnRangeToday">Heute</button>
+<button class="btn" id="btnRangeWeek">Woche</button>
+<button class="btn" id="btnRangeMonth">Monat</button>
+<button class="btn" id="btnExportCsv">CSV export</button>
+<button class="btn" id="btnPrintHistory">Drucken</button>
+<button class="btn danger" id="btnClearHistory" title="Löscht nur die Historie auf diesem Gerät">Historie löschen</button>
+</div>
+</div>
+<div class="history-summary">
+<div><b>Gefahrene Kilometer:</b> <span id="hKm">—</span></div>
+<div><b>Gespeicherte Touren:</b> <span id="hTours">0</span></div>
+</div>
+<div class="history-list" id="historyList"></div>
+</section>
+<!-- Fahrdaten Drawer -->
+<div aria-hidden="true" class="drawer" id="fahrdatenDrawer">
+<div class="drawer-head">
+<h2>📊 Fahrdaten</h2>
+<button aria-label="Schließen" class="drawer-close" id="closeFahrdaten">✕</button>
+</div>
+<div class="drawer-body" id="fahrdatenBody"></div>
+</div>
 <!-- Intro Video Overlay -->
-<div id="introOverlay" class="intro-overlay">
-  <div class="intro-content">
-    <button class="intro-close" onclick="closeIntro()">✕</button>
-    <video id="introVideo" controls autoplay muted playsinline>
-      <source src="assets/intro.mp4" type="video/mp4">
-    </video>
-  </div>
+<div class="intro-overlay" id="introOverlay">
+<div class="intro-content">
+<button class="intro-close" onclick="closeIntro()">✕</button>
+<video autoplay="" controls="" id="introVideo" muted="" playsinline="">
+<source src="assets/intro.mp4" type="video/mp4"/>
+</video>
+</div>
 </div>
