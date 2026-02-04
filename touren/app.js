@@ -1257,7 +1257,7 @@ async function initAfterLogin(acc){
       if(acc.excelB64){
         await importExcelArrayBuffer(base64ToArrayBuffer(acc.excelB64), {silent:true});
       } else if(acc.excelUrl){
-        const res = await fetch(acc.excelUrl);
+        const res = await fetch(acc.excelUrl, { cache: "no-store" });
         if(res.ok){
           const buf = await res.arrayBuffer();
           await importExcelArrayBuffer(buf, {silent:true});
