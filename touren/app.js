@@ -193,6 +193,26 @@ function encodeAttr(s){ return String(s??"").replace(/[&<>"\']/g,c=>({"&":"&amp;
 function formatKm(km){ return Number.isFinite(km)?km.toFixed(1).replace(".", ","):"—"; }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
+
+
+// Read a File as base64 (without the data: prefix) – used for optional Excel import in admin account creation
+function readFileAsBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if(typeof result === "string"){
+        const comma = result.indexOf(",");
+        resolve(comma >= 0 ? result.slice(comma + 1) : result);
+      } else {
+        reject(new Error("Unerwartetes FileReader-Ergebnis."));
+      }
+    };
+    reader.onerror = () => reject(reader.error || new Error("Datei konnte nicht gelesen werden."));
+    reader.readAsDataURL(file);
+  });
+}
+
 let markets = [];
 let routeIds = [];
 let myPos = null; // {lat,lng}
