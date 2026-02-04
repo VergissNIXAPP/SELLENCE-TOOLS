@@ -207,7 +207,7 @@ async function adminRefreshAccountList(){
   el.innerHTML = rows
     .sort((a,b)=>String(a.username||"").localeCompare(String(b.username||""), "de"))
     .map(a=>{
-      const u = escapeHtml(a.username||"");
+      const u = escapeHTML(a.username||"");
       const when = a.createdAt ? new Date(a.createdAt).toLocaleString("de-DE") : "";
       const tag = a.hasExcel ? " · Excel ✔" : "";
       return `<div>• <b>${u}</b><span class="muted tiny">${when ? " · "+when : ""}${tag}</span></div>`;
@@ -238,6 +238,18 @@ function escapeHTML(s){ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;"
 function encodeAttr(s){ return String(s??"").replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c])); }
 function formatKm(km){ return Number.isFinite(km)?km.toFixed(1).replace(".", ","):"—"; }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+// Convert base64 (without data: prefix) to ArrayBuffer.
+// Required for auto-importing Excel stored as excelB64 in the user profile.
+function base64ToArrayBuffer(base64){
+  const b64 = String(base64 || "").trim();
+  if(!b64) return new ArrayBuffer(0);
+  const bin = atob(b64);
+  const len = bin.length;
+  const bytes = new Uint8Array(len);
+  for(let i=0;i<len;i++) bytes[i] = bin.charCodeAt(i);
+  return bytes.buffer;
+}
 
 
 
