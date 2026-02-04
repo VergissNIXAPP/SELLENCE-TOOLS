@@ -6,7 +6,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAxfkIEytsL5KJen6IrxLZD57uRzU6v-5s",
@@ -26,9 +26,11 @@ const $ = (id)=>document.getElementById(id);
 
 // Session keeps last username for convenience (NOT credentials)
 const SESSION_KEY  = "sellence_tour_session_v1";
+const LOCAL_ACCOUNTS_KEY = "sellence_tour_local_accounts_v1";
 
 let currentUser = null;
-let currentProfile = null; // { username, excelUrl, role, excelB64? }
+let currentProfile = null;
+let currentUid = null; // { username, excelUrl, role, excelB64? }
 
 function storeKey(name){
   const u = (currentUser || "default").toLowerCase();
@@ -60,6 +62,7 @@ function showAdminMode(on){
   const p = document.getElementById("adminPanel");
   if(!p) return;
   p.style.display = on ? "block" : "none";
+  if(on) adminRefreshAccountList();
 }
 
 function usernameToEmail(username){
@@ -93,6 +96,7 @@ async function loginOrBootstrap(username, passcode){
   try{
     const cred = await signInWithEmailAndPassword(auth, email, password);
     const uid = cred.user.uid;
+    currentUid = uid;
 
     const baseProfile = {
       username: u,
@@ -113,6 +117,8 @@ async function loginOrBootstrap(username, passcode){
       try{
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const uid = cred.user.uid;
+
+        currentUid = uid;
 
         const baseProfile = {
           username: u,
@@ -166,6 +172,9 @@ async function adminCreateAccount(username, passcode, opts={}){
 
     await setDoc(doc(db, "users", uid), payload, { merge: true });
 
+    // Local overview (Admin) – damit du die erstellten Accounts wieder siehst
+    addLocalAccountIndex(u, !!excelB64 || u.toLowerCase()==="franco");
+
     await signOut(auth);
     return true;
   }catch(err){
@@ -177,6 +186,43 @@ async function adminCreateAccount(username, passcode, opts={}){
       throw new Error("Passcode zu schwach (mind. 6 Zeichen).");
     }
     throw new Error("Account erstellen fehlgeschlagen (Firebase).");
+  }
+}
+
+
+
+async function adminRefreshAccountList(){
+  const el = document.getElementById("adminAccountList");
+  if(!el) return;
+
+  // Always show local list (works even ohne Firestore-Rechte)
+  const local = load(LOCAL_ACCOUNTS_KEY, []);
+  const rows = Array.isArray(local) ? local : [];
+
+  if(!rows.length){
+    el.innerHTML = "<span class='muted tiny'>Noch keine Accounts angelegt.</span>";
+    return;
+  }
+
+  el.innerHTML = rows
+    .sort((a,b)=>String(a.username||"").localeCompare(String(b.username||""), "de"))
+    .map(a=>{
+      const u = escapeHtml(a.username||"");
+      const when = a.createdAt ? new Date(a.createdAt).toLocaleString("de-DE") : "";
+      const tag = a.hasExcel ? " · Excel ✔" : "";
+      return `<div>• <b>${u}</b><span class="muted tiny">${when ? " · "+when : ""}${tag}</span></div>`;
+    }).join("");
+}
+
+function addLocalAccountIndex(username, hasExcel){
+  const list = load(LOCAL_ACCOUNTS_KEY, []);
+  const arr = Array.isArray(list) ? list : [];
+  const u = String(username||"").trim();
+  if(!u) return;
+  const exists = arr.some(x=>String(x.username||"").toLowerCase()===u.toLowerCase());
+  if(!exists){
+    arr.push({ username: u, createdAt: new Date().toISOString(), hasExcel: !!hasExcel });
+    save(LOCAL_ACCOUNTS_KEY, arr);
   }
 }
 
@@ -229,7 +275,51 @@ function saveUserData(){
   save(STORE.route(), routeIds);
   save(STORE.myPos(), myPos);
   save(STORE.lastLinks(), lastLinks);
+  scheduleCloudPush();
 }
+
+// ---------- Cloud Sync (optional): keep markets/routes across devices ----------
+let cloudPushTimer = null;
+
+async function cloudPullIfEmpty(){
+  try{
+    if(!currentUid) return false;
+    if(markets && markets.length) return false;
+
+    const snap = await getDoc(doc(db, "users", currentUid));
+    if(!snap.exists()) return false;
+    const d = snap.data() || {};
+
+    if(Array.isArray(d.markets) && d.markets.length){
+      markets = d.markets;
+      routeIds = Array.isArray(d.routeIds) ? d.routeIds : [];
+      myPos = d.myPos || null;
+      lastLinks = Array.isArray(d.lastLinks) ? d.lastLinks : [];
+      saveUserData(); // persist locally
+      return true;
+    }
+    return false;
+  }catch(e){
+    return false;
+  }
+}
+
+function scheduleCloudPush(){
+  if(!currentUid) return;
+  if(cloudPushTimer) clearTimeout(cloudPushTimer);
+  cloudPushTimer = setTimeout(async ()=>{
+    try{
+      await setDoc(doc(db, "users", currentUid), {
+        markets,
+        routeIds,
+        myPos,
+        lastLinks,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+    }catch(e){}
+  }, 800);
+}
+
 
 function setStartEnabled(on){
   const b = document.getElementById("btnStartMaps");
@@ -682,10 +772,9 @@ async function importExcelArrayBuffer(data, {silent=false}={}){
     return {added:0, updated:0, total: markets.length};
   }
   const res = mergeMarkets(imported);
-  save(STORE.markets(), markets);
   // invalidate previous links, keep route
   lastLinks = [];
-  save(STORE.lastLinks(), lastLinks);
+  saveUserData();
 
   $("marketCount").textContent = String(markets.length);
   initMap();
@@ -1139,6 +1228,8 @@ if(__btnReset){
 // ---------- init ----------
 async function initAfterLogin(acc){
   loadUserData();
+  // 1) If this device has nothing yet, try pulling from cloud (so Franco zuhause direkt alles hat)
+  await cloudPullIfEmpty();
 
   // Update counts + UI
   $("marketCount").textContent = String(markets.length);
@@ -1148,7 +1239,7 @@ async function initAfterLogin(acc){
   renderMarkers();
   fitAll();
 
-  // Auto-load Excel for this account (once) if configured and no markets yet
+  // 2) If still empty: Auto-load Excel for this account (once)
   try{
     if((!markets || !markets.length) && acc){
       if(acc.excelB64){
@@ -1161,9 +1252,12 @@ async function initAfterLogin(acc){
         }
       }
     }
-  } catch(e){
+    } catch(e){
     console.warn("Auto-Import failed", e);
   }
+
+  // Persist after auto-import so it is available on all devices
+  if(markets && markets.length) saveUserData();
 
   $("marketCount").textContent = String(markets.length);
   initMap();
@@ -1258,6 +1352,7 @@ function boot(){
       }
 
       await adminCreateAccount(username, pass, { excelB64, excelName });
+      adminRefreshAccountList();
 
       const nu=document.getElementById("newUser"); if(nu) nu.value="";
       const np=document.getElementById("newPass"); if(np) np.value="";

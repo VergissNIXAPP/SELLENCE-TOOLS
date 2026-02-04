@@ -1,4 +1,4 @@
-const CACHE="sellence-tourenplaner-sap-osrm-v2";
+const CACHE="sellence-tourenplaner-sap-osrm-v1";
 const ASSETS=["./","./index.html","./styles.css","./app.js","./manifest.json","./sw.js","./icons/icon-192.png","./icons/icon-512.png","./data/franco_kundenliste_2026.xlsx"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.map(k=>k!==CACHE?caches.delete(k):null))).then(()=>self.clients.claim())));
