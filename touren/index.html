@@ -196,7 +196,7 @@ Mit <b>„✅ Angekommen“</b> wird der Markt aus der Liste entfernt und der n�
 <!-- Defer scripts so DOM (incl. modal) exists before app.js wires event listeners -->
 <script defer="" src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script crossorigin="" defer="" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script defer="" src="./app.js"></script>
+<script type="module" src="./app.js"></script>
 <!-- Modal: Markt hinzufügen -->
 <div aria-hidden="true" aria-modal="true" class="modal" id="addMarketModal" role="dialog">
 <div class="modalCard" role="document">
@@ -286,12 +286,4 @@ Mit <b>„✅ Angekommen“</b> wird der Markt aus der Liste entfernt und der n�
 </div>
 <div class="drawer-body" id="fahrdatenBody"></div>
 </div>
-<!-- Intro Video Overlay -->
-<div class="intro-overlay" id="introOverlay">
-<div class="intro-content">
-<button class="intro-close" onclick="closeIntro()">✕</button>
-<video autoplay="" controls="" id="introVideo" muted="" playsinline="">
-<source src="assets/intro.mp4" type="video/mp4"/>
-</video>
-</div>
-</div>
+<!-- Intro removed -->
