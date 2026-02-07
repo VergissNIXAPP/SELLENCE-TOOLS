@@ -1,36 +1,25 @@
 /* SELLENCE-TOURENPLANER (SAP) – OSRM v1 (kostenlos) */
-
-// ---------- Accounts & Storage (Firebase Auth + Firestore) ----------
-// NOTE: Accounts are stored online via Firebase Authentication.
-// LocalStorage is only used for per-user app data (routes/markets), not for account creation.
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAxfkIEytsL5KJen6IrxLZD57uRzU6v-5s",
-  authDomain: "sellence-tourenplaner.firebaseapp.com",
-  projectId: "sellence-tourenplaner",
-  storageBucket: "sellence-tourenplaner.firebasestorage.app",
-  messagingSenderId: "470352193194",
-  appId: "1:470352193194:web:9eb12ce95ba23400f092d3",
-  measurementId: "G-CMEDLN4FF4"
-};
-
-const fbApp = initializeApp(firebaseConfig);
-const auth = getAuth(fbApp);
-const db   = getFirestore(fbApp);
-
 const $ = (id)=>document.getElementById(id);
 
-// Session keeps last username for convenience (NOT credentials)
+// ---------- Accounts & Storage ----------
+const ACCOUNTS_KEY = "sellence_tour_accounts_v1";
 const SESSION_KEY  = "sellence_tour_session_v1";
-const LOCAL_ACCOUNTS_KEY = "sellence_tour_local_accounts_v1";
+
+const EMBEDDED_ACCOUNTS = [
+  { username: "Andre", excelUrl: "assets/excel/Andre.xlsx" },
+  { username: "Dennis", excelUrl: "assets/excel/Dennis.xlsx" },
+  { username: "Franco", excelUrl: "assets/excel/Franco.xlsx" },
+  { username: "Hannes", excelUrl: "assets/excel/Hannes.xlsx" },
+  { username: "Heiko", excelUrl: "assets/excel/Heiko.xlsx" },
+  { username: "Katja", excelUrl: "assets/excel/Katja.xlsx" },
+  { username: "Kosta", excelUrl: "assets/excel/Kosta.xlsx" },
+  { username: "Magarita", excelUrl: "assets/excel/Magarita.xlsx" },
+  { username: "Marco", excelUrl: "assets/excel/Marco.xlsx" },
+  { username: "Sabrina", excelUrl: "assets/excel/Sabrina.xlsx" },
+  { username: "franco_kundenliste_2026", excelUrl: "assets/excel/franco_kundenliste_2026.xlsx" },
+];
 
 let currentUser = null;
-let currentProfile = null;
-let currentUid = null; // { username, excelUrl, role, excelB64? }
 
 function storeKey(name){
   const u = (currentUser || "default").toLowerCase();
@@ -45,10 +34,79 @@ const STORE = {
   flags: (flag)=>storeKey("flag_"+flag),
 };
 
+function loadAccounts(){
+  // Accounts are hard-coded from /data (one Excel per colleague)
+  return EMBEDDED_ACCOUNTS;
+}
+function saveAccounts(arr){
+  save(ACCOUNTS_KEY, arr);
+}
+async function sha256(str){
+  const enc = new TextEncoder().encode(String(str));
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function getAccount(username){
+  const u = String(username||"").trim();
+  if(!u) return null;
+  return loadAccounts().find(a => String(a.username||"").toLowerCase() === u.toLowerCase()) || null;
+}
+function upsertAccount(acc){
+  const arr = loadAccounts();
+  const i = arr.findIndex(a => String(a.username||"").toLowerCase() === String(acc.username||"").toLowerCase());
+  if(i>=0) arr[i] = {...arr[i], ...acc};
+  else arr.push(acc);
+  saveAccounts(arr);
+  return arr;
+}
+function deleteAccount(username){
+  const u = String(username||"").trim();
+  if(!u) return;
+  // Remove from accounts registry
+  let arr = loadAccounts();
+  arr = arr.filter(a => String(a.username||"").toLowerCase() !== u.toLowerCase());
+  saveAccounts(arr);
+
+  // Remove all user-scoped storage
+  const suffix = "__" + u.toLowerCase();
+  try{
+    for(let i = localStorage.length - 1; i >= 0; i--){
+      const k = localStorage.key(i);
+      if(!k) continue;
+      if(k.startsWith("sellence_tour_") && k.endsWith(suffix)){
+        localStorage.removeItem(k);
+      }
+    }
+  }catch(e){ /* ignore */ }
+
+  // If the deleted user was currently active, end session
+  try{
+    const sess = load(SESSION_KEY, null);
+    if(sess && String(sess.user||"").toLowerCase() === u.toLowerCase()){
+      localStorage.removeItem(SESSION_KEY);
+    }
+  }catch(e){ /* ignore */ }
+}
+
+function ensureEmbeddedAccounts(){
+  // no-op: accounts are embedded in code
+}
+
+
 function showLoginOverlay(show=true){
   const o = document.getElementById("loginOverlay");
   if(!o) return;
   o.style.display = show ? "flex" : "none";
+}
+function fillUserSelect(){
+  const sel = document.getElementById("loginUser");
+  if(!sel) return;
+  const arr = loadAccounts().slice().sort((a,b)=>String(a.username||"").localeCompare(String(b.username||"")));
+  sel.innerHTML = arr.map(a=>`<option value="${escapeHTML(String(a.username||""))}">${escapeHTML(String(a.username||""))}</option>`).join("") || `<option value="">(keine Accounts)</option>`;
+  const last = load(SESSION_KEY, null);
+  if(last?.username){
+    sel.value = last.username;
+  }
 }
 function setLoginStatus(msg){
   const el = document.getElementById("loginStatus");
@@ -62,170 +120,231 @@ function showAdminMode(on){
   const p = document.getElementById("adminPanel");
   if(!p) return;
   p.style.display = on ? "block" : "none";
-  if(on) adminRefreshAccountList();
 }
-
-function usernameToEmail(username){
-  const u = String(username||"").trim().toLowerCase();
-  return `${u}@sellence.local`;
-}
-
-async function ensureUserDoc(uid, data){
-  try{
-    const ref = doc(db, "users", uid);
-    const snap = await getDoc(ref);
-    if(!snap.exists()){
-      await setDoc(ref, data, { merge: true });
-      return data;
-    }
-    return { ...data, ...(snap.data()||{}) };
-  }catch(e){
-    return data;
-  }
-}
-
-async function loginOrBootstrap(username, passcode){
-  const u = String(username||"").trim();
-  if(!u) throw new Error("Bitte Passcode eingeben.");
-  const email = usernameToEmail(u);
-
-  // Passcode-only screen -> same string for username & password
-  const password = String(passcode||"").trim();
-  if(!password) throw new Error("Bitte Passcode eingeben.");
-
-  try{
-    const cred = await signInWithEmailAndPassword(auth, email, password);
-    const uid = cred.user.uid;
-    currentUid = uid;
-
-    const baseProfile = {
-      username: u,
-      email,
-      role: (u.toLowerCase()==="franco") ? "franco" : "user",
-      excelUrl: (u.toLowerCase()==="franco") ? "./data/franco_kundenliste_2026.xlsx" : "",
-      updatedAt: new Date().toISOString()
-    };
-    currentProfile = await ensureUserDoc(uid, baseProfile);
-    currentUser = currentProfile.username || u;
-
-    save(SESSION_KEY, {username: currentUser, at: new Date().toISOString()});
-    return currentProfile;
-
-  }catch(err){
-    const code = err?.code || "";
-    if(code.includes("user-not-found") || code.includes("invalid-credential")){
-      try{
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const uid = cred.user.uid;
-
-        currentUid = uid;
-
-        const baseProfile = {
-          username: u,
-          email,
-          role: (u.toLowerCase()==="franco") ? "franco" : "user",
-          excelUrl: (u.toLowerCase()==="franco") ? "./data/franco_kundenliste_2026.xlsx" : "",
-          createdAt: new Date().toISOString()
-        };
-        currentProfile = await ensureUserDoc(uid, baseProfile);
-        currentUser = currentProfile.username || u;
-
-        save(SESSION_KEY, {username: currentUser, at: new Date().toISOString()});
-        return currentProfile;
-      }catch(e2){
-        throw new Error("Passcode falsch oder Account existiert nicht.");
-      }
-    }
-    if(code.includes("too-many-requests")){
-      throw new Error("Zu viele Versuche. Bitte kurz warten und erneut versuchen.");
-    }
-    throw new Error("Login fehlgeschlagen. Firebase prüfen (Auth/Firestore).");
-  }
-}
-
-async function adminCreateAccount(username, passcode, opts={}){
-  const u = String(username||"").trim();
-  const p = String(passcode||"").trim();
-  if(!u) throw new Error("Bitte Benutzername eingeben.");
-  if(!p) throw new Error("Bitte Passcode eingeben.");
-
-  const email = usernameToEmail(u);
-  const excelB64 = String(opts?.excelB64||"");
-  const excelName = String(opts?.excelName||"");
-
-  try{
-    const cred = await createUserWithEmailAndPassword(auth, email, p);
-    const uid = cred.user.uid;
-
-    const payload = {
-      username: u,
-      email,
-      role: (u.toLowerCase()==="franco") ? "franco" : "user",
-      excelUrl: (u.toLowerCase()==="franco") ? "./data/franco_kundenliste_2026.xlsx" : "",
-      createdAt: new Date().toISOString()
-    };
-
-    if(excelB64){
-      payload.excelB64 = excelB64;
-      payload.excelName = excelName || "liste.xlsx";
-    }
-
-    await setDoc(doc(db, "users", uid), payload, { merge: true });
-
-    // Local overview (Admin) – damit du die erstellten Accounts wieder siehst
-    addLocalAccountIndex(u, !!excelB64 || u.toLowerCase()==="franco");
-
-    await signOut(auth);
-    return true;
-  }catch(err){
-    const code = err?.code || "";
-    if(code.includes("email-already-in-use")){
-      throw new Error("Account existiert bereits.");
-    }
-    if(code.includes("weak-password")){
-      throw new Error("Passcode zu schwach (mind. 6 Zeichen).");
-    }
-    throw new Error("Account erstellen fehlgeschlagen (Firebase).");
-  }
-}
-
-
-
-async function adminRefreshAccountList(){
+function refreshAdminAccountList(){
   const el = document.getElementById("adminAccountList");
   if(!el) return;
-
-  // Always show local list (works even ohne Firestore-Rechte)
-  const local = load(LOCAL_ACCOUNTS_KEY, []);
-  const rows = Array.isArray(local) ? local : [];
-
-  if(!rows.length){
-    el.innerHTML = "<span class='muted tiny'>Noch keine Accounts angelegt.</span>";
+  const arr = loadAccounts().slice().sort((a,b)=>String(a.username||"").localeCompare(String(b.username||"")));
+  if(!arr.length){
+    el.innerHTML = "<i>Keine Accounts</i>";
     return;
   }
-
-  el.innerHTML = rows
-    .sort((a,b)=>String(a.username||"").localeCompare(String(b.username||""), "de"))
-    .map(a=>{
-      const u = escapeHTML(a.username||"");
-      const when = a.createdAt ? new Date(a.createdAt).toLocaleString("de-DE") : "";
-      const tag = a.hasExcel ? " · Excel ✔" : "";
-      return `<div>• <b>${u}</b><span class="muted tiny">${when ? " · "+when : ""}${tag}</span></div>`;
-    }).join("");
+  const items = arr.map(a=>{
+    const uRaw = String(a.username||"");
+    const u = escapeHTML(uRaw);
+    const hasExcel = (a.excelB64||a.excelUrl) ? "✓" : "–";
+    const locked = (uRaw||"").toLowerCase()==="franco" ? "" : "";
+    return `<div class="adminAccRow" style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <span style="font-weight:700">${u}</span>
+        <span style="opacity:.7;font-size:12px">Excel: ${hasExcel}</span>
+      </div>
+      <button class="btn btn--ghost btnDelAcc" data-user="${encodeAttr(uRaw)}" title="Account löschen" style="padding:8px 10px;min-width:auto">🗑️</button>
+    </div>`;
+  }).join("");
+  el.innerHTML = items;
 }
 
-function addLocalAccountIndex(username, hasExcel){
-  const list = load(LOCAL_ACCOUNTS_KEY, []);
-  const arr = Array.isArray(list) ? list : [];
-  const u = String(username||"").trim();
-  if(!u) return;
-  const exists = arr.some(x=>String(x.username||"").toLowerCase()===u.toLowerCase());
-  if(!exists){
-    arr.push({ username: u, createdAt: new Date().toISOString(), hasExcel: !!hasExcel });
-    save(LOCAL_ACCOUNTS_KEY, arr);
+async function loginByPasscode(code){
+  const arr = loadAccounts();
+  const c = String(code||"").trim();
+  if(!c) throw new Error("Bitte Namen eingeben.");
+  const byUser = arr.find(a=>String(a.username||"").toLowerCase()===c.toLowerCase());
+  if(!byUser) throw new Error("Account nicht gefunden. Tipp: Name komplett klein schreiben.");
+  currentUser = String(byUser.username);
+  save(SESSION_KEY, {username: currentUser, at: new Date().toISOString()});
+  return byUser;
+}
+
+async function loginWith(username, password){
+  const acc = getAccount(username);
+  if(!acc) throw new Error("Account nicht gefunden.");
+  const hash = await sha256(password);
+  if(String(acc.passHash||"") !== String(hash)) throw new Error("Passwort falsch.");
+  currentUser = String(acc.username);
+  save(SESSION_KEY, {username: currentUser, at: new Date().toISOString()});
+  return acc;
+}
+
+async function readFileAsBase64(file){
+  const buf = await file.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let bin = "";
+  const chunk = 0x8000;
+  for(let i=0;i<bytes.length;i+=chunk){
+    bin += String.fromCharCode.apply(null, bytes.subarray(i,i+chunk));
   }
+  return btoa(bin);
+}
+function base64ToArrayBuffer(b64){
+  const bin = atob(String(b64||""));
+  const len = bin.length;
+  const bytes = new Uint8Array(len);
+  for(let i=0;i<len;i++) bytes[i]=bin.charCodeAt(i);
+  return bytes.buffer;
 }
 
+// Keep the rest of the app the same – but per-account keys.
+
+
+const OSRM_BASE = "https://router.project-osrm.org";
+const NOMINATIM = "https://nominatim.openstreetmap.org/search";
+
+// Märkte, die im Tourenplaner ignoriert werden sollen
+// (Case-insensitive, Treffer per "includes")
+const IGNORE_MARKETS = [
+  "rossmann",
+  "aldi",
+  "lidl",
+  "netto",
+  "penny",
+];
+
+
+// Hamburger menu
+(function(){
+  const btn = document.getElementById("menuBtn");
+  const panel = document.getElementById("menuPanel");
+  if(!btn || !panel) return;
+  const close = ()=>{ panel.classList.remove("open"); panel.setAttribute("aria-hidden","true"); };
+  const toggle = ()=>{
+    const open = panel.classList.toggle("open");
+    panel.setAttribute("aria-hidden", open ? "false" : "true");
+  };
+  btn.addEventListener("click", (e)=>{ e.stopPropagation(); toggle(); });
+  panel.addEventListener("click",(e)=>{ e.stopPropagation(); });
+  document.addEventListener("click", close);
+  document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") close(); });
+})();
+
+
+// Share (AirDrop / iOS Share Sheet via Web Share API)
+(function(){
+  const btn = document.getElementById("shareBtn");
+  if(!btn) return;
+
+  function buildShareText(){
+    const ordered = routeIds
+      .map(id=>markets.find(m=>m.id===id))
+      .filter(Boolean);
+
+    if(!ordered.length) return "Noch keine Route geplant.";
+    return ordered.map((m,i)=>{
+      const addr = marketAddr(m);
+      const sap = m.sap ? ` (SAP ${m.sap})` : "";
+      return `${i+1}. ${m.name}${sap}${addr?` – ${addr}`:""}`;
+    }).join("\n");
+  }
+
+  function buildShareFile(){
+    const ordered = routeIds
+      .map(id=>markets.find(m=>m.id===id))
+      .filter(Boolean)
+      .map(m=>({
+        id: m.id,
+        name: m.name,
+        sap: m.sap || "",
+        anschrift: m.anschrift || "",
+        plz: m.plz || "",
+        ort: m.ort || "",
+        lat: m.lat ?? null,
+        lng: m.lng ?? null,
+      }));
+
+    const payload = {
+      app: "SELLENCE-TOURENPLANER",
+      createdAt: new Date().toISOString(),
+      route: ordered
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+    return new File([blob], "sellence-tourenplan.json", {type:"application/json"});
+  }
+
+  async function copy(text){
+    try{
+      await navigator.clipboard.writeText(text);
+      alert("Link kopiert ✅");
+    }catch(e){
+      prompt("Kopieren:", text);
+    }
+  }
+
+  btn.addEventListener("click", async ()=>{
+    const url = location.href;
+    const title = "SELLENCE Tourenplaner – Route";
+    const text = buildShareText();
+
+    // Prefer sharing a small JSON export too (works great with AirDrop into Files/Notes/WhatsApp)
+    const file = buildShareFile();
+    const payloadWithFile = { title, text, url, files:[file] };
+    const payloadNoFile = { title, text, url };
+
+    if(navigator.share){
+      try{
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          await navigator.share(payloadWithFile);
+        }else{
+          await navigator.share(payloadNoFile);
+        }
+      }catch(err){
+        // user canceled or share failed – silently ignore
+        console.warn(err);
+      }
+      return;
+    }
+
+    // Fallback: copy link
+    await copy(url);
+  });
+})();
+
+
+// Add-market modal helpers
+function setAddMarketStatus(msg=""){
+  const el = document.getElementById("addMarketStatus");
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.toggle("show", !!msg);
+}
+function openAddMarketModal(){
+  const modal = document.getElementById("addMarketModal");
+  if(!modal) return;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden","false");
+  setAddMarketStatus("");
+  (document.getElementById("amName"))?.focus();
+}
+function closeAddMarketModal(){
+  const modal = document.getElementById("addMarketModal");
+  if(!modal) return;
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden","true");
+  setAddMarketStatus("");
+}
+
+// Wire modal UI
+(function(){
+  const btnOpen = document.getElementById("btnAddMarket");
+  const modal = document.getElementById("addMarketModal");
+  if(btnOpen && modal){
+    btnOpen.addEventListener("click", ()=>{
+      // close hamburger menu if open
+      document.getElementById("menuPanel")?.classList.remove("open");
+      document.getElementById("menuPanel")?.setAttribute("aria-hidden","true");
+      // reset fields
+      (document.getElementById("amName")).value = "";
+      (document.getElementById("amAddr")).value = "";
+      (document.getElementById("amSap")).value = "";
+      openAddMarketModal();
+    });
+  }
+
+  document.getElementById("btnAddMarketClose")?.addEventListener("click", closeAddMarketModal);
+  document.getElementById("btnAddMarketCancel")?.addEventListener("click", closeAddMarketModal);
+  modal?.addEventListener("click", (e)=>{ if(e.target === modal) closeAddMarketModal(); });
+  document.addEventListener("keydown", (e)=>{ if(e.key === "Escape") closeAddMarketModal(); });
+})();
 
 function load(key, fallback){
   try{ const raw=localStorage.getItem(key); return raw?JSON.parse(raw):fallback; }catch{return fallback;}
@@ -238,38 +357,6 @@ function escapeHTML(s){ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;"
 function encodeAttr(s){ return String(s??"").replace(/[&<>"\']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#39;"}[c])); }
 function formatKm(km){ return Number.isFinite(km)?km.toFixed(1).replace(".", ","):"—"; }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-// Convert base64 (without data: prefix) to ArrayBuffer.
-// Required for auto-importing Excel stored as excelB64 in the user profile.
-function base64ToArrayBuffer(base64){
-  const b64 = String(base64 || "").trim();
-  if(!b64) return new ArrayBuffer(0);
-  const bin = atob(b64);
-  const len = bin.length;
-  const bytes = new Uint8Array(len);
-  for(let i=0;i<len;i++) bytes[i] = bin.charCodeAt(i);
-  return bytes.buffer;
-}
-
-
-
-// Read a File as base64 (without the data: prefix) – used for optional Excel import in admin account creation
-function readFileAsBase64(file){
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if(typeof result === "string"){
-        const comma = result.indexOf(",");
-        resolve(comma >= 0 ? result.slice(comma + 1) : result);
-      } else {
-        reject(new Error("Unerwartetes FileReader-Ergebnis."));
-      }
-    };
-    reader.onerror = () => reject(reader.error || new Error("Datei konnte nicht gelesen werden."));
-    reader.readAsDataURL(file);
-  });
-}
 
 let markets = [];
 let routeIds = [];
@@ -287,51 +374,7 @@ function saveUserData(){
   save(STORE.route(), routeIds);
   save(STORE.myPos(), myPos);
   save(STORE.lastLinks(), lastLinks);
-  scheduleCloudPush();
 }
-
-// ---------- Cloud Sync (optional): keep markets/routes across devices ----------
-let cloudPushTimer = null;
-
-async function cloudPullIfEmpty(){
-  try{
-    if(!currentUid) return false;
-    if(markets && markets.length) return false;
-
-    const snap = await getDoc(doc(db, "users", currentUid));
-    if(!snap.exists()) return false;
-    const d = snap.data() || {};
-
-    if(Array.isArray(d.markets) && d.markets.length){
-      markets = d.markets;
-      routeIds = Array.isArray(d.routeIds) ? d.routeIds : [];
-      myPos = d.myPos || null;
-      lastLinks = Array.isArray(d.lastLinks) ? d.lastLinks : [];
-      saveUserData(); // persist locally
-      return true;
-    }
-    return false;
-  }catch(e){
-    return false;
-  }
-}
-
-function scheduleCloudPush(){
-  if(!currentUid) return;
-  if(cloudPushTimer) clearTimeout(cloudPushTimer);
-  cloudPushTimer = setTimeout(async ()=>{
-    try{
-      await setDoc(doc(db, "users", currentUid), {
-        markets,
-        routeIds,
-        myPos,
-        lastLinks,
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
-    }catch(e){}
-  }, 800);
-}
-
 
 function setStartEnabled(on){
   const b = document.getElementById("btnStartMaps");
@@ -784,9 +827,10 @@ async function importExcelArrayBuffer(data, {silent=false}={}){
     return {added:0, updated:0, total: markets.length};
   }
   const res = mergeMarkets(imported);
+  save(STORE.markets(), markets);
   // invalidate previous links, keep route
   lastLinks = [];
-  saveUserData();
+  save(STORE.lastLinks(), lastLinks);
 
   $("marketCount").textContent = String(markets.length);
   initMap();
@@ -1240,8 +1284,6 @@ if(__btnReset){
 // ---------- init ----------
 async function initAfterLogin(acc){
   loadUserData();
-  // 1) If this device has nothing yet, try pulling from cloud (so Franco zuhause direkt alles hat)
-  await cloudPullIfEmpty();
 
   // Update counts + UI
   $("marketCount").textContent = String(markets.length);
@@ -1251,25 +1293,52 @@ async function initAfterLogin(acc){
   renderMarkers();
   fitAll();
 
-  // 2) If still empty: Auto-load Excel for this account (once)
+  // Auto-load Excel for this account (once) if configured and no markets yet
   try{
     if((!markets || !markets.length) && acc){
       if(acc.excelB64){
         await importExcelArrayBuffer(base64ToArrayBuffer(acc.excelB64), {silent:true});
       } else if(acc.excelUrl){
-        const res = await fetch(acc.excelUrl, { cache: "no-store" });
-        if(res.ok){
-          const buf = await res.arrayBuffer();
-          await importExcelArrayBuffer(buf, {silent:true});
+        // GitHub Pages + Offline: always fetch from packaged assets (no LocalStorage required)
+        const tryUrls = [];
+        try{
+          const u = String(acc.excelUrl);
+          // 1) as provided (relative to current page)
+          tryUrls.push(new URL(u, window.location.href).toString());
+          // 2) lowercase filename fallback (GitHub is case-sensitive)
+          const parts = u.split("/");
+          const file = parts.pop();
+          if(file){
+            parts.push(file.toLowerCase());
+            const lower = parts.join("/");
+            if(lower !== u) tryUrls.push(new URL(lower, window.location.href).toString());
+          }
+        } catch(e){
+          tryUrls.push(String(acc.excelUrl));
+        }
+
+        let loaded = false;
+        for(const url of tryUrls){
+          try{
+            const res = await fetch(url, {cache:"no-store"});
+            if(res.ok){
+              const buf = await res.arrayBuffer();
+              await importExcelArrayBuffer(buf, {silent:true});
+              loaded = true;
+              break;
+            }
+          } catch(e){ /* next */ }
+        }
+
+        if(!loaded){
+          throw new Error("Excel-Datei konnte nicht geladen werden.\nGeprüft: " + tryUrls.join(" | ") + "\n\nTipps:\n- Öffne die Seite über GitHub Pages (https://…), nicht als lokale Datei (file://).\n- Prüfe im Browser, ob /assets/excel/<DATEI>.xlsx erreichbar ist (kein 404).");
         }
       }
     }
-    } catch(e){
+  } catch(e){
     console.warn("Auto-Import failed", e);
+    try{ alert((e && e.message) ? e.message : "Auto-Import der Excel-Datei ist fehlgeschlagen."); }catch(_){ }
   }
-
-  // Persist after auto-import so it is available on all devices
-  if(markets && markets.length) saveUserData();
 
   $("marketCount").textContent = String(markets.length);
   initMap();
@@ -1291,16 +1360,17 @@ async function initAfterLogin(acc){
 }
 
 function boot(){
-    // Always start on login overlay
-  showLoginOverlay(true);
-  showAdminMode(false);
+  ensureEmbeddedAccounts();
 
-  // Menu action: switch account (back to passcode screen)
+  // Always start on login overlay
+  showLoginOverlay(true);
+
+  // Menu action: switch account (back to login screen)
   document.getElementById("btnAccount")?.addEventListener("click", ()=>{
     showLoginOverlay(true);
-    showAdminMode(false);
     const i = document.getElementById("loginCode");
     if(i){ i.value=""; i.focus(); }
+    setLoginStatus("");
   });
 
   // Clear passcode
@@ -1315,15 +1385,8 @@ function boot(){
     setLoginStatus("");
     try{
       const code = String(document.getElementById("loginCode")?.value || "").trim();
-      if(!code) throw new Error("Bitte Passcode eingeben.");
-      if(code === "admin"){
-        showAdminMode(true);
-        setLoginStatus("Admin-Modus ✓");
-                const u = document.getElementById("newUser");
-        if(u) u.focus();
-        return;
-      }
-      const acc = await loginOrBootstrap(code, code);
+      if(!code) throw new Error("Bitte Namen eingeben.");
+      const acc = await loginByPasscode(code);
       showLoginOverlay(false);
       const i = document.getElementById("loginCode");
       if(i) i.value = "";
@@ -1336,58 +1399,38 @@ function boot(){
   document.getElementById("loginCode")?.addEventListener("keydown",(e)=>{
     if(e.key==="Enter"){ e.preventDefault(); document.getElementById("btnLogin")?.click(); }
   });
-
-  // Admin: create account
-  document.getElementById("btnCreateAccount")?.addEventListener("click", async ()=>{
-    setLoginStatus("");
-    try{
-      if(!isAdminMode()) throw new Error("Nur im Admin-Modus möglich.");
-
-      const username = String(document.getElementById("newUser")?.value||"").trim();
-      const pass = String(document.getElementById("newPass")?.value||"").trim();
-      const file = document.getElementById("newExcel")?.files?.[0] || null;
-
-      if(!username || !pass) throw new Error("Bitte Nutzername + Passcode angeben.");
-      if(username.trim().toLowerCase() !== pass.trim().toLowerCase()){
-        throw new Error("Passcode muss gleich Nutzername sein (wegen Passcode-only Login).");
-      }
-
-      let excelB64 = "";
-      let excelName = "";
-      if(file){
-        // Firestore Document limit ~1 MiB. Keep it conservative.
-        if(file.size > 700 * 1024){
-          throw new Error("Excel ist zu groß für Online-Speicherung. Bitte ohne Excel anlegen oder Excel als URL im Code hinterlegen.");
-        }
-        excelB64 = await readFileAsBase64(file);
-        excelName = file.name;
-      }
-
-      await adminCreateAccount(username, pass, { excelB64, excelName });
-      adminRefreshAccountList();
-
-      const nu=document.getElementById("newUser"); if(nu) nu.value="";
-      const np=document.getElementById("newPass"); if(np) np.value="";
-      const ne=document.getElementById("newExcel"); if(ne) ne.value="";
-      setLoginStatus("Account online erstellt ✓");
-    } catch(err){
-      setLoginStatus(err?.message || "Account erstellen fehlgeschlagen.");
-    }
-  });
-
-// Admin: exit
-  document.getElementById("btnAdminExit")?.addEventListener("click", ()=>{
-    showAdminMode(false);
-    setLoginStatus("");
-    const i = document.getElementById("loginCode");
-    if(i){ i.value=""; i.focus(); }
-  });
 }
 
 document.addEventListener("DOMContentLoaded", boot);
 if("serviceWorker" in navigator){
   window.addEventListener("load", ()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 }
+
+document.addEventListener("DOMContentLoaded",()=>{
+ if(localStorage.getItem("introSeen")){
+  const o=document.getElementById("introOverlay");
+  if(o) o.style.display="none";
+ }
+});
+function closeIntro(){
+ localStorage.setItem("introSeen","true");
+ const o=document.getElementById("introOverlay");
+ const v=document.getElementById("introVideo");
+ if(v) v.pause();
+ if(o) o.style.display="none";
+}
+
+function closeIntro(){
+  localStorage.setItem("introSeen","true");
+  const o=document.getElementById("introOverlay");
+  const v=document.getElementById("introVideo");
+  if(v) v.pause();
+  if(o){
+    o.classList.add("fade-out");
+    setTimeout(()=>{ o.style.display="none"; },400);
+  }
+}
+
 
 // ---------- Tour Historie ----------
 function pad2(n){ return String(n).padStart(2,"0"); }
