@@ -591,39 +591,4 @@ input:focus, select:focus{
 }
 
 
-/* === SELLENCE HIGHLIGHT CENTER PATCH === */
-/* Zentriert das einzelne Highlight (Retouren Scanner) perfekt in der Mitte */
-.highlights{
-  display:flex !important;
-  justify-content:center !important;   /* horizontal */
-  align-items:center !important;       /* vertikal */
-  margin-top: 10px;
-  margin-bottom: 14px;
-}
-
-/* Falls nur 1 Highlight vorhanden ist: mittig halten & Größe wie "Hero" */
-.highlights > .tile--highlight{
-  margin-left:auto !important;
-  margin-right:auto !important;
-  width:auto !important;   /* gleiche Breite wie normale Tiles */
-  max-width:520px;         /* verhindert zu breites Stretching */
-}
-
-/* Optional: etwas mehr "Hero"-Gefühl durch Abstand zu den normalen Tiles */
-.tiles{
-  margin-top: 10px;
-}
-
-@media (max-width:520px){
-  .highlights{
-    margin-top: 6px;
-  }
-  .highlights > .tile--highlight{
-  margin-left:auto !important;
-  margin-right:auto !important;
-  width:auto !important;   /* gleiche Breite wie normale Tiles */
-  max-width:520px;         /* verhindert zu breites Stretching */
-}
-}
-/* === END SELLENCE HIGHLIGHT CENTER PATCH === */
 
