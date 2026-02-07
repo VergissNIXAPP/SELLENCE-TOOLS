@@ -617,6 +617,32 @@ function routePoints(){
   return routeIds.map(id=>markets.find(m=>m.id===id)).filter(Boolean);
 }
 
+function homePoint(){
+  if(!myPos || !isNum(myPos.lat) || !isNum(myPos.lng)) return null;
+  return { id:"__home", name:"Zuhause", lat:myPos.lat, lng:myPos.lng, __home:true };
+}
+
+/** Points used for Tour-Modus (optional: Rückkehr nach Hause am Ende) */
+function tourPoints(){
+  const pts = routePoints();
+  const chk = document.getElementById("chkReturn");
+  const includeReturn = !!(chk && chk.checked);
+  const home = includeReturn ? homePoint() : null;
+
+  // Default: nur die geplanten Stops
+  if(!home) return pts;
+
+  // Im Tour-Modus soll "Zuhause" erst NACH dem letzten Markt kommen
+  if(tourMode?.active){
+    if(pts.length===0) return [home];
+    return pts;
+  }
+
+  // Außerhalb des Tour-Modus: kein Zuhause in der Liste (nur Stops)
+  return pts;
+}
+
+
 function googleNavUrl(m){
   const dest = (isNum(m?.lat)&&isNum(m?.lng)) ? `${m.lat},${m.lng}` : marketAddr(m);
   const params = new URLSearchParams();
@@ -648,14 +674,14 @@ function setTourActive(on){
 }
 
 function clampTourIdx(){
-  const pts = routePoints();
+  const pts = tourPoints();
   if(!pts.length){ tourMode.idx = 0; return; }
   if(tourMode.idx < 0) tourMode.idx = 0;
   if(tourMode.idx > pts.length-1) tourMode.idx = pts.length-1;
 }
 
 function currentTourStop(){
-  const pts = routePoints();
+  const pts = tourPoints();
   if(!pts.length) return null;
   clampTourIdx();
   return pts[tourMode.idx] || null;
@@ -677,7 +703,7 @@ function renderTourNav(){
   if(!wrap) return;
   if(!tourMode.active){ wrap.hidden = true; return; }
 
-  const pts = routePoints();
+  const pts = tourPoints();
   if(!pts.length){
     wrap.hidden = false;
     document.getElementById("tourNavTitle").textContent = "Keine Stops";
@@ -690,8 +716,8 @@ function renderTourNav(){
   clampTourIdx();
   const m = pts[tourMode.idx];
   document.getElementById("tourNavTitle").textContent = `${tourMode.idx+1}. ${m.name || ""}`;
-  document.getElementById("tourNavSub").textContent = marketAddr(m);
-  document.getElementById("tourNavSap").textContent = String(m.sap || "SAP?");
+  document.getElementById("tourNavSub").textContent = m.__home ? "Start/Ende (Zuhause)" : marketAddr(m);
+  document.getElementById("tourNavSap").textContent = m.__home ? "—" : String(m.sap || "SAP?");
   document.getElementById("tourNavIdx").textContent = `${tourMode.idx+1}/${pts.length}`;
 
   // Buttons state
@@ -1227,21 +1253,44 @@ if(__btnStart){
     if(!tourMode.active) return;
     const cur = currentTourStop();
     if(!cur) return;
+
+    // Wenn Zuhause erreicht: Tour beenden (ohne routeIds zu verändern)
+    if(cur.__home){
+      setTourActive(false);
+      setStatus("🏁 Zuhause angekommen. Tour beendet.");
+      return;
+    }
+
     // remove current stop from route
     const removeId = cur.id;
     routeIds = routeIds.filter(x=>x!==removeId);
     save(STORE.route(), routeIds);
     clearRouteLine();
-    // keep index within range
+
+    // keep index within range + UI refresh
     clampTourIdx();
     renderRoute();
     renderTourNav();
     focusTourStop();
+
     setStatus(`✅ Angekommen: ${cur.name||"Stop"}`);
-    // if route empty => end tour mode
+
+    // Wenn keine Stops mehr übrig sind, aber Rückkehr aktiv ist: als letzten Punkt "Zuhause" anbieten
+    const chk = document.getElementById("chkReturn");
+    const includeReturn = !!(chk && chk.checked);
+    const home = includeReturn ? homePoint() : null;
+
     if(!routePoints().length){
-      setTourActive(false);
-      setStatus("Tour fertig. Keine Stops mehr.");
+      if(home){
+        // Zuhause als letzten Schritt (Tour bleibt aktiv)
+        tourMode.idx = 0;
+        renderTourNav();
+        focusTourStop();
+        setStatus("Letzter Schritt: 🏠 Zuhause");
+      } else {
+        setTourActive(false);
+        setStatus("Tour fertig. Keine Stops mehr.");
+      }
     }
   });
   if(g) g.addEventListener("click", ()=>{
@@ -1465,7 +1514,7 @@ function getLastPlannedKm(){
   return Number.isFinite(n) ? n : null;
 }
 function recordTourStart(){
-  const pts = routePoints();
+  const pts = tourPoints();
   if(!pts.length) return;
 
   const nowIso = new Date().toISOString();
