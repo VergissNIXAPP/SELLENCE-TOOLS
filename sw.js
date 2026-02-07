@@ -1,5 +1,5 @@
 /* SELLENCE Tools - Service Worker */
-const CACHE = "sellence-tools-v3";
+const CACHE = "sellence-tools-v4";
 
 /**
  * Core assets to pre-cache.
@@ -27,21 +27,24 @@ const CORE = [
   "./sellence-vw-helfer/assets/icon.svg",
 
   // Optional / placeholder (best effort)
-  "./assets/lager-icon.png",
-
   // OOS
   "./oos/index.html",
   "./oos/oos.html",
   "./oos/style.css",
   "./oos/icon-512.png",
 
-  // Retouren
-  "./retouren/index.html",
-  "./retouren/app.html",
-  "./retouren/manifest.webmanifest",
-  "./retouren/sw.js",
-  "./retouren/icon-192.png",
-  "./retouren/icon-512.png",
+  // Retouren Scanner
+  "./retouren-scanner/index.html",
+  "./retouren-scanner/app.html",
+  "./retouren-scanner/manifest.webmanifest",
+  "./retouren-scanner/manifest.json",
+  "./retouren-scanner/sw.js",
+  "./retouren-scanner/styles.css",
+  "./retouren-scanner/app.js",
+  "./retouren-scanner/icon-192.png",
+  "./retouren-scanner/icon-512.png",
+  "./retouren-scanner/assets/icon-192.png",
+  "./retouren-scanner/assets/icon-512.png",
 
   // Touren
   "./touren/index.html",

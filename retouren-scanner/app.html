@@ -1,0 +1,1828 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/>
+<meta content="#0A1022" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="SELLENCE RETOURENSCANNER" name="apple-mobile-web-app-title"/>
+<link href="icon-192.png" rel="apple-touch-icon"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<title>SELLENCE RETOURENSCANNER</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg1:#0A1022;
+    --bg2:#060812;
+    --card:rgba(255,255,255,.065);
+    --stroke:rgba(255,255,255,.12);
+    --text:rgba(255,255,255,.92);
+    --muted:rgba(255,255,255,.70);
+    --muted2:rgba(255,255,255,.55);
+    --ok:#2DD4BF;
+    --warn:#FBBF24;
+    --bad:#FB7185;
+    --brand1:#7C3AED;
+    --brand2:#22D3EE;
+    --shadow: 0 18px 60px rgba(0,0,0,.45);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 680px at 20% 0%, rgba(124,58,237,.28), transparent 60%),
+      radial-gradient(1000px 640px at 90% 10%, rgba(34,211,238,.22), transparent 55%),
+      linear-gradient(180deg,var(--bg1),var(--bg2));
+    overflow-x:hidden;
+  }
+  .app{min-height:100%;max-width:1160px;margin:0 auto;padding:18px 16px 28px}
+  header{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:8px 6px 14px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:12px;
+  }
+  .logo{
+    width:44px;height:44px;border-radius:14px;
+    background:linear-gradient(135deg,rgba(124,58,237,.95),rgba(34,211,238,.9));
+    box-shadow:0 14px 28px rgba(0,0,0,.35);
+    display:grid;place-items:center;
+    position:relative;
+  }
+  .logo:after{
+    content:"";position:absolute;inset:2px;border-radius:12px;
+    background:radial-gradient(circle at 30% 20%, rgba(255,255,255,.22), transparent 55%);
+    pointer-events:none;
+  }
+  .logo span{font-family:"Montserrat",system-ui;font-weight:900;letter-spacing:.5px;color:#07121f}
+  .titleWrap{display:flex;flex-direction:column;line-height:1.05}
+  h1{margin:0;font-family:"Montserrat",system-ui;font-weight:900;font-size:18px;letter-spacing:.2px}
+  .sub{font-size:12px;color:var(--muted2);margin-top:4px}
+  .rightTop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .chip{
+    border:1px solid var(--stroke);
+    background:rgba(255,255,255,.05);
+    border-radius:999px;
+    padding:8px 10px;
+    display:flex;gap:8px;align-items:center;
+    box-shadow:0 10px 28px rgba(0,0,0,.22);
+  }
+  .chip .k{font-size:11px;color:var(--muted2)}
+  .chip .v{font-size:12px;font-weight:800}
+  .btn{
+    border:1px solid var(--stroke);
+    background:rgba(255,255,255,.06);
+    color:var(--text);
+    border-radius:14px;
+    padding:10px 12px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 10px 30px rgba(0,0,0,.22);
+    transition:transform .08s ease, border-color .2s ease, background .2s ease;
+  }
+  .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.18)}
+  .btn:active{transform:translateY(0px)}
+  .btn.primary{
+    border:none;
+    background:linear-gradient(135deg,rgba(124,58,237,.95),rgba(34,211,238,.92));
+    color:#07121f;
+  }
+  .btn.danger{border-color:rgba(251,113,133,.38);background:rgba(251,113,133,.10)}
+  .btn.small{padding:7px 10px;border-radius:12px;font-weight:800;font-size:12px}
+  .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+  @media (max-width: 980px){.grid{grid-template-columns:1fr}}
+  .card{
+    background:var(--card);
+    border:1px solid var(--stroke);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--shadow);
+    backdrop-filter: blur(10px);
+  }
+  .cardTitle{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin-bottom:10px;
+  }
+  .cardTitle h2{margin:0;font-family:"Montserrat";font-size:14px;letter-spacing:.2px}
+  .mini{font-size:12px;color:var(--muted2)}
+  .seg{
+    display:flex;gap:8px;flex-wrap:wrap;
+    background:rgba(0,0,0,.16);
+    padding:6px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
+  }
+  .seg button{
+    flex:1 1 auto;
+    border:none;background:transparent;color:var(--muted);
+    font-weight:900;border-radius:12px;padding:9px 10px;cursor:pointer;
+  }
+  .seg button.active{background:rgba(255,255,255,.10);color:var(--text)}
+  .seg button strong{color:inherit}
+  .scanner{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  .scanArea{
+    position:relative;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.25);
+    aspect-ratio: 16 / 10;
+    min-height: 220px;
+  }
+  video{width:100%;height:100%;object-fit:cover;display:block}
+  .scanOverlay{
+    position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+  }
+  .frame{
+    width:min(70%, 420px);
+    aspect-ratio: 4/3;
+    border:2px solid rgba(34,211,238,.65);
+    border-radius:18px;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,.25);
+    position:relative;
+  }
+  .frame:before,.frame:after{
+    content:"";position:absolute;inset:-6px;border-radius:22px;border:1px dashed rgba(124,58,237,.55);
+  }
+  .scanHint{
+    position:absolute;left:12px;bottom:10px;
+    background:rgba(0,0,0,.35);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:14px;
+    padding:8px 10px;
+    font-size:12px;color:rgba(255,255,255,.85);
+    backdrop-filter: blur(8px);
+  }
+  .scanBtns{display:flex;gap:10px;flex-wrap:wrap}
+
+  .camControls{margin-top:10px;padding:10px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.03)}
+  .camRow{display:flex;align-items:center;gap:10px}
+  .camRow + .camRow{margin-top:10px}
+  .camRow input[type="range"]{flex:1}
+  .inputRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .field{
+    flex:1 1 180px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(0,0,0,.22);
+    color:var(--text);
+    border-radius:14px;
+    padding:11px 12px;
+    outline:none;
+  }
+  .field::placeholder{color:rgba(255,255,255,.45)}
+  .kbd{font-size:12px;color:var(--muted2)}
+  .packHeader{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px
+  }
+  .packTitle{font-family:"Montserrat";font-size:14px;margin:0}
+  .pill{
+    font-size:11px;font-weight:900;letter-spacing:.3px;
+    padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);
+    background:rgba(0,0,0,.18);color:rgba(255,255,255,.86)
+  }
+  .pill.ok{border-color:rgba(45,212,191,.35);background:rgba(45,212,191,.12)}
+  .pill.warn{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.12)}
+  .stats{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px
+  }
+  @media (max-width:560px){.stats{grid-template-columns:1fr}}
+  .stat{
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(0,0,0,.18);
+    border-radius:18px;padding:12px 12px;
+  }
+  .stat .k{font-size:11px;color:var(--muted2)}
+  .stat .v{margin-top:4px;font-weight:900;font-size:16px}
+  .packagesGrid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px
+  }
+  @media (max-width:980px){.packagesGrid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:520px){.packagesGrid{grid-template-columns:1fr}}
+  .packTile{
+    text-align:left;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.18);
+    border-radius:18px;padding:12px;
+    cursor:pointer;
+    transition:transform .08s ease, border-color .2s ease;
+  }
+  .packTile:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.18)}
+  .packTile.active{outline:2px solid rgba(34,211,238,.38)}
+  .tileTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .tileTitle{font-weight:900}
+  .tileNums{display:flex;gap:12px;justify-content:space-between;margin-top:8px}
+  .tileNums .mini{font-size:11px}
+  .tileNums .big{font-weight:900}
+  .tileSplit{display:flex;gap:8px;justify-content:center;align-items:center;margin-top:8px;color:var(--muted2);font-size:12px}
+  .tileCats{margin-top:10px;display:grid;gap:6px}
+  .catLine{display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.85)}
+  .moreLine{font-size:12px;color:var(--muted2)}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px}
+  th{color:var(--muted2);font-size:11px;text-transform:uppercase;letter-spacing:.35px}
+  td.num{text-align:right;font-variant-numeric: tabular-nums;}
+  .xBtn{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.20);
+    color:rgba(255,255,255,.85);
+    border-radius:12px;
+    padding:6px 10px;
+    cursor:pointer;
+    font-weight:900;
+  }
+  .qtyBtns{display:flex;gap:6px;justify-content:flex-end}
+  .qtyBtns .xBtn{padding:6px 8px}
+  .muted{color:var(--muted2)}
+  /* Toast */
+  .toast{
+    position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+    min-width:min(560px, calc(100% - 24px));
+    background:rgba(0,0,0,.55);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:18px;
+    padding:12px 12px;
+    box-shadow:0 18px 60px rgba(0,0,0,.55);
+    backdrop-filter: blur(12px);
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    opacity:0;pointer-events:none;
+    transition:opacity .15s ease;
+  }
+  .toast[aria-hidden="false"]{opacity:1;pointer-events:auto}
+  .toast .t1{font-weight:900}
+  .toast .t2{font-size:12px;color:rgba(255,255,255,.82);margin-top:2px}
+  /* Modal */
+  .modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.45);
+    display:grid;place-items:center;padding:18px;
+    opacity:0;pointer-events:none;transition:opacity .15s ease;
+  }
+  .modal[aria-hidden="false"]{opacity:1;pointer-events:auto}
+  .modalCard{
+    width:min(860px, 100%);
+    background:rgba(9,12,24,.94);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:24px;
+    box-shadow:0 30px 90px rgba(0,0,0,.62);
+    padding:14px;
+  }
+  .modalHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 6px 10px}
+  .modalHead h3{margin:0;font-family:"Montserrat";font-size:14px}
+  .modalBody{padding:6px}
+  .modalGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:860px){.modalGrid{grid-template-columns:1fr}}
+  .hr{height:1px;background:rgba(255,255,255,.10);margin:12px 0}
+  .hintBox{
+    padding:10px 12px;border-radius:18px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(0,0,0,.22);
+    color:rgba(255,255,255,.85);
+    font-size:12px;line-height:1.4
+  }
+  .footerMini{padding-top:10px;text-align:center;color:rgba(255,255,255,.45);font-size:12px}
+  .kbd2{font-size:12px;color:rgba(255,255,255,.55)}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo"><span>S</span></div>
+      <div class="titleWrap">
+        <h1>SELLENCE RETOURENSCANNER</h1>
+        <div class="sub" id="dt"></div>
+      </div>
+    </div>
+    <div class="rightTop">
+      <div class="chip"><span class="k">Gesamt KVP</span><span class="v" id="totalKvp">0,00 €</span></div>
+      <div class="chip"><span class="k">Gutschrift</span><span class="v" id="totalRefund">0,00 €</span></div>
+      <div class="chip"><span class="k">Artikel</span><span class="v" id="countItems">0</span></div>
+      <button class="btn" id="btnImportExport" type="button">Import/Export</button>
+      <button class="btn danger" id="btnReset" type="button">Reset</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT -->
+    <section class="card">
+      <div class="cardTitle">
+        <h2>Scanner</h2>
+        <div class="mini">Modus: <span id="modeText">PMG 90%</span></div>
+      </div>
+
+      <div class="seg" role="tablist" aria-label="Gutschrift-Modus">
+        <button id="mode90" class="active" type="button"><strong>90%</strong> PMG veranlasst</button>
+        <button id="mode55" type="button"><strong>55%</strong> Good Will</button>
+      </div>
+
+      <div class="scanner">
+        <div class="scanArea" id="scanArea">
+          <video id="video" autoplay muted playsinline></video>
+          <div class="scanOverlay">
+            <div class="frame"></div>
+          </div>
+          <div class="scanHint" id="scanHint">Kamera aus • Tippe auf „Scan starten“</div>
+        </div>
+
+        <div class="scanBtns">
+          <button class="btn primary" id="btnStart" type="button">Scan starten</button>
+          <button class="btn" id="btnStop" type="button">Stop</button>
+          <button class="btn" id="btnTorch" type="button" disabled>🔦</button>
+          <button class="btn" id="btnManualEan" type="button">EAN manuell</button>
+        </div>
+
+        <div class="camControls" id="camControls" style="display:none">
+          <div class="camRow">
+            <div class="mini">Zoom</div>
+            <input id="zoomSlider" type="range" min="1" max="1" step="0.1" value="1" />
+            <div class="mini" id="zoomVal">1.0×</div>
+          </div>
+        </div>
+
+          </div>
+        </div>
+
+        <div class="inputRow">
+          <input class="field" id="quickQty" inputmode="numeric" placeholder="Menge (Standard 1)" value="1" />
+          <div class="kbd">Tipp: EAN mehrfach scannen → Menge steigt automatisch.</div>
+        </div>
+
+        <div class="hintBox" style="margin-top:6px">
+          <b>So läuft’s:</b> EAN scannen → wenn bekannt: automatisch ins aktuelle Paket. Wenn unbekannt: du speicherst Name, Preis & Kategorie (per Tastatur oder Sprache) und scannst direkt weiter.
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="cardTitle">
+        <h2>Retourenprotokoll</h2>
+        <div class="mini">nach SELLENCE-Template</div>
+      </div>
+
+      <div class="inputRow">
+        <button class="btn primary" id="btnProtocol" type="button">Retourenprotokoll erstellen</button>
+        <button class="btn" id="btnLabel" type="button">Retouren Label</button>
+        <button class="btn" id="btnClosePack" type="button">Neues Paket</button>
+        <span class="kbd2">Max. <b>500,00 €</b> pro Paket (wird niemals überschritten).</span>
+      </div>
+
+    </section>
+
+    <!-- RIGHT -->
+    <section class="card">
+      <div class="packHeader">
+        <div>
+          <p class="packTitle" id="activePackTitle">Paket 1</p>
+          <div class="mini" id="packCounter">Paket 1 von 1</div>
+        </div>
+        <div class="pill warn" id="progressText">Bis Paket voll: 500,00 €</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="k">Paket KVP</div><div class="v" id="packKvp">0,00 €</div></div>
+        <div class="stat"><div class="k">Paket Gutschrift</div><div class="v" id="packRefund">0,00 €</div></div>
+        <div class="stat"><div class="k">Rest bis 500 €</div><div class="v" id="packLeft">500,00 €</div></div>
+      </div>
+
+      <div style="margin-top:12px; overflow:auto;border-radius:18px;border:1px solid rgba(255,255,255,.10)">
+        <table>
+          <thead>
+            <tr>
+              <th>EAN / Produkt</th>
+              <th class="num">Menge</th>
+              <th class="num">Preis</th>
+              <th class="num">KVP</th>
+              <th class="num">%</th>
+              <th class="num"></th>
+            </tr>
+          </thead>
+          <tbody id="itemsTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="packagesGrid" id="packagesGrid"></div>
+    </section>
+  </div>
+
+  <div class="footerMini">© Andre Schorn</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" aria-hidden="true">
+  <div>
+    <div class="t1" id="toastTitle">Info</div>
+    <div class="t2" id="toastText"></div>
+  </div>
+  <div id="toastBtnWrap" style="display:none">
+    <button class="btn small" id="toastBtn" type="button">Undo</button>
+  </div>
+</div>
+
+<!-- Modal: Manual EAN -->
+<div class="modal" id="eanModal" aria-hidden="true" data-close="1">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="eanTitle">
+    <div class="modalHead">
+      <h3 id="eanTitle">EAN manuell eingeben</h3>
+      <button class="btn small" id="closeEanModal" type="button">Schließen</button>
+    </div>
+    <div class="modalBody">
+      <div class="inputRow">
+        <input class="field" id="eanInput" inputmode="numeric" placeholder="z.B. 4001234567890" />
+        <button class="btn primary" id="eanSubmit" type="button">Übernehmen</button>
+      </div>
+      <div class="hintBox" style="margin-top:10px">
+        Wenn die EAN bereits gespeichert ist, wird der Artikel sofort ins Paket übernommen. Wenn nicht, öffnet sich der „Neues Produkt“-Dialog.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: New Product -->
+<div class="modal" id="prodModal" aria-hidden="true" data-close="1">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="prodTitle">
+    <div class="modalHead">
+      <h3 id="prodTitle">Neues Produkt speichern</h3>
+      <button class="btn small" id="closeProdModal" type="button">Schließen</button>
+    </div>
+    <div class="modalBody">
+      <div class="modalGrid">
+        <div class="card" style="box-shadow:none">
+          <div class="cardTitle" style="margin-bottom:6px"><h2 style="font-size:13px">Daten</h2><div class="mini" id="prodEanLabel"></div></div>
+
+          <div class="inputRow">
+            <input class="field" id="prodName" placeholder="Produktname" />
+            <button class="btn" id="micName" type="button">🎙️</button>
+          </div>
+
+          <div class="inputRow" style="margin-top:10px">
+            <input class="field" id="prodPrice" inputmode="decimal" placeholder="Preis (z.B. 9,00)" />
+            <button class="btn" id="micPrice" type="button">🎙️</button>
+          </div>
+
+          <div class="inputRow" style="margin-top:10px">
+            <select class="field" id="prodCat">
+              <option value="OTP">OTP Zigarette</option>
+              <option value="UTP">UTP Feinschnitt/Tabak</option>
+              <option value="HEETS">HEETS/TEREA</option>
+            </select>
+          </div>
+
+          <div class="inputRow" style="margin-top:10px">
+            <button class="btn primary" id="saveProduct" type="button">Speichern & hinzufügen</button>
+            <button class="btn" id="saveOnly" type="button">Nur speichern</button>
+          </div>
+
+          <div class="hintBox" style="margin-top:10px">
+            Tipp: Beim nächsten Scan wird dieses Produkt sofort erkannt. Preis & Kategorie kannst du später über „Import/Export“ auch wieder korrigieren.
+          </div>
+        </div>
+
+        <div class="card" style="box-shadow:none">
+          <div class="cardTitle" style="margin-bottom:6px"><h2 style="font-size:13px">Sprach-Eingabe</h2></div>
+          <div class="hintBox">
+            <b>Was geht?</b><br>
+            • <b>Name</b>: „Marlboro Gold XL“<br>
+            • <b>Preis</b>: „neun euro“ oder „9,00“<br><br>
+            <span class="muted">Hinweis:</span> Sprach-Erkennung funktioniert am besten in Chrome/Android. Auf iPhone/iPad kann es je nach iOS-Version eingeschränkt sein.
+          </div>
+          <div class="hr"></div>
+          <div class="hintBox">
+            <b>Scannen + Speichern Flow</b><br>
+            1) Scanne unbekannte EAN → Dialog öffnet sich automatisch.<br>
+            2) Name/Preis/Kategorie eintragen (oder mic).<br>
+            3) „Speichern & hinzufügen“ → landet direkt im Paket.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: 500€ Limit -->
+<div class="modal" id="limitModal" aria-hidden="true" data-close="0">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="limitTitle">
+    <div class="modalHead">
+      <h3 id="limitTitle">Paket-Limit erreicht</h3>
+      <button class="btn small" id="limitClose" type="button">OK</button>
+    </div>
+    <div class="modalBody">
+      <div class="hintBox" id="limitMsg" style="font-size:14px"></div>
+      <div class="inputRow" style="margin-top:12px">
+        <button class="btn primary" id="limitOk" type="button">Paket schließen & neues starten</button>
+        <button class="btn" id="limitKeep" type="button">Weiter (Paket bleibt offen)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Import/Export -->
+<div class="modal" id="ieModal" aria-hidden="true" data-close="1">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="ieTitle">
+    <div class="modalHead">
+      <h3 id="ieTitle">Import / Export</h3>
+      <button class="btn small" id="closeIeModal" type="button">Schließen</button>
+    </div>
+    <div class="modalBody">
+      <div class="modalGrid">
+        <div class="card" style="box-shadow:none">
+          <div class="cardTitle"><h2 style="font-size:13px">Export</h2></div>
+          <div class="inputRow">
+            <button class="btn primary" id="btnExportProducts" type="button">Produkte (JSON)</button>
+            <button class="btn" id="btnExportSession" type="button">Session (JSON)</button>
+          </div>
+          <div class="hintBox" style="margin-top:10px">
+            Produkte = deine lokale EAN-Datenbank. Session = aktuelle Pakete + Items + Meta.
+          </div>
+        </div>
+
+        <div class="card" style="box-shadow:none">
+          <div class="cardTitle"><h2 style="font-size:13px">Import</h2></div>
+          <div class="inputRow">
+            <input class="field" id="fileInput" type="file" accept=".json" />
+            <button class="btn primary" id="btnImport" type="button">Importieren</button>
+          </div>
+          <div class="hintBox" style="margin-top:10px">
+            Importiert entweder Produkte oder eine komplette Session. Bestehende Daten bleiben erhalten (werden ergänzt/überschrieben).
+          </div>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="hintBox">
+        <b>Backup Tipp:</b> Exportiere regelmäßig die Produkt-JSON. Wenn du die Datenbank später online stellst, kannst du die JSON als Grundlage nehmen.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // --- Constants / Categories ---
+  const MAX_PACKAGE_VALUE = 500;
+
+  const CATS = {
+    OTP:   { label: "OTP Zigarette", pdfSection: "Zigaretten" },
+    UTP:   { label: "UTP Feinschnitt/Tabak", pdfSection: "Feinschnitt" },
+    HEETS: { label: "HEETS/TEREA", pdfSection: "Consumables" }
+  };
+
+  const MODES = {
+    "90": { label: "PMG veranlasst", rate: 0.90 },
+    "55": { label: "Good Will", rate: 0.55 }
+  };
+
+  const STORE_PRODUCTS = "sellence_ean_products_v1";
+  const STORE_STATE    = "sellence_ean_retoure_state_v1";
+
+  // --- State ---
+  let products = {}; // ean -> {ean,name,price,catKey,updatedAt}
+  let state = {
+    meta: { sap:"", gln:"", date:"", contact:"", dhl:"" },
+    packages: [{id:1, createdAt:Date.now(), closed:false, items:[]}],
+    activeId: 1,
+    mode: "90" // default
+  };
+  let undo = null;
+
+  // --- Helpers ---
+  const $ = (id)=>document.getElementById(id);
+  const fmt = (n)=> (Number(n)||0).toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+  const parseNum = (s)=> {
+    const v = String(s||"").trim().replace(/\./g,"").replace(",",".");
+    const n = Number(v);
+    return Number.isFinite(n) ? n : NaN;
+  };
+  const uid = ()=> (crypto && crypto.randomUUID) ? crypto.randomUUID() : (String(Date.now()) + "_" + Math.random().toString(16).slice(2));
+  function persist(){
+    try{ localStorage.setItem(STORE_PRODUCTS, JSON.stringify(products)); }catch(e){}
+    try{ localStorage.setItem(STORE_STATE, JSON.stringify(state)); }catch(e){}
+  }
+  function restore(){
+    try{
+      const rawP = localStorage.getItem(STORE_PRODUCTS);
+      if(rawP) products = JSON.parse(rawP) || {};
+    }catch(e){}
+    try{
+      const rawS = localStorage.getItem(STORE_STATE);
+      if(rawS){
+        const obj = JSON.parse(rawS);
+        if(obj && Array.isArray(obj.packages) && obj.packages.length) state = obj;
+      }
+    }catch(e){}
+    if(!state.packages || !state.packages.length){
+      state.packages=[{id:1, createdAt:Date.now(), closed:false, items:[]}];
+      state.activeId=1;
+    }
+    if(!state.packages.some(p=>p.id===state.activeId)) state.activeId = state.packages[0].id;
+    if(!MODES[state.mode]) state.mode="90";
+  }
+
+  function showToast(title, text, withUndo=false){
+    $("toastTitle").textContent = title || "Info";
+    $("toastText").textContent = text || "";
+    $("toastBtnWrap").style.display = withUndo ? "block" : "none";
+    $("toast").setAttribute("aria-hidden","false");
+    setTimeout(()=> $("toast").setAttribute("aria-hidden","true"), 2400);
+  }
+  $("toastBtn").addEventListener("click", ()=>{
+    if(!undo) return;
+    undo(); undo=null;
+    $("toast").setAttribute("aria-hidden","true");
+    persist(); render();
+  });
+
+  function getPack(id){ return state.packages.find(p=>p.id===id) || state.packages[0]; }
+  function currentPack(){ return getPack(state.activeId); }
+
+  function packTotals(pack){
+    const t = { kvp:0, refund:0, byMode:{"90":0,"55":0}, byCat:{} };
+    for(const it of pack.items){
+      t.kvp += it.kvp; t.refund += it.refund;
+      t.byMode[it.mode] = (t.byMode[it.mode]||0) + it.kvp;
+      t.byCat[it.catLabel] = (t.byCat[it.catLabel]||0) + it.kvp;
+    }
+    return t;
+  }
+  function allTotals(){
+    const t = { kvp:0, refund:0, items:0 };
+    for(const p of state.packages){
+      const pt = packTotals(p);
+      t.kvp += pt.kvp; t.refund += pt.refund;
+      t.items += p.items.reduce((a,x)=>a+(x.qty||0),0);
+    }
+    return t;
+  }
+
+  // --- Package logic: STRICT 500 rule ---
+  function ensurePackForDelta(delta){
+    const pack = currentPack();
+    const pt = packTotals(pack);
+    if(pack.closed){
+      // always create new
+      return createNewPack("Neues Paket gestartet.");
+    }
+    if(pt.kvp + delta > MAX_PACKAGE_VALUE){
+      // close old & open new
+      pack.closed = true;
+      const next = createNewPack(`Paket ${pack.id} geschlossen (500 €-Limit).`);
+      showLimitModal(`Limit würde überschritten. Paket ${pack.id} wurde geschlossen, Paket ${next.id} gestartet.`, false, "");
+      return next;
+    }
+    return pack;
+  }
+  function createNewPack(reasonText){
+    const nextId = state.packages[state.packages.length-1].id + 1;
+    const np = {id:nextId, createdAt:Date.now(), closed:false, items:[]};
+    state.packages.push(np);
+    state.activeId = nextId;
+    if(reasonText) showToast("Paket", reasonText);
+    return np;
+  }
+  function manualNewPack(){
+    const pack = currentPack();
+    if(pack.items.length===0 && state.packages.length===1){
+      showToast("Hinweis","Erstes Paket ist noch leer.");
+      return;
+    }
+    pack.closed = true;
+    createNewPack(`Paket ${pack.id} manuell geschlossen.`);
+    persist(); render();
+  }
+
+  // --- Add item (scan flow) ---
+  function normalizeEan(raw){
+    const e = String(raw||"").replace(/\s+/g,"").replace(/[^\d]/g,"");
+    return e.length ? e : "";
+  }
+
+  function addKnownProductToPack(ean, qty=1){
+    const prod = products[ean];
+    if(!prod){ openNewProductModal(ean, true); return; }
+
+    const price = Number(prod.price)||0;
+    if(price <= 0){
+      openNewProductModal(ean, true, "Bitte Preis ergänzen (0,00 ist nicht erlaubt).");
+      return;
+    }
+    const delta = price * qty;
+    if(delta > MAX_PACKAGE_VALUE){
+      showToast("Zu teuer", "Ein einzelner Artikel übersteigt 500 €. Bitte prüfen.");
+      return;
+    }
+
+    const pack = ensurePackForDelta(delta);
+    const mode = state.mode;
+    const rate = MODES[mode].rate;
+
+    // merge by (ean + mode + price) in same pack
+    const existing = pack.items.find(it => it.ean===ean && it.mode===mode && Number(it.price)===Number(price));
+    if(existing){
+      existing.qty += qty;
+      existing.kvp = existing.qty * existing.price;
+      existing.refund = existing.kvp * existing.rate;
+      existing.at = Date.now();
+    }else{
+      const cat = CATS[prod.catKey] || CATS.OTP;
+      pack.items.push({
+        id: uid(),
+        ean,
+        name: prod.name || "",
+        catKey: prod.catKey || "OTP",
+        catLabel: cat.label,
+        pdfSection: cat.pdfSection,
+        mode,
+        rate,
+        qty,
+        price,
+        kvp: qty * price,
+        refund: qty * price * rate,
+        at: Date.now()
+      });
+    }
+persist(); render();
+
+    // If exactly 500€ reached, show dismissible modal (and auto-start a new pack on OK)
+    const ptAfter = packTotals(pack);
+    if(!pack.closed && (ptAfter.kvp >= (MAX_PACKAGE_VALUE - 0.01))) {
+      showLimitModal(`500 € erreicht in Paket ${pack.id}. Bitte jetzt bestätigen – danach wird das Paket geschlossen und ein neues gestartet.`, true, `Paket ${pack.id} geschlossen (500 € erreicht).`);
+    }
+
+    beep();
+  }
+
+  // --- UI rendering ---
+  function setDT(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,"0");
+    $("dt").textContent = `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} • ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  function render(){
+    const totals = allTotals();
+    $("totalKvp").textContent = fmt(totals.kvp);
+    $("totalRefund").textContent = fmt(totals.refund);
+    $("countItems").textContent = String(totals.items);
+
+    // mode UI
+    $("mode90").classList.toggle("active", state.mode==="90");
+    $("mode55").classList.toggle("active", state.mode==="55");
+    $("modeText").textContent = (state.mode==="90") ? "PMG 90%" : "Good Will 55%";
+
+    const pack = currentPack();
+    const pt = packTotals(pack);
+    $("packCounter").textContent = `Paket ${pack.id} von ${state.packages.length}`;
+    $("activePackTitle").textContent = `Paket ${pack.id}`;
+
+    const left = Math.max(0, MAX_PACKAGE_VALUE - pt.kvp);
+    $("packKvp").textContent = fmt(pt.kvp);
+    $("packRefund").textContent = fmt(pt.refund);
+    $("packLeft").textContent = fmt(left);
+
+    const statusText = pack.closed ? "Paket geschlossen ✓" : `Bis Paket voll: ${fmt(left)}`;
+    $("progressText").textContent = statusText;
+    $("progressText").className = "pill " + (pack.closed ? "ok" : (left <= 50 ? "warn" : "warn"));
+
+    renderItemsTable();
+    renderPackagesGrid();
+  }
+
+  function renderPackagesGrid(){
+    const grid = $("packagesGrid");
+    grid.innerHTML="";
+    for(const p of state.packages){
+      const pt = packTotals(p);
+      const isActive = p.id === state.activeId;
+      const status = p.closed ? "GESCHLOSSEN" : (pt.kvp >= MAX_PACKAGE_VALUE ? "VOLL" : "OFFEN");
+      const el = document.createElement("button");
+      el.type="button";
+      el.className = "packTile" + (isActive ? " active" : "");
+      el.innerHTML = `
+        <div class="tileTop">
+          <div class="tileTitle">Paket ${p.id}</div>
+          <div class="pill ${p.closed ? "ok" : "warn"}">${status}</div>
+        </div>
+        <div class="tileNums">
+          <div><div class="mini">KVP</div><div class="big">${fmt(pt.kvp)}</div></div>
+          <div><div class="mini">Gutschrift</div><div class="big">${fmt(pt.refund)}</div></div>
+        </div>
+        <div class="tileSplit">
+          <span>90%: <b>${fmt(pt.byMode["90"]||0)}</b></span><span>•</span>
+          <span>55%: <b>${fmt(pt.byMode["55"]||0)}</b></span>
+        </div>
+        <div class="tileCats">
+          ${Object.entries(pt.byCat).slice(0,3).map(([k,v])=>`<div class="catLine"><span>${k}</span><span>${fmt(v)}</span></div>`).join("")}
+          ${Object.keys(pt.byCat).length>3 ? `<div class="moreLine">+ ${Object.keys(pt.byCat).length-3} weitere</div>` : ""}
+        </div>
+      `;
+      el.addEventListener("click", ()=>{ state.activeId=p.id; persist(); render(); });
+      grid.appendChild(el);
+    }
+  }
+
+  function renderItemsTable(){
+    const pack = currentPack();
+    const tb = $("itemsTbody");
+    tb.innerHTML="";
+    const items = [...pack.items].sort((a,b)=>b.at-a.at);
+    for(const it of items){
+      const tr = document.createElement("tr");
+      const name = (it.name||"").trim();
+      const short = name ? name : "Unbenannt";
+      tr.innerHTML = `
+        <td><div style="font-weight:900">${it.ean}</div><div class="muted" style="font-size:12px">${escapeHtml(short)} • ${escapeHtml(it.catLabel)}</div></td>
+        <td class="num">
+          <div class="qtyBtns">
+            <button class="xBtn" data-act="minus" title="Minus">−</button>
+            <span style="min-width:26px;display:inline-block;text-align:center;font-weight:900">${it.qty}</span>
+            <button class="xBtn" data-act="plus" title="Plus">+</button>
+          </div>
+        </td>
+        <td class="num">${Number(it.price).toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td class="num"><b>${fmt(it.kvp)}</b></td>
+        <td class="num"><b>${it.mode}%</b></td>
+        <td class="num"><button class="xBtn" data-act="del" title="Entfernen">✕</button></td>
+      `;
+      tr.querySelector('[data-act="del"]').addEventListener("click", ()=>{
+        const idx = pack.items.findIndex(x=>x.id===it.id);
+        if(idx<0) return;
+        const removed = pack.items.splice(idx,1)[0];
+        undo = ()=> pack.items.splice(idx,0,removed);
+        showToast("Entfernt","Eintrag gelöscht.", true);
+        persist(); render();
+      });
+      tr.querySelector('[data-act="plus"]').addEventListener("click", ()=>{
+        // strict limit check for +1
+        const delta = it.price;
+        const packNow = currentPack();
+        if(packNow.id !== pack.id) return;
+        const pt = packTotals(packNow);
+        if(packNow.closed){
+          showToast("Paket geschlossen","Erhöhe Menge in einem offenen Paket oder starte ein neues.");
+          return;
+        }
+        if(pt.kvp + delta > MAX_PACKAGE_VALUE){
+          showToast("Limit 500 €","Diese Erhöhung würde 500 € überschreiten.");
+          return;
+        }
+        it.qty += 1;
+        it.kvp = it.qty * it.price;
+        it.refund = it.kvp * it.rate;
+        it.at = Date.now();
+        persist(); render();
+      });
+      tr.querySelector('[data-act="minus"]').addEventListener("click", ()=>{
+        if(it.qty <= 1){
+          // delete
+          const idx = pack.items.findIndex(x=>x.id===it.id);
+          if(idx<0) return;
+          const removed = pack.items.splice(idx,1)[0];
+          undo = ()=> pack.items.splice(idx,0,removed);
+          showToast("Entfernt","Eintrag gelöscht.", true);
+          persist(); render();
+          return;
+        }
+        it.qty -= 1;
+        it.kvp = it.qty * it.price;
+        it.refund = it.kvp * it.rate;
+        it.at = Date.now();
+        persist(); render();
+      });
+
+      tb.appendChild(tr);
+    }
+  }
+
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  }
+
+  // --- Modal helpers ---
+  function openModal(id){ $(id).setAttribute("aria-hidden","false"); if(id==="prodModal"||id==="eanModal"){ scanLock = true; } }
+  function closeModal(id){ $(id).setAttribute("aria-hidden","true"); if(id==="prodModal"||id==="eanModal"){ scanLock = false; } }
+
+  // close on backdrop click
+  for(const mid of ["eanModal","prodModal","ieModal"]){
+    $(mid).addEventListener("click", (e)=>{ if(e.target?.dataset?.close==="1") closeModal(mid); });
+  }
+  $("closeEanModal").addEventListener("click", ()=>closeModal("eanModal"));
+  $("closeProdModal").addEventListener("click", ()=>closeModal("prodModal"));
+  $("closeIeModal").addEventListener("click", ()=>closeModal("ieModal"));
+
+  // 500€ Limit modal
+  $("limitClose").addEventListener("click", ()=>limitModalAction("close"));
+  $("limitOk").addEventListener("click", ()=>limitModalAction("ok"));
+  $("limitKeep").addEventListener("click", ()=>limitModalAction("keep"));
+
+  let limitModalState = { autoClose:false, closeReason:"", forceOk:false };
+  function setMainUiDisabled(disabled){
+    const ids = ["btnStart","btnStop","btnClosePack","btnManualEan","mode90","mode55","btnImportExport","btnProtocol","btnLabel","btnReset"];
+    for(const id of ids){
+      const el = $(id);
+      if(el) el.disabled = !!disabled;
+    }
+  }
+
+
+
+  function showLimitModal(message, autoClose=true, closeReason="500€ erreicht"){
+    $("limitMsg").textContent = message;
+    limitModalState.autoClose = !!autoClose;
+    limitModalState.closeReason = closeReason || "Limit erreicht";
+    // If autoClose=true, user MUST acknowledge (and we force close + new pack)
+    limitModalState.forceOk = !!autoClose;
+
+    // UI adjustments
+    $("limitKeep").style.display  = autoClose ? "none" : "inline-flex";
+    $("limitClose").style.display = autoClose ? "none" : "inline-flex";
+    $("limitOk").textContent      = autoClose ? "OK – Paket schließen & neues starten" : "Paket schließen & neues starten";
+
+    openModal("limitModal");
+    // freeze scanning & main UI while the modal is visible
+    scanLock = true;
+    setMainUiDisabled(true);
+    setHint("Paket-Limit erreicht • Scanner pausiert");
+  }
+
+  function limitModalAction(action){
+    // If this is a hard limit modal, only the OK button is allowed
+    if(limitModalState.forceOk && action !== "ok"){
+      return;
+    }
+
+    if(action==="ok"){
+      // Always close & start new when hard-limit is shown (and also for normal close action)
+      forceClosePack(limitModalState.closeReason || "500€ erreicht");
+    }else if(action==="close"){
+      forceClosePack("Manuell geschlossen");
+    }else{
+      // keep open: nothing
+    }
+
+    // Close modal & resume UI
+    closeModal("limitModal");
+    scanLock = false;
+    limitModalState.forceOk = false;
+    setMainUiDisabled(false);
+    setHint(scanning ? "Scannen… Halte die EAN in den Rahmen." : "Kamera aus • Tippe auf „Scan starten“");
+  }
+
+  function forceClosePack(reason){
+    const pack = currentPack();
+    if(!pack.closed){
+      pack.closed = true;
+      createNewPack(reason);
+      persist(); render();
+    }
+  }
+
+
+  // Manual EAN modal
+  $("btnManualEan").addEventListener("click", ()=>{
+    $("eanInput").value="";
+    openModal("eanModal");
+    setTimeout(()=> $("eanInput").focus(), 50);
+  });
+  $("eanSubmit").addEventListener("click", ()=>{
+    const ean = normalizeEan($("eanInput").value);
+    if(!ean){ showToast("EAN fehlt","Bitte EAN eingeben."); return; }
+    closeModal("eanModal");
+    handleEan(ean);
+  });
+  $("eanInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter") $("eanSubmit").click(); });
+
+  // Mode buttons
+  $("mode90").addEventListener("click", ()=>{ state.mode="90"; persist(); render(); });
+  $("mode55").addEventListener("click", ()=>{ state.mode="55"; persist(); render(); });
+
+  // New pack
+  $("btnClosePack").addEventListener("click", manualNewPack);
+
+  // Reset
+  $("btnReset").addEventListener("click", ()=>{
+    if(!confirm("Alles löschen? (Produkte + Pakete)")) return;
+    products = {};
+    state = { meta:{sap:"",gln:"",date:"",contact:"",dhl:""}, packages:[{id:1, createdAt:Date.now(), closed:false, items:[]}], activeId:1, mode:"90" };
+    undo=null;
+    persist(); render();
+    showToast("Reset","Alles gelöscht.");
+  });
+
+  // Import/Export
+  $("btnImportExport").addEventListener("click", ()=> openModal("ieModal"));
+  $("btnExportProducts").addEventListener("click", ()=> downloadJson({type:"products", exportedAt:Date.now(), products}, "sellence_products.json"));
+  $("btnExportSession").addEventListener("click", ()=> downloadJson({type:"session", exportedAt:Date.now(), products, state}, "sellence_session.json"));
+
+  $("btnImport").addEventListener("click", async ()=>{
+    const f = $("fileInput").files?.[0];
+    if(!f){ showToast("Datei fehlt","Bitte JSON auswählen."); return; }
+    try{
+      const txt = await f.text();
+      const obj = JSON.parse(txt);
+      if(obj.type==="products" && obj.products){
+        products = {...products, ...obj.products};
+        persist(); render();
+        showToast("Import","Produkte importiert.");
+      }else if(obj.type==="session" && obj.state){
+        // merge products + session (session wins)
+        if(obj.products) products = {...products, ...obj.products};
+        state = obj.state;
+        if(!state.packages || !state.packages.length) throw new Error("Session ungültig (packages)");
+        if(!state.packages.some(p=>p.id===state.activeId)) state.activeId = state.packages[0].id;
+        if(!MODES[state.mode]) state.mode="90";
+        persist(); render();
+        showToast("Import","Session importiert.");
+      }else{
+        // try infer: if it has products or packages
+        if(obj.products && !obj.state){
+          products = {...products, ...obj.products};
+          showToast("Import","Produkte importiert.");
+        }else if(obj.state){
+          state = obj.state;
+          if(obj.products) products = {...products, ...obj.products};
+          showToast("Import","Session importiert.");
+        }else{
+          throw new Error("Unbekanntes JSON-Format.");
+        }
+        persist(); render();
+      }
+      closeModal("ieModal");
+    }catch(err){
+      console.error(err);
+      showToast("Import fehlgeschlagen", String(err.message||err));
+    }
+  });
+
+  function downloadJson(obj, filename){
+    const blob = new Blob([JSON.stringify(obj,null,2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href=url; a.download=filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }
+
+  // --- Product modal flow ---
+  let pendingEan = null;
+  let autoAddAfterSave = false;
+
+  function openNewProductModal(ean, addAfter=false, toastText=""){
+    pendingEan = ean;
+    autoAddAfterSave = !!addAfter;
+    $("prodEanLabel").textContent = "EAN: " + ean;
+    $("prodName").value = products[ean]?.name || "";
+    $("prodPrice").value = (products[ean]?.price!=null) ? String(products[ean].price).replace(".",",") : "";
+    $("prodCat").value = products[ean]?.catKey || "OTP";
+    if(toastText) showToast("EAN unbekannt", toastText || "Bitte Produkt speichern.");
+    openModal("prodModal");
+    setTimeout(()=> $("prodName").focus(), 60);
+  }
+
+  function saveProduct(addToPack){
+    const ean = pendingEan;
+    if(!ean){ closeModal("prodModal"); return; }
+    const name = String($("prodName").value||"").trim();
+    const price = parseNum($("prodPrice").value);
+    const catKey = $("prodCat").value;
+    if(!Number.isFinite(price) || price<=0){
+      showToast("Preis fehlt","Bitte Preis korrekt eingeben.");
+      return;
+    }
+    products[ean] = { ean, name, price, catKey, updatedAt: Date.now() };
+    persist();
+    closeModal("prodModal");
+    showToast("Gespeichert", `${(name||("EAN "+ean))} • ${fmt(price)}`);
+
+    if(addToPack){
+      const qty = Math.max(1, Math.floor(parseNum($("quickQty").value) || 1));
+      addKnownProductToPack(ean, qty);
+    }
+  }
+
+  $("saveProduct").addEventListener("click", ()=> saveProduct(true));
+  $("saveOnly").addEventListener("click", ()=> saveProduct(false));
+
+  // --- Speech input ---
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  function startDictation(targetId, opts={}){
+    if(!SpeechRecognition){
+      showToast("Nicht verfügbar","Sprach-Erkennung wird hier nicht unterstützt.");
+      return;
+    }
+    const rec = new SpeechRecognition();
+    rec.lang = "de-DE";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    showToast("🎙️ Hören zu…", "Sprich jetzt.");
+    rec.onresult = (ev)=>{
+      const t = ev.results?.[0]?.[0]?.transcript || "";
+      if(!t) return;
+      if(opts.type==="price"){
+        const p = parsePriceFromSpeech(t);
+        if(Number.isFinite(p)){
+          $(targetId).value = String(p.toFixed(2)).replace(".",",");
+          showToast("Erkannt", `Preis: ${fmt(p)}`);
+        }else{
+          $(targetId).value = t;
+          showToast("Erkannt", `Text: ${t}`);
+        }
+      }else{
+        $(targetId).value = t;
+        showToast("Erkannt", t);
+      }
+    };
+    rec.onerror = (e)=> showToast("Sprach-Fehler", e.error || "Unbekannt");
+    rec.start();
+  }
+  function parsePriceFromSpeech(text){
+    // Extract first number-like token
+    const s = String(text||"").toLowerCase().replace(/€/g,"").replace("euro","");
+    // handle "neun komma null null"
+    const m = s.match(/(\d+[.,]?\d*)/);
+    if(m){
+      const n = parseNum(m[1]);
+      return Number.isFinite(n) ? n : NaN;
+    }
+    // very simple german words 1-20
+    const map = {
+      "eins":1,"eine":1,"ein":1,"zwei":2,"drei":3,"vier":4,"fünf":5,"sechs":6,"sieben":7,"acht":8,"neun":9,"zehn":10,
+      "elf":11,"zwölf":12,"dreizehn":13,"vierzehn":14,"fünfzehn":15,"sechzehn":16,"siebzehn":17,"achtzehn":18,"neunzehn":19,"zwanzig":20
+    };
+    for(const [k,v] of Object.entries(map)){
+      if(s.includes(k)) return v;
+    }
+    return NaN;
+  }
+  $("micName").addEventListener("click", ()=> startDictation("prodName"));
+  $("micPrice").addEventListener("click", ()=> startDictation("prodPrice",{type:"price"}));
+
+  // --- EAN handling entry point ---
+  function handleEan(rawEan){
+    const ean = normalizeEan(rawEan);
+    if(!ean) return;
+    const qty = Math.max(1, Math.floor(parseNum($("quickQty").value) || 1));
+    if(products[ean]){
+      addKnownProductToPack(ean, qty);
+    }else{
+      openNewProductModal(ean, true);
+    }
+  }
+
+  // --- Scanner (BarcodeDetector OR Quagga2 fallback) ---
+  let stream = null;
+  let detector = null;
+  let scanning = false;
+  let lastEan = "";
+  let lastAt = 0;
+  let quaggaLoaded = false;
+  let scanLock = false; // true while modal is open (freeze last scan)
+  let scanHoldUntil = 0; // pause after accept
+  let detBuf = []; // best-of-3 buffer: [{ean,t}]
+  let camTrack = null;
+  let camCap = null;
+
+  function setHint(t){ $("scanHint").textContent = t; }
+
+  async function startScan(){
+    if(scanning) return;
+    scanning = true;
+    setHint("Kamera wird gestartet…");
+    try{
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:{ ideal:"environment" }, width:{ideal:1920}, height:{ideal:1080} }, audio:false });
+      $("video").srcObject = stream;
+      await $("video").play().catch(()=>{});
+      await applyTrackEnhancements();
+      await setupTorchButton();
+      setHint("Scannen… Halte den Barcode in den Rahmen.");
+      // try BarcodeDetector
+      if("BarcodeDetector" in window){
+        try{
+          detector = new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39"]});
+          scanLoop();
+          return;
+        }catch(e){}
+      }
+      // fallback Quagga2
+      await startQuagga();
+    }catch(err){
+      console.error(err);
+      scanning=false;
+      setHint("Kamera nicht verfügbar.");
+      showToast("Kamera Fehler", "Bitte Kamera-Berechtigung prüfen.");
+    }
+  }
+
+  function stopScan(){
+    scanning = false;
+    detector = null;
+    try{
+      if(stream){
+        stream.getTracks().forEach(t=>t.stop());
+        stream=null;
+      }
+      $("video").srcObject = null;
+    }catch(e){}
+    try{
+      if(window.Quagga && window.Quagga.stop){
+        window.Quagga.stop();
+      }
+    }catch(e){}
+    $("btnTorch").disabled = true;
+    setHint("Kamera aus • Tippe auf „Scan starten“");
+  }
+
+  async function scanLoop(){
+    if(!scanning || !detector) return;
+    try{
+      const barcodes = await detector.detect($("video"));
+      if(barcodes && barcodes.length){
+        const code = barcodes[0].rawValue || barcodes[0].rawValue;
+        onDetected(code);
+      }
+    }catch(e){}
+    requestAnimationFrame(scanLoop);
+  }
+
+  function onDetected(code){
+    if(scanLock) return; // freeze while modal open
+    const now = Date.now();
+    if(now < scanHoldUntil) return; // 1s hold after accept
+
+    const ean = normalizeEan(code);
+    if(!ean) return;
+
+    // Best-of-3: collect 3 recent detections and take the most frequent
+    detBuf.push({ ean, t: now });
+    detBuf = detBuf.filter(x => (now - x.t) <= 1200);
+    const last3 = detBuf.slice(-3).map(x=>x.ean);
+    if(last3.length < 3) return;
+
+    // mode of last3
+    const counts = {};
+    for(const v of last3) counts[v] = (counts[v]||0) + 1;
+    let best = last3[2], bestC = 0;
+    for(const [k,c] of Object.entries(counts)){
+      if(c > bestC){ bestC = c; best = k; }
+    }
+    detBuf = [];
+
+    if(best === lastEan && (now - lastAt) < 1200) return; // debounce
+    lastEan = best; lastAt = now;
+
+    // pause scanner after a confirmed scan (helps rapid workflows)
+    scanHoldUntil = now + 1000;
+
+    beep();
+    showToast("Scan", best);
+    handleEan(best);
+  }
+
+  async function startQuagga(){
+    if(!quaggaLoaded){
+      await loadScript("https://unpkg.com/@ericblade/quagga2/dist/quagga.min.js");
+      quaggaLoaded = true;
+    }
+    if(!window.Quagga){
+      throw new Error("Quagga nicht geladen");
+    }
+    const target = $("scanArea");
+    window.Quagga.init({
+      inputStream: {
+        type: "LiveStream",
+        target: target,
+        constraints: { facingMode: "environment", width:{min:640}, height:{min:480} }
+      },
+      locator: { halfSample: true, patchSize: "medium" },
+      numOfWorkers: Math.max(1, Math.min(4, navigator.hardwareConcurrency || 2)),
+      frequency: 10,
+      decoder: { readers: ["ean_reader","ean_8_reader","upc_reader","upc_e_reader","code_128_reader"], multiple: false },
+      locate: true
+    }, (err) => {
+      if(err){
+        console.error(err);
+        setHint("Scanner Fehler.");
+        showToast("Scanner Fehler", "Konnte Quagga nicht starten.");
+        return;
+      }
+      window.Quagga.start();
+      window.Quagga.onDetected((data)=>{
+        const code = data?.codeResult?.code;
+        if(code) onDetected(code);
+      });
+      setHint("Scannen… Halte den Barcode in den Rahmen.");
+    });
+  }
+
+  function loadScript(src){
+    return new Promise((resolve,reject)=>{
+      const s=document.createElement("script");
+      s.src=src; s.async=true;
+      s.onload=resolve; s.onerror=reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  
+  async function applyTrackEnhancements(){
+    try{
+      const track = stream?.getVideoTracks?.()[0];
+      if(!track) return;
+      camTrack = track;
+      camCap = (track.getCapabilities && track.getCapabilities()) ? track.getCapabilities() : null;
+
+      // Build UI sliders if supported
+      setupCameraControls();
+
+      if(!track.getCapabilities || !track.applyConstraints || !camCap) return;
+
+      const adv = [];
+      // try best autofocus / continuous focus where supported
+      if(camCap.focusMode && Array.isArray(camCap.focusMode) && camCap.focusMode.includes("continuous")){
+        adv.push({ focusMode: "continuous" });
+      }
+      // default modest zoom if available (helps small barcodes)
+      if(camCap.zoom){
+        const z = Math.min((camCap.zoom.max||1), Math.max((camCap.zoom.min||1), 1.8));
+        if(isFinite(z)) adv.push({ zoom: z });
+      }
+      if(adv.length){
+        return track.applyConstraints({ advanced: adv }).catch(()=>{});
+      }
+    }catch(e){}
+  }
+
+  function setupCameraControls(){
+    const wrap = $("camControls");
+    const zoom = $("zoomSlider");
+    const zoomVal = $("zoomVal");
+
+    if(!camTrack || !camCap || !camTrack.applyConstraints){
+      wrap.style.display="none";
+      return;
+    }
+
+    // Zoom
+    if(camCap.zoom){
+      wrap.style.display="block";
+      zoom.min = String(camCap.zoom.min ?? 1);
+      zoom.max = String(camCap.zoom.max ?? 1);
+      zoom.step = String(camCap.zoom.step ?? 0.1);
+      // try read current settings
+      const st = camTrack.getSettings ? camTrack.getSettings() : {};
+      const cur = st.zoom ?? 1;
+      zoom.value = String(cur);
+      zoomVal.textContent = `${Number(cur).toFixed(1)}×`;
+
+      zoom.oninput = ()=>{
+        const v = Number(zoom.value);
+        zoomVal.textContent = `${v.toFixed(1)}×`;
+      };
+      zoom.onchange = async ()=>{
+        const v = Number(zoom.value);
+        try{ await camTrack.applyConstraints({ advanced: [{ zoom: v }] }); }catch(e){}
+      };
+    }else{
+      // no zoom support → hide whole control block
+      wrap.style.display="none";
+    }
+
+    // Focus distance (rarely supported on mobile web)
+  }
+
+async function setupTorchButton(){
+    const btn = $("btnTorch");
+    btn.disabled = true;
+    btn.textContent = "🔦";
+    btn.onclick = null;
+    try{
+      const track = stream?.getVideoTracks?.()[0];
+      if(!track) return;
+      const cap = track.getCapabilities ? track.getCapabilities() : null;
+      if(!cap || !cap.torch) return;
+      let on = false;
+      btn.disabled = false;
+      btn.textContent = "🔦 Aus";
+      btn.onclick = async ()=>{
+        on = !on;
+        try{
+          await track.applyConstraints({ advanced: [{ torch: on }] });
+          btn.textContent = on ? "🔦 An" : "🔦 Aus";
+        }catch(e){}
+      };
+    }catch(e){}
+  }
+
+  // short beep (no external file)
+  function beep(){
+    try{
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type="sine"; o.frequency.value=880;
+      g.gain.value=0.06;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      setTimeout(()=>{ o.stop(); ctx.close(); }, 70);
+    }catch(e){}
+  }
+
+  $("btnStart").addEventListener("click", startScan);
+  $("btnStop").addEventListener("click", stopScan);
+
+  // --- Protocol creation (print) ---
+  $("btnProtocol").addEventListener("click", ()=>{
+    const hasAny = state.packages.some(p=>p.items && p.items.length);
+    if(!hasAny){ showToast("Leer","Keine Items vorhanden."); return; }
+    openProtocolPrint();
+  });
+
+  $("btnLabel").addEventListener("click", ()=>{
+    const hasAny = state.packages.some(p=>p.items && p.items.length);
+    if(!hasAny){ showToast("Leer","Keine Items vorhanden."); return; }
+    openLabelPrint();
+  });
+
+
+  function openLabelPrint(){
+    // one small label per package (for shipping / retouren label)
+    const packs = state.packages.filter(p=>p.items && p.items.length);
+    const css = labelCss();
+    const htmlDoc = labelHtml(packs);
+    const docString = `<!doctype html><html lang="de"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Retouren-Label</title><style>${css}</style></head><body>${htmlDoc}</body></html>`;
+
+    // 1) Try classic popup (best for desktop)
+    try{
+      const w = window.open("", "_blank");
+      if(w){
+        w.document.open(); w.document.write(docString); w.document.close();
+        w.focus();
+        setTimeout(()=>{ try{ w.print(); }catch(e){} }, 350);
+        return;
+      }
+    }catch(e){}
+
+    // 2) Blob URL open (works better on iOS/PWA than document.write)
+    try{
+      const blob = new Blob([docString], {type:"text/html;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      // As a fallback, also offer a direct download (some PWA contexts block new tabs)
+      setTimeout(()=>{
+        try{
+          const dl = document.createElement("a");
+          dl.href = url;
+          dl.download = "Retouren-Label.html";
+          document.body.appendChild(dl);
+          dl.click();
+          dl.remove();
+        }catch(e){}
+        setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(e){} }, 2000);
+      }, 400);
+
+      showToast("Retouren Label","Öffnet sich in neuem Tab. Falls blockiert: HTML-Download wird gestartet.");
+      return;
+    }catch(e){}
+
+    // 3) last resort: iframe print
+    printHtmlViaIframe(docString);
+  }
+
+  function labelCss(){
+    return `
+      @page{ size:A4; margin:10mm; }
+      body{ font-family: Arial, Helvetica, sans-serif; color:#000; }
+      .wrap{ display:flex; flex-wrap:wrap; gap:8mm; }
+      .lbl{
+        width:88mm; height:55mm;
+        border:1px solid #000; padding:6mm;
+        display:flex; flex-direction:column; justify-content:space-between;
+      }
+      .h{ font-weight:800; font-size:14px; }
+      .s{ font-size:11px; margin-top:2mm; }
+      .row{ display:flex; justify-content:space-between; font-size:12px; }
+      .muted{ color:#333; font-size:10px; }
+      .line{ height:1px; background:#000; margin:3mm 0; }
+      .sig{ display:flex; justify-content:space-between; gap:6mm; }
+      .box{ flex:1; border:1px solid #000; height:10mm; }
+      .boxLbl{ font-size:9px; margin-top:1mm; }
+    `;
+  }
+
+  function labelHtml(packs){
+    const today = new Date();
+    const ds = `${String(today.getDate()).padStart(2,"0")}.${String(today.getMonth()+1).padStart(2,"0")}.${today.getFullYear()}`;
+    let out = `<div class="wrap">`;
+    for(const p of packs){
+      const sums = packTotals(p);
+      out += `
+        <div class="lbl">
+          <div>
+            <div class="h">SELLENCE Retoure • Paket ${p.id}</div>
+            <div class="muted">Datum: ${ds}</div>
+            <div class="line"></div>
+            <div class="row"><span>KVP</span><strong>${fmtEUR(sums.kvp)}</strong></div>
+            <div class="row"><span>PMG 90%</span><strong>${fmtEUR(sums.byMode["90"]||0)}</strong></div>
+            <div class="row"><span>Good Will 55%</span><strong>${fmtEUR(sums.byMode["55"]||0)}</strong></div>
+          </div>
+          <div>
+            <div class="muted">DHL Sendungsnummer</div>
+            <div class="box"></div>
+          </div>
+        </div>`;
+    }
+    out += `</div>`;
+    return out;
+  }
+
+  function groupForProtocol(){
+    // aggregate across ALL packages
+    const rows = [];
+    for(const p of state.packages){
+      for(const it of p.items){
+        rows.push(it);
+      }
+    }
+    // group by section + mode + price
+    const map = new Map();
+    for(const it of rows){
+      const key = `${it.pdfSection}||${it.mode}||${Number(it.price).toFixed(2)}`;
+      const cur = map.get(key) || { section: it.pdfSection, mode: it.mode, price: Number(it.price), qty:0, sum:0 };
+      cur.qty += it.qty;
+      cur.sum += it.qty * it.price;
+      map.set(key, cur);
+    }
+    // regroup per section
+    const sections = ["Zigaretten","Feinschnitt","Consumables"];
+    const out = {};
+    for(const s of sections){
+      out[s] = { "90":[], "55":[] };
+    }
+    for(const v of map.values()){
+      out[v.section] = out[v.section] || {"90":[],"55":[]};
+      out[v.section][v.mode].push(v);
+    }
+    for(const s of Object.keys(out)){
+      for(const m of ["90","55"]){
+        out[s][m].sort((a,b)=>a.price-b.price);
+      }
+    }
+    return out;
+  }
+
+  function openProtocolPrint(){
+    const data = groupForProtocol();
+    const totals = {
+      kvp90: sumArr(data, "90"),
+      kvp55: sumArr(data, "55")
+    };
+    totals.ref90 = totals.kvp90 * 0.90;
+    totals.ref55 = totals.kvp55 * 0.55;
+
+    const css = protocolCss();
+    const htmlDoc = protocolHtml(data, totals);
+    const docString = `<!doctype html><html lang="de"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Retoure-Protokoll</title><style>${css}</style></head><body>${htmlDoc}</body></html>`;
+
+    // Best effort open (no auto-print; user prints/shares from the opened tab – works reliably on iOS/PWA)
+    try{
+      const w = window.open("", "_blank");
+      if(w){
+        w.document.open();
+        w.document.write(docString);
+        w.document.close();
+        try{ w.focus(); }catch(e){}
+        showToast("Retourenprotokoll","In neuem Tab geöffnet. Dort kannst du drucken/teilen.");
+        return;
+      }
+    }catch(e){}
+
+    // Blob open + download fallback (iOS/PWA friendly)
+    try{
+      const blob = new Blob([docString], {type:"text/html;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      setTimeout(()=>{
+        try{
+          const dl = document.createElement("a");
+          dl.href = url;
+          dl.download = "Retoure-Protokoll.html";
+          document.body.appendChild(dl);
+          dl.click();
+          dl.remove();
+        }catch(e){}
+      }, 400);
+
+      setTimeout(()=>{ try{ URL.revokeObjectURL(url); }catch(e){} }, 5000);
+      showToast("Retourenprotokoll","Öffnet sich in neuem Tab. Falls blockiert: HTML-Download startet.");
+      return;
+    }catch(e){}
+
+    showToast("Retourenprotokoll","Popup/Download blockiert. Bitte Popups erlauben oder in Safari öffnen.");
+  }
+
+
+  function printHtmlViaIframe(docString){
+    try{
+      let fr = document.getElementById("printFrame");
+      if(!fr){
+        fr = document.createElement("iframe");
+        fr.id="printFrame";
+        fr.style.position="fixed";
+        fr.style.right="0";
+        fr.style.bottom="0";
+        fr.style.width="0";
+        fr.style.height="0";
+        fr.style.border="0";
+        document.body.appendChild(fr);
+      }
+      const d = fr.contentWindow.document;
+      d.open();
+      d.write(docString);
+      d.close();
+      fr.onload = ()=>{ try{ fr.contentWindow.focus(); fr.contentWindow.print(); }catch(e){} };
+      // some browsers don't fire onload reliably for about:blank writes
+      setTimeout(()=>{ try{ fr.contentWindow.focus(); fr.contentWindow.print(); }catch(e){} }, 350);
+    }catch(e){
+      showToast("Drucken nicht möglich","Popup blockiert. Bitte Popups erlauben oder in Safari/Chrome drucken.");
+    }
+  }
+
+  function sumArr(data, mode){
+    let s=0;
+    for(const sec of Object.keys(data)){
+      for(const r of data[sec][mode]) s += r.sum;
+    }
+    return s;
+  }
+
+  function protocolCss(){
+    return `
+      @page{ size:A4; margin:12mm; }
+      body{ font-family: Arial, Helvetica, sans-serif; color:#111; }
+      .top{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
+      .brand{ font-weight:800; font-size:18px; }
+      .brand small{ display:block; font-size:11px; font-weight:700; color:#444; margin-top:2px }
+      .box{ border:1px solid #111; padding:10px; }
+      .meta{ width:52%; }
+      .metaRow{ display:grid; grid-template-columns:80px 1fr; gap:8px; margin-bottom:8px; font-size:12px; }
+      .line{ border-bottom:1px solid #111; height:16px; }
+      h1{ margin:12px 0 8px; font-size:16px; text-align:center; }
+      table{ width:100%; border-collapse:collapse; font-size:11px; }
+      th,td{ border:1px solid #111; padding:5px 6px; }
+      th{ background:#f1f1f1; font-weight:800; }
+      .subhead{ background:#fafafa; font-weight:800; }
+      .right{ text-align:right; }
+      .center{ text-align:center; }
+      .sum{ background:#f1f1f1; font-weight:800; }
+      .bottomGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+      .sign{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+      .sign .box{ height:86px; font-size:11px; }
+      .muted{ color:#555; }
+    `;
+  }
+
+  function protocolHtml(data, totals){
+    const sectionOrder = ["Zigaretten","Feinschnitt","Consumables"];
+    const makeRows = (sec, mode) => {
+      const arr = data[sec][mode];
+      if(!arr.length){
+        return `<tr><td class="center muted" colspan="3">—</td></tr>`;
+      }
+      const rows = arr.map(r=>`
+        <tr>
+          <td class="right">${r.qty}</td>
+          <td class="right">${r.price.toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})} €</td>
+          <td class="right">${r.sum.toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})} €</td>
+        </tr>
+      `).join("");
+      const sum = arr.reduce((a,x)=>a+x.sum,0);
+      rows += `
+        <tr class="sum">
+          <td colspan="2">Summe ${sec}</td>
+          <td class="right">${sum.toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})} €</td>
+        </tr>
+      `;
+      return rows;
+    };
+
+    const head = `
+      <div class="top">
+        <div class="meta box">
+          <div class="metaRow"><div><b>SAP</b></div><div class="line"></div></div>
+          <div class="metaRow"><div><b>GLN</b></div><div class="line"></div></div>
+          <div class="metaRow"><div><b>Datum</b></div><div class="line"></div></div>
+          <div class="metaRow"><div><b>Ansprechpartner</b></div><div class="line"></div></div>
+        </div>
+        <div class="box" style="width:46%">
+          <div class="brand">SELLENCE<br><small>SALES PROFESSIONALS</small></div>
+          <div class="muted" style="margin-top:10px;font-size:11px">im Auftrag von</div>
+          <div style="margin-top:6px;font-size:11px" class="muted">Retouren-Protokoll (auto erstellt)</div>
+        </div>
+      </div>
+      <h1>Retoure-Protokoll</h1>
+    `;
+
+    const table = `
+      <table>
+        <tr>
+          <th rowspan="2" style="width:22%">Eingang Retoure</th>
+          <th colspan="3" class="center">PMG veranlasst (90 %)</th>
+          <th colspan="3" class="center">Good Will (55 %)</th>
+        </tr>
+        <tr>
+          <th class="center" style="width:10%">Anzahl Packs</th>
+          <th class="center" style="width:12%">Preisgruppe KVP</th>
+          <th class="center" style="width:14%">Gesamtsumme KVP €</th>
+          <th class="center" style="width:10%">Anzahl Packs</th>
+          <th class="center" style="width:12%">Preisgruppe KVP</th>
+          <th class="center" style="width:14%">Gesamtsumme KVP €</th>
+        </tr>
+        ${sectionOrder.map(sec=>`
+          <tr class="subhead"><td colspan="7">${sec}</td></tr>
+          <tr>
+            <td rowspan="${Math.max(data[sec]["90"].length + 1, data[sec]["55"].length + 1, 2)}" class="muted"> </td>
+            <td colspan="3" style="padding:0">
+              <table style="border:none;border-collapse:collapse;width:100%">
+                ${makeRows(sec,"90")}
+              </table>
+            </td>
+            <td colspan="3" style="padding:0">
+              <table style="border:none;border-collapse:collapse;width:100%">
+                ${makeRows(sec,"55")}
+              </table>
+            </td>
+          </tr>
+        `).join("")}
+      </table>
+    `;
+
+    const bottom = `
+      <div class="bottomGrid">
+        <div class="box">
+          <div style="display:flex;justify-content:space-between"><b>Gesamt KVP (90%)</b><span>${totals.kvp90.toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})} €</span></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px"><b>Gesamt Erstattung PMG 90%</b><span>${totals.ref90.toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})} €</span></div>
+        </div>
+        <div class="box">
+          <div style="display:flex;justify-content:space-between"><b>Gesamt KVP (55%)</b><span>${totals.kvp55.toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})} €</span></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px"><b>Gesamt Erstattung PMG 55%</b><span>${totals.ref55.toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})} €</span></div>
+        </div>
+      </div>
+      <div class="box" style="margin-top:10px">
+        <b>DHL Sendungsnummer</b><div class="line" style="margin-top:6px"></div>
+      </div>
+      <div class="sign">
+        <div class="box">
+          <b>Marktstempel und Unterschrift Ansprechpartner:</b><br>
+          <span class="muted">Hiermit bestätige ich, dass die Angaben inklusive der GLN-Nummer korrekt sind.</span>
+          <div class="line" style="margin-top:26px"></div>
+        </div>
+        <div class="box">
+          <b>Unterschrift Außendienstler:</b>
+          <div class="line" style="margin-top:46px"></div>
+        </div>
+      </div>
+    `;
+    return head + table + bottom;
+  }
+
+  // --- Startup ---
+  restore();
+  setDT(); setInterval(setDT, 15000);
+  render();
+
+  // PWA
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+
+})(); 
+</script>
+
+</body>
+</html>
