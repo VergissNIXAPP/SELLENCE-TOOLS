@@ -7,6 +7,15 @@ const selCountEl = byId("selCount");
 const selSubEl = byId("selSub");
 const countHintEl = byId("countHint");
 
+// Marken-Rahmenfarben (bessere Unterscheidung)
+const BRAND_COLORS = {
+  "IQOS": "#0B2A5B",        // dunkelblau
+  "TEREA": "#5BB8FF",       // hellblau
+  "MB CRAFTED": "#FFD200",  // gelb
+  "DELIA": "#FF3B30",       // rot
+  "VEEV": "#FF8A00"         // orange
+};
+
 let selected = new Set();
 
 function loadSelection(){
@@ -50,7 +59,7 @@ function render(){
   const q = norm(searchEl.value);
   const filtered = PRODUCT_DATA.filter(it=>{
     if(!q) return true;
-    const hay = `${it.brand} ${it.name} ${it.ean} ${it.pack||""}`.toLowerCase();
+    const hay = `${it.brand} ${it.name} ${it.ean} ${(it.pack_ean||"")} ${it.pack||""}`.toLowerCase();
     return hay.includes(q);
   });
 
@@ -64,6 +73,7 @@ function render(){
   for(const [brand, items] of groups){
     const section = document.createElement("section");
     section.className = "brand card";
+    if(BRAND_COLORS[brand]) section.style.setProperty("--brandColor", BRAND_COLORS[brand]);
 
     const header = document.createElement("div");
     header.className = "brandHeader";
@@ -123,7 +133,15 @@ function render(){
       ean.className = "ean";
       ean.textContent = it.ean;
 
-      meta.append(name, ean);
+      // optional: Packungs-EAN anzeigen (Gebinde bleibt immer die Haupt-EAN)
+      if(it.pack_ean){
+        const packEan = document.createElement("div");
+        packEan.className = "subean";
+        packEan.textContent = `Packung: ${it.pack_ean}`;
+        meta.append(name, ean, packEan);
+      }else{
+        meta.append(name, ean);
+      }
 
       const check = document.createElement("div");
       check.className = "check";

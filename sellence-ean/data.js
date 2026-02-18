@@ -13,7 +13,7 @@ const PRODUCT_DATA = [
   },
   {
     "name": "DELIA Classic Red",
-    "ean": "40235000746687",
+    "ean": "4023500746687",
     "brand": "DELIA",
     "pack": ""
   },
@@ -142,5 +142,43 @@ const PRODUCT_DATA = [
     "ean": "4023500747196",
     "brand": "TEREA",
     "pack": ""
-  }
-];
+  },
+
+  // --- VEEV (Gebinde-EAN laut Sortimentsübersicht) ---
+  {
+    "name": "VEEV ONE Kit Velvet Black",
+    "ean": "4023500044325",
+    "brand": "VEEV",
+    "pack": "KIT"
+  },
+  {
+    "name": "VEEV ONE Kit Silky Grey",
+    "ean": "4023500044332",
+    "brand": "VEEV",
+    "pack": "KIT"
+  },
+  {
+    "name": "VEEV ONE Kit Freshy Green",
+    "ean": "4023500044363",
+    "brand": "VEEV",
+    "pack": "KIT"
+  },
+
+  { "name": "VEEV ONE Ice Mint", "ean": "4023500747554", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Green Mint", "ean": "4023500754477", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Sour Apple", "ean": "4023500747509", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Cherry", "ean": "4023500747493", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Mango", "ean": "4023500744416", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Passion Fruit Kiwi Guava", "ean": "4023500746656", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Classic Tobacco", "ean": "4023500744386", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Blue Mint", "ean": "4023500744393", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Peach", "ean": "4023500744454", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Blueberry", "ean": "4023500744447", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Strawberry", "ean": "4023500744430", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Watermelon", "ean": "4023500744409", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Blue Raspberry", "ean": "4023500744478", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Grape", "ean": "4023500746663", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Balanced Tobacco", "ean": "4023500754903", "brand": "VEEV", "pack": "POD" },
+  { "name": "VEEV ONE Red Berries", "ean": "4023500757584", "brand": "VEEV", "pack": "POD" },
+
+ ];
