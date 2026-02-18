@@ -7,6 +7,7 @@ const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 function pad2(n){ return String(n).padStart(2,'0'); }
 function fmtTime(d){ return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+function fmtTimeSec(d){ return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`; }
 function fmtDateKey(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
 function parseDateKey(key){
   const [y,m,da] = key.split('-').map(n=>parseInt(n,10));
@@ -22,6 +23,13 @@ function msToHM(ms){
   const totalMin = Math.round(ms/60000);
   const h = Math.floor(totalMin/60);
   const m = totalMin % 60;
+  return `${sign}${h}:${pad2(m)}`;
+}
+function minutesToHM(min){
+  const sign = min < 0 ? '-' : '';
+  min = Math.abs(min);
+  const h = Math.floor(min/60);
+  const m = min % 60;
   return `${sign}${h}:${pad2(m)}`;
 }
 function hmToMinutes(hm){
@@ -140,6 +148,13 @@ function render(){
   }
   $('#weekHours').textContent = `${Math.floor(weekMin/60)}:${pad2(weekMin%60)}`;
 
+  // overtime vs target
+  const overtimeMin = weekMin - WEEK_TARGET_MIN;
+  const otEl = $('#weekOvertime');
+  if(otEl){
+    otEl.textContent = minutesToHM(overtimeMin);
+  }
+
   // hint (Thursday)
   const hintEl = $('#hintCard');
   hintEl.classList.add('hidden');
@@ -207,6 +222,77 @@ function render(){
       stateEl.classList.add('off');
     }
   }
+
+  // today panel
+  const todayInEl = $('#todayIn');
+  const todayOutEl = $('#todayOut');
+  const todayNetEl = $('#todayNet');
+  const todayLiveEl = $('#todayLive');
+  if(todayInEl && todayOutEl && todayNetEl && todayLiveEl){
+    todayInEl.textContent = today.in ? fmtTime(new Date(today.in)) : '—';
+    todayOutEl.textContent = today.out ? fmtTime(new Date(today.out)) : '—';
+    const netMin = calcNetMinutesForDay(today);
+    todayNetEl.textContent = minutesToHM(netMin);
+
+    if(today.in && !today.out){
+      const grossMin = Math.max(0, Math.round((Date.now() - today.in)/60000));
+      const liveNet = Math.max(0, grossMin - BREAK_MIN);
+      todayLiveEl.textContent = minutesToHM(liveNet);
+    } else {
+      todayLiveEl.textContent = '—';
+    }
+  }
+
+  // history cards (last 10 days, newest first)
+  const hist = $('#historyList');
+  if(hist){
+    const keysDesc = [...allKeys].sort().reverse().slice(0, 10);
+    if(keysDesc.length === 0){
+      hist.innerHTML = `<div class='muted tiny'>Noch keine Einträge vorhanden.</div>`;
+    } else {
+      hist.innerHTML = '';
+      for(const k of keysDesc){
+        const day = data.days[k];
+        const inStr = day?.in ? fmtTime(new Date(day.in)) : '—';
+        const outStr = day?.out ? fmtTime(new Date(day.out)) : '—';
+        const netMin = calcNetMinutesForDay(day);
+        const netStr = netMin ? minutesToHM(netMin) : '—';
+        const ok = netMin >= DAILY_TARGET_MIN;
+        const done = !!day?.in && !!day?.out;
+        const status = !day?.in ? 'kein Start' : (!day?.out ? 'läuft…' : 'fertig');
+
+        const wrap = document.createElement('div');
+        wrap.className = 'historyItem';
+        wrap.innerHTML = `
+          <div class='historyLeft'>
+            <div class='historyDate'>${dayLabel(k)}</div>
+            <div class='historyMeta'>${inStr} – ${outStr} · ${BREAK_MIN} min Pause · <b>${status}</b></div>
+          </div>
+          <div class='historyRight'>
+            <span class='pillTag ${done ? (ok ? 'good' : 'bad') : ''}'>${netStr}</span>
+          </div>
+        `;
+        hist.appendChild(wrap);
+      }
+    }
+  }
+}
+
+function startLiveClock(){
+  const timeEl = document.getElementById('liveTime');
+  const dateEl = document.getElementById('liveDate');
+  if(!timeEl || !dateEl) return;
+
+  const tick = ()=>{
+    const now = new Date();
+    timeEl.textContent = fmtTimeSec(now);
+    dateEl.textContent = now.toLocaleDateString('de-DE', {
+      weekday:'long', year:'numeric', month:'long', day:'2-digit'
+    });
+  };
+  tick();
+  clearInterval(startLiveClock._t);
+  startLiveClock._t = setInterval(tick, 1000);
 }
 
 function setStatus(text){
@@ -445,6 +531,7 @@ function setup(){
   $('#toDate').value = to;
 
   render();
+  startLiveClock();
 }
 
 document.addEventListener('DOMContentLoaded', setup);

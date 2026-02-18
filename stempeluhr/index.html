@@ -4,7 +4,7 @@
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1, viewport-fit=cover'>
   <meta name='theme-color' content='#0b1220'>
-  <title>SELLENCE Stempeluhr</title>
+  <title>Stempeluhr</title>
   <link rel='manifest' href='manifest.json'>
   <link rel='apple-touch-icon' href='assets/icon-192.png'>
   <link rel='icon' type='image/png' sizes='192x192' href='assets/icon-192.png'>
@@ -18,23 +18,9 @@
         <a id='backTools' class='iconBtn backBtn' href='../index.html' aria-label='Zurueck zu Tools'>←</a>
 
         <div class='brand brandCenter'>
-          <div class='logo' aria-hidden='true'>
-            <!-- Simple clock + S mark (inline so it works offline) -->
-            <svg viewBox='0 0 64 64' width='22' height='22' focusable='false' aria-hidden='true'>
-              <defs>
-                <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
-                  <stop offset='0' stop-color='#1ee3a6'/>
-                  <stop offset='1' stop-color='#3b82f6'/>
-                </linearGradient>
-              </defs>
-              <circle cx='32' cy='32' r='24' fill='none' stroke='url(#g)' stroke-width='6' opacity='.95'/>
-              <path d='M32 20v13l10 6' fill='none' stroke='url(#g)' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/>
-              <path d='M27 38c2.7 3.2 9 3.4 12 .5 1.7-1.6 1.4-3.8-.8-4.8-1.6-.7-3.6-.9-5.5-1.5-2.7-.8-3.2-3.5-1.1-5.1 2.5-1.9 7.6-1.7 10.2.7' fill='none' stroke='rgba(255,255,255,.92)' stroke-width='3.2' stroke-linecap='round'/>
-            </svg>
-          </div>
           <div>
-            <div class='title'>SELLENCE</div>
-            <div class='subtitle'>STEMPELUHR</div>
+            <div class='title'>STEMPELUHR</div>
+            <div class='subtitle'>Zeiterfassung</div>
           </div>
         </div>
 
@@ -47,6 +33,11 @@
     <main class='grid'>
       <section class='card'>
         <div class='centerStack'>
+          <div class='heroClock' aria-label='Uhrzeit'>
+            <div id='liveTime' class='heroTime'>00:00:00</div>
+            <div id='liveDate' class='heroDate'>—</div>
+          </div>
+
           <label class='field nameField'>
             <span>Mitarbeitername</span>
             <input id='employeeName' type='text' value='z.B. Andre Schorn' placeholder='Andre Schorn' autocomplete='name'>
@@ -62,6 +53,27 @@
           <div class='stateRow'>
             <span class='stateLabel'>Status</span>
             <span id='clockState' class='stateBadge'>—</span>
+          </div>
+
+          <div class='todayPanel'>
+            <div class='todayKpis'>
+              <div class='miniKpi'>
+                <div class='miniLabel'>Heute Start</div>
+                <div id='todayIn' class='miniValue'>—</div>
+              </div>
+              <div class='miniKpi'>
+                <div class='miniLabel'>Heute Ende</div>
+                <div id='todayOut' class='miniValue'>—</div>
+              </div>
+              <div class='miniKpi'>
+                <div class='miniLabel'>Netto</div>
+                <div id='todayNet' class='miniValue'>0:00</div>
+              </div>
+              <div class='miniKpi'>
+                <div class='miniLabel'>Live</div>
+                <div id='todayLive' class='miniValue'>—</div>
+              </div>
+            </div>
           </div>
 
           <div id='statusLine' class='status' aria-live='polite'></div>
@@ -81,6 +93,10 @@
             <div class='kpi'>
               <div class='kpiLabel'>Diese Woche</div>
               <div id='weekHours' class='kpiValue'>0:00</div>
+            </div>
+            <div class='kpi'>
+              <div class='kpiLabel'>Überstunden (Woche)</div>
+              <div id='weekOvertime' class='kpiValue'>0:00</div>
             </div>
           </div>
         </div>
@@ -113,6 +129,12 @@
             </thead>
             <tbody id='rows'></tbody>
           </table>
+        </div>
+
+        <div class='history'>
+          <div class='h2'>Verlauf</div>
+          <div class='historyHint muted tiny'>Letzte Tage (neu → alt)</div>
+          <div id='historyList' class='historyList'></div>
         </div>
       </section>
     </main>
