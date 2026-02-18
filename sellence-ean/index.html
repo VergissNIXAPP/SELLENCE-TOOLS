@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>SELLENCE‑EAN</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/icon-180.png" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg"></div>
+
+  <header class="top">
+    <a class="backBtn" href="../index.html" aria-label="Zurück zu SELLENCE-TOOLS">
+      <span aria-hidden="true">←</span> Zurück
+    </a>
+<div class="brandMark" aria-hidden="true"></div>
+    <h1 class="title">SELLENCE‑EAN</h1>
+    <p class="subtitle">Wähle Marken oder einzelne Produkte – exportiere für <span class="pill">Katasymbol</span></p>
+  </header>
+
+  <main class="wrap">
+    <section class="controls card">
+      <div class="controlsRow">
+        <input id="search" class="search" type="search" placeholder="Suchen… (z.B. TEREA, MB, Bronze, 7XL)" autocomplete="off" />
+        <button id="clearSel" class="btn ghost" type="button" title="Auswahl löschen">Leeren</button>
+      </div>
+      <div class="hint" id="countHint"></div>
+    </section>
+
+    <section id="list" class="list"></section>
+  </main>
+
+  <footer class="sticky">
+    <div class="stickyInner">
+      <div class="selInfo">
+        <div class="selCount" id="selCount">0 ausgewählt</div>
+        <div class="selSub" id="selSub">Exportiert als CSV für KataSymbol</div>
+      </div>
+      <button id="exportBtn" class="btn primary" type="button">Export</button>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
