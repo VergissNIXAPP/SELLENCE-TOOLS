@@ -39,6 +39,7 @@
       <div class="controlsRow">
         <input id="search" class="search" type="search" placeholder="Suchen… (z.B. TEREA, MB, Bronze, 7XL)" autocomplete="off" />
         <button id="clearSel" class="btn ghost" type="button" title="Auswahl löschen">Leeren</button>
+        <button id="brandOrderBtn" class="btn ghost" type="button" title="Marken-Reihenfolge einstellen">Marken</button>
       </div>
       <div class="hint" id="countHint"></div>
     </section>
@@ -71,7 +72,24 @@
     </div>
   </div>
 
-  <script src="data.js"></script>
+  
+  <!-- Marken-Reihenfolge Modal -->
+  <div id="brandModal" class="modal" aria-hidden="true">
+    <div class="modalBackdrop" data-close="1"></div>
+    <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="brandTitle">
+      <div class="modalTitle" id="brandTitle">Marken-Reihenfolge</div>
+      <div class="modalText">Stelle ein, in welcher Reihenfolge die Marken (von oben nach unten) angezeigt werden. Wird lokal gespeichert.</div>
+
+      <div id="brandOrderList" class="brandOrderList"></div>
+
+      <div class="modalBtns" style="margin-top:14px;">
+        <button id="brandResetBtn" class="btn ghost" type="button">Standard</button>
+        <button id="brandCloseBtn" class="btn primary" type="button">Fertig</button>
+      </div>
+    </div>
+  </div>
+
+<script src="data.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

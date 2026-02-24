@@ -1,4 +1,5 @@
 const LS_KEY = "sellence_ean_selected_v1";
+const BRAND_ORDER_KEY = "sellence_ean_brand_order_v1";
 
 const byId = (id) => document.getElementById(id);
 const listEl = byId("list");
@@ -43,8 +44,116 @@ function groupByBrand(items){
     if(!map.has(it.brand)) map.set(it.brand, []);
     map.get(it.brand).push(it);
   }
-  return [...map.entries()].sort((a,b)=> a[0].localeCompare(b[0], "de"));
+  return sortBrandEntries([...map.entries()]);
 }
+
+function getAllBrands(){
+  return [...new Set(PRODUCT_DATA.map(it=>it.brand))].sort((a,b)=>a.localeCompare(b,"de"));
+}
+
+function loadBrandOrder(){
+  try{
+    const raw = localStorage.getItem(BRAND_ORDER_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    const all = getAllBrands();
+    if(!Array.isArray(parsed) || parsed.length===0) return all;
+    // ensure includes all brands and no duplicates
+    const set = new Set();
+    const clean = [];
+    for(const b of parsed){
+      if(typeof b === "string" && all.includes(b) && !set.has(b)){
+        set.add(b); clean.push(b);
+      }
+    }
+    for(const b of all){ if(!set.has(b)) clean.push(b); }
+    return clean;
+  }catch(_){
+    return getAllBrands();
+  }
+}
+
+function saveBrandOrder(order){
+  localStorage.setItem(BRAND_ORDER_KEY, JSON.stringify(order));
+}
+
+function sortBrandEntries(entries){
+  const order = loadBrandOrder();
+  const idx = new Map(order.map((b,i)=>[b,i]));
+  return entries.sort((a,b)=>{
+    const ia = idx.has(a[0]) ? idx.get(a[0]) : 1e9;
+    const ib = idx.has(b[0]) ? idx.get(b[0]) : 1e9;
+    if(ia !== ib) return ia-ib;
+    return a[0].localeCompare(b[0], "de");
+  });
+}
+
+// Brand-Order Modal
+function showBrandModal(){
+  const modal = byId("brandModal");
+  if(!modal) return;
+  renderBrandOrderList();
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+}
+
+function hideBrandModal(){
+  const modal = byId("brandModal");
+  if(!modal) return;
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden","true");
+}
+
+function renderBrandOrderList(){
+  const host = byId("brandOrderList");
+  if(!host) return;
+  const order = loadBrandOrder();
+  host.innerHTML = "";
+
+  order.forEach((brand, i)=>{
+    const row = document.createElement("div");
+    row.className = "brandOrderRow";
+
+    const name = document.createElement("div");
+    name.className = "brandOrderName";
+    name.textContent = brand;
+
+    const btns = document.createElement("div");
+    btns.className = "brandOrderBtns";
+
+    const up = document.createElement("button");
+    up.className = "brandArrowBtn";
+    up.type = "button";
+    up.textContent = "↑";
+    up.disabled = i===0;
+    up.addEventListener("click", ()=>{
+      const cur = loadBrandOrder();
+      if(i===0) return;
+      [cur[i-1], cur[i]] = [cur[i], cur[i-1]];
+      saveBrandOrder(cur);
+      render();
+      renderBrandOrderList();
+    });
+
+    const down = document.createElement("button");
+    down.className = "brandArrowBtn";
+    down.type = "button";
+    down.textContent = "↓";
+    down.disabled = i===order.length-1;
+    down.addEventListener("click", ()=>{
+      const cur = loadBrandOrder();
+      if(i===cur.length-1) return;
+      [cur[i+1], cur[i]] = [cur[i], cur[i+1]];
+      saveBrandOrder(cur);
+      render();
+      renderBrandOrderList();
+    });
+
+    btns.append(up, down);
+    row.append(name, btns);
+    host.append(row);
+  });
+}
+
 
 function makeCheckIcon(){
   return `
@@ -307,6 +416,45 @@ if(modal){
   });
   document.addEventListener("keydown", (e)=>{
     if(e.key === "Escape") hideExportModal();
+  });
+}
+
+
+// Brand-Order Modal Buttons
+const brandBtn = byId("brandOrderBtn");
+const brandCloseBtn = byId("brandCloseBtn");
+const brandResetBtn = byId("brandResetBtn");
+const brandModal = byId("brandModal");
+
+if(brandBtn){
+  brandBtn.addEventListener("click", showBrandModal);
+}
+if(brandCloseBtn){
+  brandCloseBtn.addEventListener("click", ()=>{
+    hideBrandModal();
+    render(); // refresh list with new order
+  });
+}
+if(brandResetBtn){
+  brandResetBtn.addEventListener("click", ()=>{
+    try{ localStorage.removeItem(BRAND_ORDER_KEY); }catch(_){}
+    renderBrandOrderList();
+    render();
+  });
+}
+if(brandModal){
+  brandModal.addEventListener("click", (e)=>{
+    const t = e.target;
+    if(t && t.getAttribute && t.getAttribute("data-close")==="1"){
+      hideBrandModal();
+      render();
+    }
+  });
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape"){
+      hideBrandModal();
+      render();
+    }
   });
 }
 

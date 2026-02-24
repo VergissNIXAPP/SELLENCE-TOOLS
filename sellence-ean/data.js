@@ -306,5 +306,40 @@ const PRODUCT_DATA = [
     "pack_ean": "42492382",
     "brand": "MB CRAFTED",
     "pack": ""
+  },
+  {
+    "name": "IQOS Breeze Blue",
+    "ean": "7622100508939",
+    "pack_ean": "",
+    "brand": "IQOS",
+    "pack": ""
+  },
+  {
+    "name": "IQOS Midnight Black",
+    "ean": "7622100566649",
+    "pack_ean": "",
+    "brand": "IQOS",
+    "pack": ""
+  },
+  {
+    "name": "IQOS Pebble Beige",
+    "ean": "7622100503323",
+    "pack_ean": "",
+    "brand": "IQOS",
+    "pack": ""
+  },
+  {
+    "name": "IQOS Pebble Grey",
+    "ean": "7622100503286",
+    "pack_ean": "",
+    "brand": "IQOS",
+    "pack": ""
+  },
+  {
+    "name": "IQOS Vivid Terracotta",
+    "ean": "7622100566625",
+    "pack_ean": "",
+    "brand": "IQOS",
+    "pack": ""
   }
 ];

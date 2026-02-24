@@ -378,3 +378,48 @@ body{
   border-color: color-mix(in srgb, var(--brandColor) 75%, rgba(255,255,255,.10)) !important;
 }
 
+
+
+/* Marken-Reihenfolge (Modal) */
+.brandOrderList{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  max-height:min(55vh, 520px);
+  overflow:auto;
+  padding-right:4px;
+}
+.brandOrderRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+}
+.brandOrderName{
+  font-weight:800;
+  letter-spacing:.2px;
+}
+.brandOrderBtns{
+  display:flex;
+  gap:8px;
+}
+.brandArrowBtn{
+  width:42px;
+  height:38px;
+  border-radius:12px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  font-size:18px;
+  font-weight:900;
+}
+.brandArrowBtn:active{ transform: translateY(1px); }
+.brandArrowBtn[disabled]{
+  opacity:.35;
+  cursor:not-allowed;
+  filter: grayscale(1);
+}
