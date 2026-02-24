@@ -11,6 +11,8 @@ const countHintEl = byId("countHint");
 const BRAND_COLORS = {
   "IQOS": "#0B2A5B",        // dunkelblau
   "TEREA": "#5BB8FF",       // hellblau
+  "MB": "#5a0000",          // dunkelrot
+  "LEVIA": "#7a3cff",       // violett
   "MB CRAFTED": "#FFD200",  // gelb
   "DELIA": "#FF3B30",       // rot
   "VEEV": "#FF8A00"         // orange
@@ -131,7 +133,7 @@ function render(){
 
       const ean = document.createElement("div");
       ean.className = "ean";
-      ean.textContent = it.ean;
+      ean.textContent = `Gebinde: ${it.ean}`;
 
       // optional: Packungs-EAN anzeigen (Gebinde bleibt immer die Haupt-EAN)
       if(it.pack_ean){
@@ -188,11 +190,51 @@ function updateFooter(){
   byId("exportBtn").style.filter = n===0 ? "grayscale(1) opacity(.7)" : "none";
 }
 
-function exportCSV(){
+function showExportModal(){
+  const modal = byId("exportModal");
+  if(!modal){
+    // Fallback: wenn Modal fehlt, exportiere Gebinde-EAN
+    doExportCSV("gebinde");
+    return;
+  }
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+
+  const first = byId("exportPackBtn") || byId("exportGebBtn");
+  if(first) first.focus();
+}
+
+function hideExportModal(){
+  const modal = byId("exportModal");
+  if(!modal) return;
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden","true");
+}
+
+function doExportCSV(mode){
   const chosen = PRODUCT_DATA.filter(it => selected.has(itemKey(it)));
 
+  // mode: "pack" => Packungs-EAN, sonst Gebinde-EAN
+  let missingPack = 0;
+  const lines = chosen.map(it => {
+    let eanOut = it.ean; // Gebinde default
+    if(mode === "pack"){
+      if(it.pack_ean){
+        eanOut = it.pack_ean;
+      }else{
+        missingPack += 1;
+        eanOut = it.ean; // Fallback
+      }
+    }
+    return `${it.name},${eanOut}`;
+  });
+
+  if(mode === "pack" && missingPack > 0){
+    const ok = confirm(`${missingPack} Produkt(e) haben keine Packungs‑EAN in der Liste.\nDiese werden mit der Gebinde‑EAN exportiert.\n\nFortfahren?`);
+    if(!ok) return;
+  }
+
   // EXACT wie deine Suvan-Datei: keine Header, keine Quotes, CRLF
-  const lines = chosen.map(it => `${it.name},${it.ean}`);
   const csv = lines.join("\r\n") + "\r\n";
 
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -201,12 +243,17 @@ function exportCSV(){
   const a = document.createElement("a");
   a.href = url;
   const stamp = new Date().toISOString().slice(0,10);
-  a.download = `SELLENCE-EAN_${stamp}.csv`;
+  const suffix = (mode === "pack") ? "PACKUNG" : "GEBINDE";
+  a.download = `SELLENCE-EAN_${suffix}_${stamp}.csv`;
 
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+
+function exportCSV(){
+  showExportModal();
 }
 
 function clearSelection(){
@@ -229,6 +276,40 @@ registerSW();
 
 byId("exportBtn").addEventListener("click", exportCSV);
 byId("clearSel").addEventListener("click", clearSelection);
+
+// Export-Modal Buttons
+const packBtn = byId("exportPackBtn");
+const gebBtn = byId("exportGebBtn");
+const cancelBtn = byId("exportCancelBtn");
+const modal = byId("exportModal");
+
+if(packBtn){
+  packBtn.addEventListener("click", ()=>{
+    hideExportModal();
+    doExportCSV("pack");
+  });
+}
+if(gebBtn){
+  gebBtn.addEventListener("click", ()=>{
+    hideExportModal();
+    doExportCSV("gebinde");
+  });
+}
+if(cancelBtn){
+  cancelBtn.addEventListener("click", hideExportModal);
+}
+if(modal){
+  modal.addEventListener("click", (e)=>{
+    const t = e.target;
+    if(t && t.getAttribute && t.getAttribute("data-close")==="1"){
+      hideExportModal();
+    }
+  });
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape") hideExportModal();
+  });
+}
+
 searchEl.addEventListener("input", ()=>{
   render();
 });

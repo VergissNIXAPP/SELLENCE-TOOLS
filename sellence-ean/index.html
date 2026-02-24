@@ -17,7 +17,19 @@
     <a class="backBtn" href="../index.html" aria-label="Zurück zu SELLENCE-TOOLS">
       <span aria-hidden="true">←</span> Zurück
     </a>
-<div class="brandMark" aria-hidden="true"></div>
+<div class="brandMark" aria-hidden="true">
+      <svg class="brandBarcode" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+  <rect x="6"  width="4" height="60"/>
+  <rect x="16" width="2" height="60"/>
+  <rect x="24" width="6" height="60"/>
+  <rect x="39" width="3" height="60"/>
+  <rect x="49" width="8" height="60"/>
+  <rect x="64" width="3" height="60"/>
+  <rect x="74" width="5" height="60"/>
+  <rect x="89" width="2" height="60"/>
+  <rect x="98" width="6" height="60"/>
+</svg>
+    </div>
     <h1 class="title">SELLENCE‑EAN</h1>
     <p class="subtitle">Wähle Marken oder einzelne Produkte – exportiere für <span class="pill">Katasymbol</span></p>
   </header>
@@ -43,6 +55,21 @@
       <button id="exportBtn" class="btn primary" type="button">Export</button>
     </div>
   </footer>
+
+
+  <!-- Export-Auswahl Modal -->
+  <div id="exportModal" class="modal" aria-hidden="true">
+    <div class="modalBackdrop" data-close="1"></div>
+    <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="exportTitle">
+      <div class="modalTitle" id="exportTitle">Was möchtest du exportieren?</div>
+      <div class="modalText">Wähle, ob die <b>Packungs‑EAN</b> oder die <b>Gebinde‑EAN</b> in die CSV geschrieben wird.</div>
+      <div class="modalBtns">
+        <button id="exportPackBtn" class="btn primary" type="button">Packungs‑EAN</button>
+        <button id="exportGebBtn" class="btn ghost" type="button">Gebinde‑EAN</button>
+        <button id="exportCancelBtn" class="btn ghost" type="button">Abbrechen</button>
+      </div>
+    </div>
+  </div>
 
   <script src="data.js"></script>
   <script src="app.js"></script>
