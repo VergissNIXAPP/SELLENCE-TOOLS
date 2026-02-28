@@ -340,7 +340,7 @@
           <button class="btn primary" id="btnStart" type="button">Scan starten</button>
           <button class="btn" id="btnStop" type="button">Stop</button>
           <button class="btn" id="btnTorch" type="button" disabled>🔦</button>
-          <button class="btn" id="btnManualEan" type="button">Manuell hinzufügen</button>
+          <button class="btn" id="btnManualEan" type="button">EAN manuell</button>
         </div>
 
         <div class="camControls" id="camControls" style="display:none">
@@ -430,7 +430,7 @@
   </div>
 </div>
 
-<!-- Modal: Manual Add -->
+<!-- Modal: Manual EAN -->
 <div class="modal" id="eanModal" aria-hidden="true" data-close="1">
   <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="eanTitle">
     <div class="modalHead">
@@ -439,11 +439,11 @@
     </div>
     <div class="modalBody">
       <div class="inputRow">
-        <input class="field" id="eanInput" inputmode="text" placeholder="z.B. 10 Zigaretten" />
+        <input class="field" id="eanInput" inputmode="numeric" placeholder="z.B. 4001234567890" />
         <button class="btn primary" id="eanSubmit" type="button">Übernehmen</button>
       </div>
-      <div class="hintBox" id="eanHelp" style="margin-top:10px">
-        Gib Preis und Kategorie ein (z.B. „10 Zigaretten“).
+      <div class="hintBox" style="margin-top:10px">
+        Wenn die EAN bereits gespeichert ist, wird der Artikel sofort ins Paket übernommen. Wenn nicht, öffnet sich der „Neues Produkt“-Dialog.
       </div>
     </div>
   </div>
@@ -840,9 +840,8 @@ persist(); render();
       const tr = document.createElement("tr");
       const name = (it.name||"").trim();
       const short = name ? name : "Unbenannt";
-      const codeLabel = (it.ean && String(it.ean).trim()) ? escapeHtml(it.ean) : "STEUERBANDEROLLE";
       tr.innerHTML = `
-        <td><div style="font-weight:900">${codeLabel}</div><div class="muted" style="font-size:12px">${escapeHtml(short)} • ${escapeHtml(it.catLabel)}</div></td>
+        <td><div style="font-weight:900">${it.ean}</div><div class="muted" style="font-size:12px">${escapeHtml(short)} • ${escapeHtml(it.catLabel)}</div></td>
         <td class="num">
           <div class="qtyBtns">
             <button class="xBtn" data-act="minus" title="Minus">−</button>
@@ -976,7 +975,7 @@ persist(); render();
     scanLock = false;
     limitModalState.forceOk = false;
     setMainUiDisabled(false);
-    setHint(scanning ? "Scannen… Halte die Steuerbanderolle (Preis) in den Rahmen." : "Kamera aus • Tippe auf „Scan starten“");
+    setHint(scanning ? "Scannen… Halte die Steuerbanderolle (Preis + Kategorie) in den Rahmen." : "Kamera aus • Tippe auf „Scan starten“");
   }
 
   function forceClosePack(reason){
@@ -989,30 +988,17 @@ persist(); render();
   }
 
 
-  // Manual add modal (price + category)
+  // Manual EAN modal
   $("btnManualEan").addEventListener("click", ()=>{
-    // Re-use the existing modal UI as a quick manual input for "Preis Kategorie".
-    // Beispiele:
-    //   10 Zigaretten
-    //   15,00 Feinschnitt
-    //   8 Consumables
-    $("eanTitle").textContent = "Manuell hinzufügen";
-    $("eanHelp").innerHTML = "Gib <b>Preis</b> und optional <b>Kategorie</b> ein, z.B. <b>10 Zigaretten</b> oder <b>15,00 Feinschnitt</b>.";
     $("eanInput").value="";
-    $("eanInput").placeholder = "z.B. 10 Zigaretten";
     openModal("eanModal");
     setTimeout(()=> $("eanInput").focus(), 50);
   });
   $("eanSubmit").addEventListener("click", ()=>{
-    const raw = String($("eanInput").value||"").trim();
-    if(!raw){ showToast("Eingabe fehlt","Bitte Preis eingeben."); return; }
+    const ean = normalizeEan($("eanInput").value);
+    if(!ean){ showToast("EAN fehlt","Bitte EAN eingeben."); return; }
     closeModal("eanModal");
-    const parsed = parseStampText(raw);
-    if(parsed && Number.isFinite(parsed.price) && parsed.price>0){
-      addStampToPack(parsed.catKey, parsed.price, 1, parsed.name || "Manuell");
-    }else{
-      showToast("Nicht erkannt","Bitte z.B. '10 Zigaretten' eingeben.");
-    }
+    handleEan(ean);
   });
   $("eanInput").addEventListener("keydown", (e)=>{ if(e.key==="Enter") $("eanSubmit").click(); });
 
@@ -1181,172 +1167,133 @@ persist(); render();
   $("micName").addEventListener("click", ()=> startDictation("prodName"));
   $("micPrice").addEventListener("click", ()=> startDictation("prodPrice",{type:"price"}));
 
-  // --- Add item from Steuerbanderolle OCR / manual ---
-  function addStampToPack(catKey, price, qty=1, name=""){
-    const p = Number(price);
-    if(!Number.isFinite(p) || p<=0){
-      showToast("Preis fehlt","Bitte Preis korrekt erfassen.");
-      return;
-    }
-    const delta = p * qty;
-    if(delta > MAX_PACKAGE_VALUE){
-      showToast("Zu teuer", "Ein einzelner Artikel übersteigt 500 €. Bitte prüfen.");
-      return;
-    }
-
-    const pack = ensurePackForDelta(delta);
-    const mode = state.mode;
-    const rate = MODES[mode].rate;
-    const cat = CATS[catKey] || CATS.OTP;
-    const displayName = (name && String(name).trim()) ? String(name).trim() : `${cat.pdfSection}`;
-
-    const existing = pack.items.find(it => it.catKey===catKey && it.mode===mode && Number(it.price)===Number(p) && (it.name||"")===displayName);
-    if(existing){
-      existing.qty += qty;
-      existing.kvp = existing.qty * existing.price;
-      existing.refund = existing.kvp * existing.rate;
-      existing.at = Date.now();
+  // --- EAN handling entry point ---
+  function handleEan(rawEan){
+    const ean = normalizeEan(rawEan);
+    if(!ean) return;
+    const qty = Math.max(1, Math.floor(parseNum($("quickQty").value) || 1));
+    if(products[ean]){
+      addKnownProductToPack(ean, qty);
     }else{
-      pack.items.push({
-        id: uid(),
-        ean: "",
-        name: displayName,
-        catKey,
-        catLabel: cat.label,
-        pdfSection: cat.pdfSection,
-        mode,
-        rate,
-        qty,
-        price: p,
-        kvp: qty * p,
-        refund: qty * p * rate,
-        at: Date.now()
-      });
+      openNewProductModal(ean, true);
     }
-    persist(); render();
-
-    const ptAfter = packTotals(pack);
-    if(!pack.closed && (ptAfter.kvp >= (MAX_PACKAGE_VALUE - 0.01))) {
-      showLimitModal(`500 € erreicht in Paket ${pack.id}. Bitte jetzt bestätigen – danach wird das Paket geschlossen und ein neues gestartet.`, true, `Paket ${pack.id} geschlossen (500 € erreicht).`);
-    }
-    beep();
   }
 
-  function parseStampText(text){
-    const raw = String(text||"");
-    const up = raw.toUpperCase();
-    const compact = up.replace(/\s+/g," ").trim();
+  // --- Scanner (OCR Steuerbanderolle) ---
+  // Ziel: Aus größerer Entfernung Preis + Kategorie (z.B. "ZIGARETTEN", "10,- €") robust erkennen.
+  // Technik: Tesseract.js + starkes Preprocessing + 2-Pass OCR (Kategorie/Preis) + Stabilisierung (best-of-3).
 
-    let catKey = "OTP";
-    if(/ZIGAR(E|F)TT?EN/.test(up) || up.includes("ZIGARETTEN")) catKey = "OTP";
-    else if(/FEI?NSCHNITT/.test(up) || /FREI?NSCHNITT/.test(up) || up.includes("TABAK")) catKey = "UTP";
-    else if(/CONSUM/.test(up) || up.includes("HEETS") || up.includes("TEREA")) catKey = "HEETS";
-
-    const candidates = [];
-    const re = /(\d{1,3})(?:[\.,](\d{1,2}))?\s*[-–]?\s*(?:€|EUR)?/g;
-    let m;
-    while((m = re.exec(up))){
-      const euros = Number(m[1]);
-      const cents = (m[2] != null) ? Number(String(m[2]).padEnd(2,"0")) : 0;
-      const val = euros + (cents/100);
-      if(Number.isFinite(val) && val>=1 && val<=60) candidates.push(val);
-    }
-    const price = candidates.length ? candidates[candidates.length-1] : NaN;
-
-    let name = "";
-    if(catKey==="OTP") name = "Zigaretten";
-    if(catKey==="UTP") name = "Feinschnitt";
-    if(catKey==="HEETS") name = "Consumables";
-
-    return {catKey, price, name, raw: compact};
-  }
-
-  // --- Scanner (Steuerbanderolle OCR via Tesseract.js) ---
   let stream = null;
   let scanning = false;
-  let scanLock = false; // true while modal is open (freeze last scan)
-  let scanHoldUntil = 0; // pause after accept
+  let scanLock = false; // freeze while modal open
+  let scanHoldUntil = 0;
+
   let camTrack = null;
   let camCap = null;
 
+  // OCR worker
+  let tesseractLoaded = false;
   let ocrWorker = null;
   let ocrBusy = false;
-  let lastStamp = "";
-  let lastStampAt = 0;
-  let stampBuf = []; // best-of-3 buffer: [{key,t,parsed}]
+  let ocrStop = false;
 
-  // Switch Tesseract parameters depending on what we read (category vs. price).
-  // Setting params is cheap compared to a full recognize, but we still avoid doing it unnecessarily.
-  let ocrParamProfile = "";
-  async function setOcrProfile(profile){
-    if(!ocrWorker || ocrParamProfile === profile) return;
-    ocrParamProfile = profile;
-    try{
-      if(profile === "cat"){
-        await ocrWorker.setParameters({
-          tessedit_pageseg_mode: "7", // single text line
-          preserve_interword_spaces: "1",
-          tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöü"
-        });
-      } else {
-        await ocrWorker.setParameters({
-          tessedit_pageseg_mode: "6", // single uniform block
-          preserve_interword_spaces: "1",
-          tessedit_char_whitelist: "0123456789€,-."
-        });
-      }
-      await ocrWorker.setParameters({ user_defined_dpi: "300" });
-    }catch(e){}
-  }
+  // Stabilisierung
+  let ocrBuf = []; // [{catKey, price, t}]
+  let lastAccepted = {catKey:"", price:0, t:0};
 
-  function ensureOcrCanvas(id="ocrCanvas"){
-    let c = document.getElementById(id);
-    if(!c){
-      c = document.createElement("canvas");
-      c.id = id;
-      c.style.display = "none";
-      document.body.appendChild(c);
-    }
-    return c;
-  }
+  const OCR = {
+    // wie oft wir wirklich OCR machen (ms). requestAnimationFrame ist zu schnell.
+    intervalMs: 520,
+    // max Breite des OCR-Inputs (höher = besser, aber langsamer)
+    maxW: 1400,
+  };
 
   function setHint(t){ $("scanHint").textContent = t; }
+
+  // Lazily load Tesseract
+  async function ensureOcrWorker(){
+    if(ocrWorker) return true;
+    try{
+      setHint("OCR lädt… (einmalig)");
+      if(!tesseractLoaded){
+        await loadScript("https://unpkg.com/tesseract.js@5/dist/tesseract.min.js");
+        tesseractLoaded = true;
+      }
+      // @ts-ignore
+      const { createWorker } = Tesseract;
+      // @ts-ignore
+      ocrWorker = await createWorker({
+        logger: (m)=>{
+          // optional: progress (nicht spammen)
+          // if(m.status==="recognizing text") console.log(m.progress);
+        }
+      });
+      // deu ist oft nicht verfügbar -> wir nutzen eng+deu, und fallen auf eng, falls deu nicht geladen werden kann.
+      try{
+        await ocrWorker.loadLanguage('deu+eng');
+        await ocrWorker.initialize('deu+eng');
+      }catch(e){
+        await ocrWorker.loadLanguage('eng');
+        await ocrWorker.initialize('eng');
+      }
+
+      // Schnelle, robuste Defaults
+      await ocrWorker.setParameters({
+        tessedit_pageseg_mode: "6", // block of text
+      });
+      return true;
+    }catch(err){
+      console.error(err);
+      showToast("OCR Fehler", "OCR konnte nicht geladen werden. Prüfe Internet/Adblock.");
+      setHint("OCR Fehler • Tippe erneut auf Scan starten");
+      ocrWorker = null;
+      return false;
+    }
+  }
 
   async function startScan(){
     if(scanning) return;
     scanning = true;
+    ocrStop = false;
     setHint("Kamera wird gestartet…");
+
     try{
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:{ ideal:"environment" }, width:{ideal:1920}, height:{ideal:1080} }, audio:false });
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode:{ ideal:"environment" }, width:{ideal:1920}, height:{ideal:1080} },
+        audio:false
+      });
+
       $("video").srcObject = stream;
       await $("video").play().catch(()=>{});
+
       await applyTrackEnhancements();
       await setupTorchButton();
 
-      // init OCR worker (lazy)
-      if(!window.Tesseract){
-        await loadScript("https://unpkg.com/tesseract.js@5.1.0/dist/tesseract.min.js");
+      // OCR initialisieren (nicht blockierend, aber wir warten kurz)
+      const ok = await ensureOcrWorker();
+      if(!ok){
+        scanning = false;
+        stopScan();
+        return;
       }
-      if(!ocrWorker){
-        setHint("OCR wird vorbereitet…");
-        // Use deu+eng: The banderole often contains patterns / punctuation better recognized with eng.
-        ocrWorker = await Tesseract.createWorker("deu+eng", 1, { logger: ()=>{} });
-        ocrParamProfile = "";
-        await setOcrProfile("cat");      }
 
       setHint("Scannen… Halte die Steuerbanderolle (Preis + Kategorie) in den Rahmen.");
+      // Start OCR loop
       ocrLoop();
     }catch(err){
       console.error(err);
-      scanning=false;
+      scanning = false;
       setHint("Kamera nicht verfügbar.");
       showToast("Kamera Fehler", "Bitte Kamera-Berechtigung prüfen.");
+      stopScan();
     }
   }
 
   function stopScan(){
     scanning = false;
+    ocrStop = true;
     ocrBusy = false;
+
     try{
       if(stream){
         stream.getTracks().forEach(t=>t.stop());
@@ -1354,253 +1301,9 @@ persist(); render();
       }
       $("video").srcObject = null;
     }catch(e){}
+
     $("btnTorch").disabled = true;
     setHint("Kamera aus • Tippe auf „Scan starten“");
-  }
-
-  async function ocrLoop(){
-    if(!scanning) return;
-    const now = Date.now();
-    if(scanLock || now < scanHoldUntil){
-      requestAnimationFrame(ocrLoop);
-      return;
-    }
-
-    // throttle OCR (expensive)
-    if(ocrBusy || (now - lastStampAt) < 550){
-      requestAnimationFrame(ocrLoop);
-      return;
-    }
-    lastStampAt = now;
-    ocrBusy = true;
-
-    try{
-      const video = $("video");
-      const c = ensureOcrCanvas();
-      const vw = video.videoWidth || 0;
-      const vh = video.videoHeight || 0;
-      if(vw>0 && vh>0){
-        // ROI: focus on the stamp area – we do two OCR passes:
-        // 1) Category line (letters)  2) Price line (digits)
-        const rx = Math.floor(vw * 0.10);
-        const ry = Math.floor(vh * 0.05);
-        const rw = Math.floor(vw * 0.80);
-        const rh = Math.floor(vh * 0.34);
-
-        // Draw ROI → upscale (no smoothing) → preprocess
-        const scale = 3.2; // aggressive upscale improves tiny print a lot
-        const c = ensureOcrCanvas("ocrCanvas");
-        c.width  = Math.max(420, Math.floor(rw * scale));
-        c.height = Math.max(220, Math.floor(rh * scale));
-        const ctx = c.getContext("2d", { willReadFrequently: true });
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(video, rx, ry, rw, rh, 0, 0, c.width, c.height);
-
-        // Split into two smaller ROIs: top (category) and middle (price line)
-        const cCat = ensureOcrCanvas("ocrCanvasCat");
-        const cPrice = ensureOcrCanvas("ocrCanvasPrice");
-
-        const catY = 0;
-        const catH = Math.floor(c.height * 0.42);
-        const priceY = Math.floor(c.height * 0.28);
-        const priceH = Math.floor(c.height * 0.60);
-
-        cCat.width = c.width;
-        cCat.height = catH;
-        cPrice.width = c.width;
-        cPrice.height = priceH;
-
-        const ctxCat = cCat.getContext("2d", { willReadFrequently: true });
-        const ctxPrice = cPrice.getContext("2d", { willReadFrequently: true });
-        ctxCat.imageSmoothingEnabled = false;
-        ctxPrice.imageSmoothingEnabled = false;
-
-        ctxCat.drawImage(c, 0, catY, c.width, catH, 0, 0, cCat.width, cCat.height);
-        ctxPrice.drawImage(c, 0, priceY, c.width, priceH, 0, 0, cPrice.width, cPrice.height);
-
-        preprocessForOcr(ctxCat, cCat.width, cCat.height, "cat");
-        preprocessForOcr(ctxPrice, cPrice.width, cPrice.height, "price");
-
-        // OCR pass 1: category (letters)
-        await setOcrProfile("cat");
-        const rCat = await ocrWorker.recognize(cCat);
-        const catTxt = String(rCat?.data?.text || "").trim();
-
-        // OCR pass 2: price (digits)
-        await setOcrProfile("price");
-        const rPrice = await ocrWorker.recognize(cPrice);
-        const priceTxt = String(rPrice?.data?.text || "").trim();
-
-        const parsed = parseStampText((catTxt + "
-" + priceTxt).trim());
-
-        if(parsed && Number.isFinite(parsed.price) && parsed.price>0){
-          const key = `${parsed.catKey}|${parsed.price.toFixed(2)}`;
-          stampBuf.push({ key, t: now, parsed });
-          stampBuf = stampBuf.filter(x => (now - x.t) <= 1500);
-          const last3 = stampBuf.slice(-3);
-          if(last3.length >= 3){
-            const counts = {};
-            for(const x of last3) counts[x.key] = (counts[x.key]||0) + 1;
-            let bestKey = last3[2].key, bestC = 0;
-            for(const [k,cnt] of Object.entries(counts)){
-              if(cnt > bestC){ bestC = cnt; bestKey = k; }
-            }
-            stampBuf = [];
-            if(bestC >= 2 && bestKey !== lastStamp){
-              lastStamp = bestKey;
-              scanHoldUntil = now + 900;
-              showToast("Erkannt", `${parsed.name || parsed.catKey} • ${fmt(parsed.price)}`);
-              const qty = Math.max(1, Math.floor(parseNum($("quickQty").value) || 1));
-              addStampToPack(parsed.catKey, parsed.price, qty, parsed.name);
-            }
-          }
-        }
-      }
-    }catch(e){
-      // ignore OCR errors
-    }finally{
-      ocrBusy = false;
-      requestAnimationFrame(ocrLoop);
-    }
-  }
-
-  function loadScript(src){
-    return new Promise((resolve,reject)=>{
-      const s=document.createElement("script");
-      s.src=src; s.async=true;
-      s.onload=resolve; s.onerror=reject;
-      document.head.appendChild(s);
-    });
-  }
-
-  // Image preprocessing to make the printed stamp text pop.
-  // (fast + deterministic, no heavy CV deps)
-  
-  // Image preprocessing tuned for Steuerbanderollen:
-  // - very low contrast paper
-  // - heavy guilloche patterns
-  // - tiny font on phones
-  // We run two profiles: "cat" (letters) and "price" (digits).
-  function preprocessForOcr(ctx, w, h, profile){
-    try{
-      // Read pixels
-      let img = ctx.getImageData(0,0,w,h);
-      let d = img.data;
-
-      // 1) grayscale
-      for(let i=0;i<d.length;i+=4){
-        const r=d[i], g=d[i+1], b=d[i+2];
-        const y = (0.2126*r + 0.7152*g + 0.0722*b);
-        d[i]=d[i+1]=d[i+2]=y;
-      }
-
-      // 2) local contrast via fast adaptive threshold (integral image mean in a window)
-      // Window size depends on ROI: smaller for category, slightly larger for price lines.
-      const win = (profile==="cat") ? 17 : 25; // odd
-      const k   = (profile==="cat") ? 0.12 : 0.10; // how much below local mean we cut
-      adaptiveThreshold(img, w, h, win, k);
-
-      // 3) sharpen (binary edges get crisper after threshold)
-      img = ctx.getImageData(0,0,w,h);
-      img = sharpen3x3(img, w, h, 1.0);
-      ctx.putImageData(img,0,0);
-
-      // 4) hard clamp to pure B/W to remove residual dithering
-      const img2 = ctx.getImageData(0,0,w,h);
-      const d2 = img2.data;
-      for(let i=0;i<d2.length;i+=4){
-        const v = d2[i] < 128 ? 0 : 255;
-        d2[i]=d2[i+1]=d2[i+2]=v;
-      }
-      ctx.putImageData(img2,0,0);
-    }catch(e){
-      // If preprocessing fails, OCR still runs on raw image.
-    }
-  }
-
-  // Adaptive threshold using integral image (mean filter) – fast enough for small ROIs.
-  function adaptiveThreshold(img, w, h, win, k){
-    const d = img.data;
-    const half = Math.floor(win/2);
-    const iw = w+1;
-    const ih = h+1;
-    const integral = new Uint32Array(iw*ih);
-
-    // Build integral image of grayscale (we store in red channel)
-    for(let y=1;y<ih;y++){
-      let rowsum = 0;
-      for(let x=1;x<iw;x++){
-        const idx = ((y-1)*w + (x-1))*4;
-        const v = d[idx] | 0;
-        rowsum += v;
-        integral[y*iw + x] = integral[(y-1)*iw + x] + rowsum;
-      }
-    }
-
-    // Apply local mean threshold
-    for(let y=0;y<h;y++){
-      const y0 = Math.max(0, y-half);
-      const y1 = Math.min(h-1, y+half);
-      for(let x=0;x<w;x++){
-        const x0 = Math.max(0, x-half);
-        const x1 = Math.min(w-1, x+half);
-        const A = integral[(y0)*iw + (x0)];
-        const B = integral[(y0)*iw + (x1+1)];
-        const C = integral[(y1+1)*iw + (x0)];
-        const D = integral[(y1+1)*iw + (x1+1)];
-        const area = (x1-x0+1)*(y1-y0+1);
-        const mean = (D - B - C + A) / area;
-
-        const idx = (y*w + x)*4;
-        const v = d[idx];
-        const thr = mean * (1 - k);
-        const out = (v < thr) ? 0 : 255;
-        d[idx]=d[idx+1]=d[idx+2]=out;
-      }
-    }
-  }
-
-  // Simple unsharp/sharpen convolution on grayscale/binary data
-  function sharpen3x3(img, w, h, amount){
-    const d = img.data;
-    const out = new Uint8ClampedArray(d.length);
-    // Kernel: center-heavy
-    const a = amount || 1.0;
-    const k = [
-      0,    -1*a, 0,
-      -1*a, 5*a,  -1*a,
-      0,    -1*a, 0
-    ];
-    for(let y=1;y<h-1;y++){
-      for(let x=1;x<w-1;x++){
-        let acc = 0;
-        let ki = 0;
-        for(let j=-1;j<=1;j++){
-          for(let i=-1;i<=1;i++){
-            const idx = ((y+j)*w + (x+i))*4;
-            acc += d[idx] * k[ki++];
-          }
-        }
-        const v = Math.max(0, Math.min(255, acc));
-        const o = (y*w + x)*4;
-        out[o]=out[o+1]=out[o+2]=v;
-        out[o+3]=255;
-      }
-    }
-    // copy borders
-    for(let x=0;x<w;x++){
-      let i1 = (0*w + x)*4, i2 = ((h-1)*w + x)*4;
-      out[i1]=d[i1]; out[i1+1]=d[i1+1]; out[i1+2]=d[i1+2]; out[i1+3]=255;
-      out[i2]=d[i2]; out[i2+1]=d[i2+1]; out[i2+2]=d[i2+2]; out[i2+3]=255;
-    }
-    for(let y=0;y<h;y++){
-      let i1 = (y*w + 0)*4, i2 = (y*w + (w-1))*4;
-      out[i1]=d[i1]; out[i1+1]=d[i1+1]; out[i1+2]=d[i1+2]; out[i1+3]=255;
-      out[i2]=d[i2]; out[i2+1]=d[i2+1]; out[i2+2]=d[i2+2]; out[i2+3]=255;
-    }
-    img.data.set(out);
-    return img;
   }
 
   async function applyTrackEnhancements(){
@@ -1610,23 +1313,24 @@ persist(); render();
       camTrack = track;
       camCap = (track.getCapabilities && track.getCapabilities()) ? track.getCapabilities() : null;
 
-      // Build UI sliders if supported
       setupCameraControls();
 
       if(!track.getCapabilities || !track.applyConstraints || !camCap) return;
 
       const adv = [];
-      // try best autofocus / continuous focus where supported
       if(camCap.focusMode && Array.isArray(camCap.focusMode) && camCap.focusMode.includes("continuous")){
         adv.push({ focusMode: "continuous" });
       }
-      // default modest zoom if available (helps small barcodes)
+      // Aus größerer Entfernung brauchen wir mehr Zoom
       if(camCap.zoom){
-        const z = Math.min((camCap.zoom.max||1), Math.max((camCap.zoom.min||1), 1.8));
+        const max = camCap.zoom.max ?? 1;
+        const min = camCap.zoom.min ?? 1;
+        // Ziel: ~3.0×, aber nicht über max
+        const z = Math.min(max, Math.max(min, 3.0));
         if(isFinite(z)) adv.push({ zoom: z });
       }
       if(adv.length){
-        return track.applyConstraints({ advanced: adv }).catch(()=>{});
+        await track.applyConstraints({ advanced: adv }).catch(()=>{});
       }
     }catch(e){}
   }
@@ -1641,13 +1345,11 @@ persist(); render();
       return;
     }
 
-    // Zoom
     if(camCap.zoom){
       wrap.style.display="block";
       zoom.min = String(camCap.zoom.min ?? 1);
       zoom.max = String(camCap.zoom.max ?? 1);
       zoom.step = String(camCap.zoom.step ?? 0.1);
-      // try read current settings
       const st = camTrack.getSettings ? camTrack.getSettings() : {};
       const cur = st.zoom ?? 1;
       zoom.value = String(cur);
@@ -1662,14 +1364,11 @@ persist(); render();
         try{ await camTrack.applyConstraints({ advanced: [{ zoom: v }] }); }catch(e){}
       };
     }else{
-      // no zoom support → hide whole control block
       wrap.style.display="none";
     }
-
-    // Focus distance (rarely supported on mobile web)
   }
 
-async function setupTorchButton(){
+  async function setupTorchButton(){
     const btn = $("btnTorch");
     btn.disabled = true;
     btn.textContent = "🔦";
@@ -1691,6 +1390,285 @@ async function setupTorchButton(){
       };
     }catch(e){}
   }
+
+  // ---------- OCR helpers ----------
+  const tmpCanvas = document.createElement('canvas');
+  const tmpCtx = tmpCanvas.getContext('2d', { willReadFrequently:true });
+  const preCanvas = document.createElement('canvas');
+  const preCtx = preCanvas.getContext('2d', { willReadFrequently:true });
+
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+  function getVideoSize(){
+    const v = $("video");
+    const vw = v.videoWidth || 1280;
+    const vh = v.videoHeight || 720;
+    return {vw, vh};
+  }
+
+  // Crop aus dem CENTER der View: Steuerbanderolle ist typischerweise oben am Pack.
+  // Wir nutzen zwei ROIs: Kategorie-Zeile (oben) + Preis-Zeile (darunter)
+  function cropRoi(type){
+    const {vw, vh} = getVideoSize();
+
+    // Bereich innerhalb des Frames: wir nehmen einen breiten Streifen im oberen Drittel.
+    const cx = 0.5 * vw;
+    const cy = 0.35 * vh;
+
+    const baseW = 0.78 * vw;
+    const baseH = 0.42 * vh;
+
+    const x0 = clamp(cx - baseW/2, 0, vw-1);
+    const y0 = clamp(cy - baseH/2, 0, vh-1);
+    const w0 = clamp(baseW, 1, vw - x0);
+    const h0 = clamp(baseH, 1, vh - y0);
+
+    // innerhalb dieses Blocks: oben = Kategorie, darunter = Preis
+    let rx=x0, ry=y0, rw=w0, rh=h0;
+    if(type==='cat'){
+      ry = y0 + 0.06*h0;
+      rh = 0.26*h0;
+    }else{ // price
+      ry = y0 + 0.26*h0;
+      rh = 0.26*h0;
+    }
+
+    return {sx:rx, sy:ry, sw:rw, sh:rh, vw, vh};
+  }
+
+  function preprocessToBW(videoEl, roi){
+    // Zielgröße
+    const scale = Math.min(OCR.maxW / roi.sw, 3.8);
+    const w = Math.max(320, Math.round(roi.sw * scale));
+    const h = Math.max(120, Math.round(roi.sh * scale));
+
+    tmpCanvas.width = w;
+    tmpCanvas.height = h;
+    tmpCtx.drawImage(videoEl, roi.sx, roi.sy, roi.sw, roi.sh, 0, 0, w, h);
+
+    // Preprocess
+    preCanvas.width = w;
+    preCanvas.height = h;
+    const img = tmpCtx.getImageData(0,0,w,h);
+    const d = img.data;
+
+    // 1) Graustufen + Kontrastboost
+    // 2) Adaptive Threshold (simple mean in 16x16 tiles)
+    // 3) Schärfen durch unsharp mask-light (nur Kanten)
+
+    // grayscale in-place
+    const g = new Uint8ClampedArray(w*h);
+    for(let i=0, p=0; i<d.length; i+=4, p++){
+      // ITU-R BT.709
+      const v = (0.2126*d[i] + 0.7152*d[i+1] + 0.0722*d[i+2]);
+      // contrast
+      const c = (v - 128) * 1.45 + 128;
+      g[p] = clamp(c,0,255);
+    }
+
+    // tile means
+    const tile = 16;
+    const means = new Float32Array(Math.ceil(w/tile)*Math.ceil(h/tile));
+    const tw = Math.ceil(w/tile);
+    const th = Math.ceil(h/tile);
+
+    for(let ty=0; ty<th; ty++){
+      for(let tx=0; tx<tw; tx++){
+        let sum=0, cnt=0;
+        const x1=tx*tile, y1=ty*tile;
+        const x2=Math.min(w, x1+tile), y2=Math.min(h, y1+tile);
+        for(let y=y1; y<y2; y++){
+          let idx=y*w + x1;
+          for(let x=x1; x<x2; x++, idx++){
+            sum += g[idx];
+            cnt++;
+          }
+        }
+        means[ty*tw+tx] = sum / Math.max(1,cnt);
+      }
+    }
+
+    // threshold
+    const out = preCtx.createImageData(w,h);
+    const od = out.data;
+    for(let y=0; y<h; y++){
+      const ty = Math.floor(y/tile);
+      for(let x=0; x<w; x++){
+        const tx = Math.floor(x/tile);
+        const m = means[ty*tw+tx];
+        // bias: bei grauem Hintergrund etwas aggressiver
+        const t = m - 12;
+        const v = g[y*w+x] < t ? 0 : 255;
+        const i=(y*w+x)*4;
+        od[i]=od[i+1]=od[i+2]=v;
+        od[i+3]=255;
+      }
+    }
+
+    preCtx.putImageData(out,0,0);
+    return preCanvas;
+  }
+
+  function normalizeOcrText(t){
+    return String(t||"")
+      .replace(/ /g,' ')
+      .replace(/[“”„]/g,'"')
+      .replace(/[^\w\s€,.\-]/g,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+  }
+
+  function parseCategory(text){
+    const u = normalizeOcrText(text).toUpperCase();
+    // typische OCR-Verwechslungen
+    const s = u.replace(/0/g,'O');
+    if(/ZIGAR|ZIGARE|ZIGA RET|ZIGARETT/i.test(s)) return 'OTP';
+    if(/FEIN|SCHNITT|TABAK|FINE/i.test(s)) return 'UTP';
+    if(/CONSUM|CONSUMABLE|HEETS|TEREA|IQOS|STICKS/i.test(s)) return 'HEETS';
+    return '';
+  }
+
+  function parsePrice(text){
+    const t = normalizeOcrText(text)
+      .replace(/O/g,'0')
+      .replace(/,/g,'.');
+
+    // Muster: 10,-  |  10.-  |  10.00  |  10 €
+    const m1 = t.match(/(\d{1,3})\s*[\.-]\s*[-–]?\s*€?/);
+    if(m1){
+      const n = Number(m1[1]);
+      if(Number.isFinite(n)) return n;
+    }
+    const m2 = t.match(/(\d{1,3})\s*[\.]\s*(\d{2})/);
+    if(m2){
+      const n = Number(`${m2[1]}.${m2[2]}`);
+      if(Number.isFinite(n)) return n;
+    }
+    const m3 = t.match(/(\d{1,3})\s*€?/);
+    if(m3){
+      const n = Number(m3[1]);
+      if(Number.isFinite(n) && n>0 && n<500) return n;
+    }
+    return NaN;
+  }
+
+  function stampKey(catKey, price){
+    const cents = Math.round((Number(price)||0)*100);
+    return `STAMP_${catKey}_${cents}`;
+  }
+
+  function ensureStampProduct(catKey, price){
+    const ean = stampKey(catKey, price);
+    if(!products[ean]){
+      const cat = CATS[catKey] || CATS.OTP;
+      products[ean] = {
+        ean,
+        name: `${cat.pdfSection} (Steuerbanderolle)`,
+        price: Number(price),
+        catKey,
+        updatedAt: Date.now()
+      };
+      persist();
+    }
+    return ean;
+  }
+
+  function acceptOcr(catKey, price){
+    const now = Date.now();
+    if(now < scanHoldUntil) return;
+
+    // debounce (nicht dauernd die gleiche Packung adden)
+    if(lastAccepted.catKey === catKey && Math.abs(lastAccepted.price - price) < 0.01 && (now - lastAccepted.t) < 1400){
+      return;
+    }
+
+    const qty = Math.max(1, Math.floor(parseNum($("quickQty").value) || 1));
+    const ean = ensureStampProduct(catKey, price);
+
+    lastAccepted = {catKey, price, t: now};
+    scanHoldUntil = now + 900;
+
+    showToast("OCR", `${CATS[catKey]?.pdfSection || catKey} • ${fmt(price)}`);
+    addKnownProductToPack(ean, qty);
+  }
+
+  async function ocrOnce(){
+    if(!scanning || ocrStop) return;
+    if(ocrBusy) return;
+    if(scanLock) return;
+
+    const now = Date.now();
+    ocrBusy = true;
+
+    try{
+      const v = $("video");
+      if(!v || !v.videoWidth) { ocrBusy=false; return; }
+
+      const roiCat = cropRoi('cat');
+      const roiPrice = cropRoi('price');
+
+      const canvasCat = preprocessToBW(v, roiCat);
+      const canvasPrice = preprocessToBW(v, roiPrice);
+
+      // Kategorie OCR (nur Buchstaben)
+      await ocrWorker.setParameters({
+        tessedit_pageseg_mode: "7", // single line
+        tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöüß "
+      });
+      const rCat = await ocrWorker.recognize(canvasCat);
+      const catText = rCat?.data?.text || "";
+      const catKey = parseCategory(catText);
+
+      // Preis OCR (nur Zahlen/€)
+      await ocrWorker.setParameters({
+        tessedit_pageseg_mode: "6",
+        tessedit_char_whitelist: "0123456789€.,- "
+      });
+      const rPrice = await ocrWorker.recognize(canvasPrice);
+      const priceText = rPrice?.data?.text || "";
+      const price = parsePrice(priceText);
+
+      if(catKey && Number.isFinite(price) && price>0 && price<500){
+        // Stabilisierung: 3er Buffer -> 2 gleiche Treffer = akzeptieren
+        ocrBuf.push({catKey, price:Number(price), t: now});
+        ocrBuf = ocrBuf.filter(x => (now - x.t) <= 1600);
+
+        const last = ocrBuf.slice(-3);
+        if(last.length >= 2){
+          // count equal pairs by rounding price to 0.5€ steps
+          const key = (x)=> `${x.catKey}_${Math.round(x.price*2)/2}`;
+          const counts = {};
+          for(const x of last){
+            const k = key(x);
+            counts[k] = (counts[k]||0)+1;
+          }
+          let bestK="", bestC=0;
+          for(const [k,c] of Object.entries(counts)){
+            if(c>bestC){ bestC=c; bestK=k; }
+          }
+          if(bestC >= 2){
+            const any = last.find(x=>key(x)===bestK);
+            ocrBuf = [];
+            acceptOcr(any.catKey, any.price);
+          }
+        }
+      }
+
+    }catch(err){
+      // OCR kann zwischendurch fehlschlagen -> ignorieren
+      // console.warn(err);
+    }finally{
+      ocrBusy = false;
+    }
+  }
+
+  async function ocrLoop(){
+    while(scanning && !ocrStop){
+      await ocrOnce();
+      await new Promise(r=>setTimeout(r, OCR.intervalMs));
+    }
+  }
+
 
   // short beep (no external file)
   function beep(){
