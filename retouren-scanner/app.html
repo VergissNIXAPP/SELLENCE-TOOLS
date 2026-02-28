@@ -1275,11 +1275,35 @@ persist(); render();
   let lastStampAt = 0;
   let stampBuf = []; // best-of-3 buffer: [{key,t,parsed}]
 
-  function ensureOcrCanvas(){
-    let c = document.getElementById("ocrCanvas");
+  // Switch Tesseract parameters depending on what we read (category vs. price).
+  // Setting params is cheap compared to a full recognize, but we still avoid doing it unnecessarily.
+  let ocrParamProfile = "";
+  async function setOcrProfile(profile){
+    if(!ocrWorker || ocrParamProfile === profile) return;
+    ocrParamProfile = profile;
+    try{
+      if(profile === "cat"){
+        await ocrWorker.setParameters({
+          tessedit_pageseg_mode: "7", // single text line
+          preserve_interword_spaces: "1",
+          tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöü"
+        });
+      } else {
+        await ocrWorker.setParameters({
+          tessedit_pageseg_mode: "6", // single uniform block
+          preserve_interword_spaces: "1",
+          tessedit_char_whitelist: "0123456789€,-."
+        });
+      }
+      await ocrWorker.setParameters({ user_defined_dpi: "300" });
+    }catch(e){}
+  }
+
+  function ensureOcrCanvas(id="ocrCanvas"){
+    let c = document.getElementById(id);
     if(!c){
       c = document.createElement("canvas");
-      c.id = "ocrCanvas";
+      c.id = id;
       c.style.display = "none";
       document.body.appendChild(c);
     }
@@ -1307,18 +1331,8 @@ persist(); render();
         setHint("OCR wird vorbereitet…");
         // Use deu+eng: The banderole often contains patterns / punctuation better recognized with eng.
         ocrWorker = await Tesseract.createWorker("deu+eng", 1, { logger: ()=>{} });
-        try{
-          await ocrWorker.setParameters({
-            // Single uniform block of text works best for the banderole header.
-            tessedit_pageseg_mode: "6",
-            preserve_interword_spaces: "1",
-            // Keep the whitelist tight to reduce noise from the emblem/background.
-            tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöü0123456789€,-."
-          });
-          // Higher DPI hint improves recognition on small prints.
-          await ocrWorker.setParameters({ user_defined_dpi: "300" });
-        }catch(e){}
-      }
+        ocrParamProfile = "";
+        await setOcrProfile("cat");      }
 
       setHint("Scannen… Halte die Steuerbanderolle (Preis + Kategorie) in den Rahmen.");
       ocrLoop();
@@ -1366,26 +1380,59 @@ persist(); render();
       const vw = video.videoWidth || 0;
       const vh = video.videoHeight || 0;
       if(vw>0 && vh>0){
-        // ROI: focus ONLY on the upper text area of the stamp.
-        // The lower emblem/background produces lots of OCR noise.
-        const rx = Math.floor(vw * 0.12);
-        const ry = Math.floor(vh * 0.06);
-        const rw = Math.floor(vw * 0.76);
-        const rh = Math.floor(vh * 0.28);
+        // ROI: focus on the stamp area – we do two OCR passes:
+        // 1) Category line (letters)  2) Price line (digits)
+        const rx = Math.floor(vw * 0.10);
+        const ry = Math.floor(vh * 0.05);
+        const rw = Math.floor(vw * 0.80);
+        const rh = Math.floor(vh * 0.34);
 
-        // Draw ROI → upscale → preprocess (grayscale + contrast + threshold)
-        const scale = 2.6; // upscaling helps small, low-contrast print on iPhone
-        c.width  = Math.max(320, Math.floor(rw * scale));
-        c.height = Math.max(180, Math.floor(rh * scale));
+        // Draw ROI → upscale (no smoothing) → preprocess
+        const scale = 3.2; // aggressive upscale improves tiny print a lot
+        const c = ensureOcrCanvas("ocrCanvas");
+        c.width  = Math.max(420, Math.floor(rw * scale));
+        c.height = Math.max(220, Math.floor(rh * scale));
         const ctx = c.getContext("2d", { willReadFrequently: true });
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
+        ctx.imageSmoothingEnabled = false;
         ctx.drawImage(video, rx, ry, rw, rh, 0, 0, c.width, c.height);
-        preprocessForOcr(ctx, c.width, c.height);
 
-        const { data } = await ocrWorker.recognize(c);
-        const txt = String(data?.text||"").trim();
-        const parsed = parseStampText(txt);
+        // Split into two smaller ROIs: top (category) and middle (price line)
+        const cCat = ensureOcrCanvas("ocrCanvasCat");
+        const cPrice = ensureOcrCanvas("ocrCanvasPrice");
+
+        const catY = 0;
+        const catH = Math.floor(c.height * 0.42);
+        const priceY = Math.floor(c.height * 0.28);
+        const priceH = Math.floor(c.height * 0.60);
+
+        cCat.width = c.width;
+        cCat.height = catH;
+        cPrice.width = c.width;
+        cPrice.height = priceH;
+
+        const ctxCat = cCat.getContext("2d", { willReadFrequently: true });
+        const ctxPrice = cPrice.getContext("2d", { willReadFrequently: true });
+        ctxCat.imageSmoothingEnabled = false;
+        ctxPrice.imageSmoothingEnabled = false;
+
+        ctxCat.drawImage(c, 0, catY, c.width, catH, 0, 0, cCat.width, cCat.height);
+        ctxPrice.drawImage(c, 0, priceY, c.width, priceH, 0, 0, cPrice.width, cPrice.height);
+
+        preprocessForOcr(ctxCat, cCat.width, cCat.height, "cat");
+        preprocessForOcr(ctxPrice, cPrice.width, cPrice.height, "price");
+
+        // OCR pass 1: category (letters)
+        await setOcrProfile("cat");
+        const rCat = await ocrWorker.recognize(cCat);
+        const catTxt = String(rCat?.data?.text || "").trim();
+
+        // OCR pass 2: price (digits)
+        await setOcrProfile("price");
+        const rPrice = await ocrWorker.recognize(cPrice);
+        const priceTxt = String(rPrice?.data?.text || "").trim();
+
+        const parsed = parseStampText((catTxt + "
+" + priceTxt).trim());
 
         if(parsed && Number.isFinite(parsed.price) && parsed.price>0){
           const key = `${parsed.catKey}|${parsed.price.toFixed(2)}`;
@@ -1429,50 +1476,133 @@ persist(); render();
 
   // Image preprocessing to make the printed stamp text pop.
   // (fast + deterministic, no heavy CV deps)
-  function preprocessForOcr(ctx, w, h){
+  
+  // Image preprocessing tuned for Steuerbanderollen:
+  // - very low contrast paper
+  // - heavy guilloche patterns
+  // - tiny font on phones
+  // We run two profiles: "cat" (letters) and "price" (digits).
+  function preprocessForOcr(ctx, w, h, profile){
     try{
-      const img = ctx.getImageData(0,0,w,h);
-      const d = img.data;
-      // 1) grayscale + compute mean luminance
-      let sum = 0;
+      // Read pixels
+      let img = ctx.getImageData(0,0,w,h);
+      let d = img.data;
+
+      // 1) grayscale
       for(let i=0;i<d.length;i+=4){
         const r=d[i], g=d[i+1], b=d[i+2];
-        const y = (0.299*r + 0.587*g + 0.114*b);
+        const y = (0.2126*r + 0.7152*g + 0.0722*b);
         d[i]=d[i+1]=d[i+2]=y;
-        sum += y;
-      }
-      const mean = sum / (d.length/4);
-
-      // 2) contrast boost around mean
-      const contrast = 1.55; // tuned for the beige/grey banderole paper
-      for(let i=0;i<d.length;i+=4){
-        let y = d[i];
-        y = (y - mean) * contrast + mean;
-        d[i]=d[i+1]=d[i+2]=Math.max(0, Math.min(255, y));
       }
 
-      // 3) threshold (adaptive-ish): slightly below mean to keep thin strokes
-      const thr = Math.max(70, Math.min(200, mean * 0.92));
-      for(let i=0;i<d.length;i+=4){
-        const y = d[i];
-        const v = (y < thr) ? 0 : 255;
-        d[i]=d[i+1]=d[i+2]=v;
-      }
+      // 2) local contrast via fast adaptive threshold (integral image mean in a window)
+      // Window size depends on ROI: smaller for category, slightly larger for price lines.
+      const win = (profile==="cat") ? 17 : 25; // odd
+      const k   = (profile==="cat") ? 0.12 : 0.10; // how much below local mean we cut
+      adaptiveThreshold(img, w, h, win, k);
+
+      // 3) sharpen (binary edges get crisper after threshold)
+      img = ctx.getImageData(0,0,w,h);
+      img = sharpen3x3(img, w, h, 1.0);
       ctx.putImageData(img,0,0);
 
-      // 4) Mild extra contrast filter (supported in modern browsers)
-      if("filter" in ctx){
-        ctx.filter = "contrast(1.15)";
-        const tmp = ctx.getImageData(0,0,w,h);
-        ctx.putImageData(tmp,0,0);
-        ctx.filter = "none";
+      // 4) hard clamp to pure B/W to remove residual dithering
+      const img2 = ctx.getImageData(0,0,w,h);
+      const d2 = img2.data;
+      for(let i=0;i<d2.length;i+=4){
+        const v = d2[i] < 128 ? 0 : 255;
+        d2[i]=d2[i+1]=d2[i+2]=v;
       }
+      ctx.putImageData(img2,0,0);
     }catch(e){
       // If preprocessing fails, OCR still runs on raw image.
     }
   }
 
-  
+  // Adaptive threshold using integral image (mean filter) – fast enough for small ROIs.
+  function adaptiveThreshold(img, w, h, win, k){
+    const d = img.data;
+    const half = Math.floor(win/2);
+    const iw = w+1;
+    const ih = h+1;
+    const integral = new Uint32Array(iw*ih);
+
+    // Build integral image of grayscale (we store in red channel)
+    for(let y=1;y<ih;y++){
+      let rowsum = 0;
+      for(let x=1;x<iw;x++){
+        const idx = ((y-1)*w + (x-1))*4;
+        const v = d[idx] | 0;
+        rowsum += v;
+        integral[y*iw + x] = integral[(y-1)*iw + x] + rowsum;
+      }
+    }
+
+    // Apply local mean threshold
+    for(let y=0;y<h;y++){
+      const y0 = Math.max(0, y-half);
+      const y1 = Math.min(h-1, y+half);
+      for(let x=0;x<w;x++){
+        const x0 = Math.max(0, x-half);
+        const x1 = Math.min(w-1, x+half);
+        const A = integral[(y0)*iw + (x0)];
+        const B = integral[(y0)*iw + (x1+1)];
+        const C = integral[(y1+1)*iw + (x0)];
+        const D = integral[(y1+1)*iw + (x1+1)];
+        const area = (x1-x0+1)*(y1-y0+1);
+        const mean = (D - B - C + A) / area;
+
+        const idx = (y*w + x)*4;
+        const v = d[idx];
+        const thr = mean * (1 - k);
+        const out = (v < thr) ? 0 : 255;
+        d[idx]=d[idx+1]=d[idx+2]=out;
+      }
+    }
+  }
+
+  // Simple unsharp/sharpen convolution on grayscale/binary data
+  function sharpen3x3(img, w, h, amount){
+    const d = img.data;
+    const out = new Uint8ClampedArray(d.length);
+    // Kernel: center-heavy
+    const a = amount || 1.0;
+    const k = [
+      0,    -1*a, 0,
+      -1*a, 5*a,  -1*a,
+      0,    -1*a, 0
+    ];
+    for(let y=1;y<h-1;y++){
+      for(let x=1;x<w-1;x++){
+        let acc = 0;
+        let ki = 0;
+        for(let j=-1;j<=1;j++){
+          for(let i=-1;i<=1;i++){
+            const idx = ((y+j)*w + (x+i))*4;
+            acc += d[idx] * k[ki++];
+          }
+        }
+        const v = Math.max(0, Math.min(255, acc));
+        const o = (y*w + x)*4;
+        out[o]=out[o+1]=out[o+2]=v;
+        out[o+3]=255;
+      }
+    }
+    // copy borders
+    for(let x=0;x<w;x++){
+      let i1 = (0*w + x)*4, i2 = ((h-1)*w + x)*4;
+      out[i1]=d[i1]; out[i1+1]=d[i1+1]; out[i1+2]=d[i1+2]; out[i1+3]=255;
+      out[i2]=d[i2]; out[i2+1]=d[i2+1]; out[i2+2]=d[i2+2]; out[i2+3]=255;
+    }
+    for(let y=0;y<h;y++){
+      let i1 = (y*w + 0)*4, i2 = (y*w + (w-1))*4;
+      out[i1]=d[i1]; out[i1+1]=d[i1+1]; out[i1+2]=d[i1+2]; out[i1+3]=255;
+      out[i2]=d[i2]; out[i2+1]=d[i2+1]; out[i2+2]=d[i2+2]; out[i2+3]=255;
+    }
+    img.data.set(out);
+    return img;
+  }
+
   async function applyTrackEnhancements(){
     try{
       const track = stream?.getVideoTracks?.()[0];
