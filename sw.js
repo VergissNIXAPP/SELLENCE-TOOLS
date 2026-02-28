@@ -1,111 +1,42 @@
-/* SELLENCE Tools - Service Worker */
-const CACHE = "sellence-tools-v11";
-
-/**
- * Core assets to pre-cache.
- * NOTE: We cache "best effort" so missing optional files (e.g. placeholder icons)
- * won't break the service worker installation.
- */
-const CORE = [
+/* SELLENCE RETOURENSCANNER – simple offline cache */
+const CACHE = "sellence-retourenscanner-v5";
+const ASSETS = [
   "./",
   "./index.html",
-  "./tools.css",
+  "./app.html",
   "./manifest.webmanifest",
   "./icon-192.png",
-  "./icon-512.png",
-
-  // Main tiles / icons
-  "./assets/oos-icon.png",
-  "./assets/retouren-icon.png",
-  "./assets/stempeluhr-icon.png",
-  "./assets/touren-icon.png",
-
-  // NEW: VW Helfer
-  "./sellence-vw-helfer/index.html",
-  "./sellence-vw-helfer/styles.css",
-  "./sellence-vw-helfer/app.js",
-  "./sellence-vw-helfer/assets/icon.svg",
-
-  // Optional / placeholder (best effort)
-  // OOS
-  "./oos/index.html",
-  "./oos/oos.html",
-  "./oos/style.css",
-  "./oos/icon-512.png",
-
-  // Retouren Scanner
-  "./retouren-scanner/index.html",
-  "./retouren-scanner/app.html",
-  "./retouren-scanner/manifest.webmanifest",
-  "./retouren-scanner/manifest.json",
-  "./retouren-scanner/sw.js",
-  "./retouren-scanner/styles.css",
-  "./retouren-scanner/app.js",
-  "./retouren-scanner/icon-192.png",
-  "./retouren-scanner/icon-512.png",
-  "./retouren-scanner/assets/icon-192.png",
-  "./retouren-scanner/assets/icon-512.png",
-
-  // Touren
-  "./touren/index.html",
-  "./touren/styles.css",
-  "./touren/app.js",
-  "./touren/manifest.json",
-  "./touren/sw.js",
-  "./touren/icons/icon-192.png",
-  "./touren/icons/icon-512.png",
-
-  // Stempeluhr
-  "./stempeluhr/index.html",
-  "./stempeluhr/styles.css",
-  "./stempeluhr/app.js",
-  "./stempeluhr/manifest.json",
-  "./stempeluhr/sw.js",
-  "./stempeluhr/assets/icon-192.png",
-  "./stempeluhr/assets/icon-512.png",
+  "./icon-512.png"
 ];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(CACHE);
-
-    // Best-effort caching: do not fail install if a single file is missing.
-    await Promise.allSettled(
-      CORE.map((url) => cache.add(url))
-    );
-
-    await self.skipWaiting();
+self.addEventListener("install", (e) => {
+  e.waitUntil((async () => {
+    const c = await caches.open(CACHE);
+    await c.addAll(ASSETS);
+    self.skipWaiting();
   })());
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.map(k => (k !== CACHE ? caches.delete(k) : null))))
-      .then(() => self.clients.claim())
-  );
+self.addEventListener("activate", (e) => {
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => (k !== CACHE) ? caches.delete(k) : null));
+    self.clients.claim();
+  })());
 });
 
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  if (req.method !== "GET") return;
-
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(req).then((res) => {
-        const copy = res.clone();
-        // cache same-origin only
-        if (new URL(req.url).origin === self.location.origin) {
-          caches.open(CACHE).then(cache => cache.put(req, copy)).catch(() => {});
-        }
-        return res;
-      }).catch(() => cached);
-    })
-  );
+self.addEventListener("fetch", (e) => {
+  const req = e.request;
+  e.respondWith((async () => {
+    const cached = await caches.match(req);
+    if (cached) return cached;
+    try{
+      const res = await fetch(req);
+      const c = await caches.open(CACHE);
+      c.put(req, res.clone());
+      return res;
+    }catch(err){
+      return cached || new Response("Offline", {status: 503, headers: {"Content-Type":"text/plain"}});
+    }
+  })());
 });
-
-
-
-

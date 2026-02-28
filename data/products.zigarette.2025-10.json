@@ -1,0 +1,348 @@
+{
+  "version": "2025-10",
+  "currency": "EUR",
+  "items": {
+    "42463627": {
+      "name": "MARLBORO RED",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 2
+    },
+    "42463160": {
+      "name": "MARLBORO RED",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 2
+    },
+    "42463610": {
+      "name": "RED OP XL-BOX",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 2
+    },
+    "42463221": {
+      "name": "MARLBORO RED",
+      "price": 12.0,
+      "category": "Zigaretten",
+      "source_page": 2
+    },
+    "42463481": {
+      "name": "MARLBORO RED",
+      "price": 15.0,
+      "category": "Zigaretten",
+      "source_page": 2
+    },
+    "42463184": {
+      "name": "RED OP 7XL-BOX",
+      "price": 20.0,
+      "category": "Zigaretten",
+      "source_page": 2
+    },
+    "42435327": {
+      "name": "OP 9XL-BOX",
+      "price": 30.0,
+      "category": "Zigaretten",
+      "source_page": 3
+    },
+    "42463603": {
+      "name": "RED LONG OP-BOX",
+      "price": 9.1,
+      "category": "Zigaretten",
+      "source_page": 3
+    },
+    "42463573": {
+      "name": "MARLBORO MIX",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 4
+    },
+    "42463528": {
+      "name": "MARLBORO MIX",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 4
+    },
+    "42463252": {
+      "name": "MIX OP 2XL-BOX",
+      "price": 12.0,
+      "category": "Zigaretten",
+      "source_page": 4
+    },
+    "42463597": {
+      "name": "MARLBORO GOLD",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 5
+    },
+    "42463177": {
+      "name": "MARLBORO GOLD",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 5
+    },
+    "42463580": {
+      "name": "GOLD OP XL-BOX",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 5
+    },
+    "42463214": {
+      "name": "MARLBORO GOLD",
+      "price": 12.0,
+      "category": "Zigaretten",
+      "source_page": 5
+    },
+    "42463498": {
+      "name": "MARLBORO GOLD",
+      "price": 15.0,
+      "category": "Zigaretten",
+      "source_page": 5
+    },
+    "42463153": {
+      "name": "GOLD OP 7XL-BOX",
+      "price": 20.0,
+      "category": "Zigaretten",
+      "source_page": 5
+    },
+    "42463566": {
+      "name": "GOLD LONG OP-BOX",
+      "price": 9.1,
+      "category": "Zigaretten",
+      "source_page": 6
+    },
+    "42463511": {
+      "name": "MARLBORO WHITE",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 7
+    },
+    "42463559": {
+      "name": "WHITE OP-BOX",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 7
+    },
+    "42463535": {
+      "name": "MARLBORO SIMPLY",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 7
+    },
+    "42463542": {
+      "name": "SIMPLY BLUE OP-BOX",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 7
+    },
+    "42046448": {
+      "name": "CRAFTED RED OP-BOX",
+      "price": 8.0,
+      "category": "Zigaretten",
+      "source_page": 8
+    },
+    "42466147": {
+      "name": "CRAFTED RED OP 2XL-BOX",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 8
+    },
+    "42493006": {
+      "name": "CRAFTED RED OP 7XL-BOX",
+      "price": 20.0,
+      "category": "Zigaretten",
+      "source_page": 8
+    },
+    "42046431": {
+      "name": "CRAFTED GOLD OP-BOX",
+      "price": 8.0,
+      "category": "Zigaretten",
+      "source_page": 8
+    },
+    "42466154": {
+      "name": "CRAFTED GOLD OP 2XL-BOX",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 8
+    },
+    "42493150": {
+      "name": "CRAFTED GOLD OP 7XL-BOX",
+      "price": 20.0,
+      "category": "Zigaretten",
+      "source_page": 8
+    },
+    "42463115": {
+      "name": "RED LABEL OP 2XL-BOX",
+      "price": 12.0,
+      "category": "Zigaretten",
+      "source_page": 9
+    },
+    "42463467": {
+      "name": "L&M RED",
+      "price": 8.6,
+      "category": "Zigaretten",
+      "source_page": 9
+    },
+    "42463146": {
+      "name": "L&M RED",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 9
+    },
+    "42463351": {
+      "name": "L&M RED",
+      "price": 21.0,
+      "category": "Zigaretten",
+      "source_page": 9
+    },
+    "42463085": {
+      "name": "RED LABEL OP 7XL-BOX",
+      "price": 21.0,
+      "category": "Zigaretten",
+      "source_page": 9
+    },
+    "42463337": {
+      "name": "RED LABEL OP 9XL-BOX",
+      "price": 28.0,
+      "category": "Zigaretten",
+      "source_page": 9
+    },
+    "42463450": {
+      "name": "RED LABEL LONG OP-BOX",
+      "price": 8.6,
+      "category": "Zigaretten",
+      "source_page": 10
+    },
+    "42463443": {
+      "name": "L&M BLUE",
+      "price": 8.6,
+      "category": "Zigaretten",
+      "source_page": 11
+    },
+    "42463139": {
+      "name": "L&M BLUE",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 11
+    },
+    "42463122": {
+      "name": "BLUE LABEL OP 2XL-BOX",
+      "price": 12.0,
+      "category": "Zigaretten",
+      "source_page": 11
+    },
+    "42463108": {
+      "name": "L&M BLUE",
+      "price": 15.0,
+      "category": "Zigaretten",
+      "source_page": 11
+    },
+    "42463344": {
+      "name": "BLUE LABEL OP 7XL-BOX",
+      "price": 21.0,
+      "category": "Zigaretten",
+      "source_page": 11
+    },
+    "42463436": {
+      "name": "SIMPLYBLUE OP-BOX",
+      "price": 8.6,
+      "category": "Zigaretten",
+      "source_page": 12
+    },
+    "42463429": {
+      "name": "L&M",
+      "price": 8.6,
+      "category": "Zigaretten",
+      "source_page": 12
+    },
+    "42463269": {
+      "name": "CHESTERFIELD",
+      "price": 8.6,
+      "category": "Zigaretten",
+      "source_page": 13
+    },
+    "42466741": {
+      "name": "CHESTERFIELD",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 13
+    },
+    "42466529": {
+      "name": "ORIGINAL OP 2XL-BOX",
+      "price": 12.0,
+      "category": "Zigaretten",
+      "source_page": 13
+    },
+    "42466758": {
+      "name": "BLUE OP 2XL-BOX",
+      "price": 12.0,
+      "category": "Zigaretten",
+      "source_page": 14
+    },
+    "42463276": {
+      "name": "CHESTERFIELD BLUE",
+      "price": 8.6,
+      "category": "Zigaretten",
+      "source_page": 14
+    },
+    "42466543": {
+      "name": "CHESTERFIELD BLUE",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 14
+    },
+    "42466581": {
+      "name": "BLUE OP 4XL-BOX",
+      "price": 15.0,
+      "category": "Zigaretten",
+      "source_page": 14
+    },
+    "42465966": {
+      "name": "PARLIAMENT NIGHT",
+      "price": 9.3,
+      "category": "Zigaretten",
+      "source_page": 15
+    },
+    "42465997": {
+      "name": "NIGHT BLUE LONG OP-BOX",
+      "price": 9.0,
+      "category": "Zigaretten",
+      "source_page": 15
+    },
+    "42463092": {
+      "name": "OP 2XL-BOX",
+      "price": 12.0,
+      "category": "Zigaretten",
+      "source_page": 16
+    },
+    "42463306": {
+      "name": "f6 ORIGINAL OP",
+      "price": 8.6,
+      "category": "Zigaretten",
+      "source_page": 16
+    },
+    "42463078": {
+      "name": "f6 ORIGINAL OP",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 16
+    },
+    "42463320": {
+      "name": "OP 7XL-BOX",
+      "price": 21.0,
+      "category": "Zigaretten",
+      "source_page": 16
+    },
+    "42463313": {
+      "name": "BLUE OP 7XL-BOX",
+      "price": 21.0,
+      "category": "Zigaretten",
+      "source_page": 17
+    },
+    "42463061": {
+      "name": "f6 BLUE",
+      "price": 10.0,
+      "category": "Zigaretten",
+      "source_page": 17
+    }
+  }
+}

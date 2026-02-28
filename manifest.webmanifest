@@ -1,11 +1,10 @@
 {
-  "name": "SELLENCE Tools",
-  "short_name": "SELLENCE Tools",
-  "start_url": "./",
-  "scope": "./",
+  "name": "SELLENCE RETOURENSCANNER",
+  "short_name": "Retouren",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#5b2bd8",
-  "theme_color": "#5b2bd8",
+  "background_color": "#0A1022",
+  "theme_color": "#0A1022",
   "icons": [
     {
       "src": "icon-192.png",
