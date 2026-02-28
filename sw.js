@@ -1,5 +1,5 @@
 /* SELLENCE Tools - Service Worker */
-const CACHE = "sellence-tools-v10";
+const CACHE = "sellence-tools-v11";
 
 /**
  * Core assets to pre-cache.
@@ -105,6 +105,7 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
 
 
