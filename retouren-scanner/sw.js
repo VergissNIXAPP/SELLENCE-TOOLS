@@ -1,5 +1,5 @@
 /* SELLENCE RETOURENSCANNER – simple offline cache */
-const CACHE = "sellence-retourenscanner-v4";
+const CACHE = "sellence-retourenscanner-v5";
 const ASSETS = [
   "./",
   "./index.html",
