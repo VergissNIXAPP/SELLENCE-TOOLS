@@ -1305,13 +1305,18 @@ persist(); render();
       }
       if(!ocrWorker){
         setHint("OCR wird vorbereitet…");
-        ocrWorker = await Tesseract.createWorker("deu", 1, { logger: ()=>{} });
+        // Use deu+eng: The banderole often contains patterns / punctuation better recognized with eng.
+        ocrWorker = await Tesseract.createWorker("deu+eng", 1, { logger: ()=>{} });
         try{
           await ocrWorker.setParameters({
+            // Single uniform block of text works best for the banderole header.
             tessedit_pageseg_mode: "6",
             preserve_interword_spaces: "1",
+            // Keep the whitelist tight to reduce noise from the emblem/background.
             tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöü0123456789€,-."
           });
+          // Higher DPI hint improves recognition on small prints.
+          await ocrWorker.setParameters({ user_defined_dpi: "300" });
         }catch(e){}
       }
 
@@ -1361,15 +1366,22 @@ persist(); render();
       const vw = video.videoWidth || 0;
       const vh = video.videoHeight || 0;
       if(vw>0 && vh>0){
-        // ROI: top/center where category + price sits
-        const rx = Math.floor(vw * 0.10);
+        // ROI: focus ONLY on the upper text area of the stamp.
+        // The lower emblem/background produces lots of OCR noise.
+        const rx = Math.floor(vw * 0.12);
         const ry = Math.floor(vh * 0.06);
-        const rw = Math.floor(vw * 0.80);
-        const rh = Math.floor(vh * 0.46);
-        c.width = rw;
-        c.height = rh;
+        const rw = Math.floor(vw * 0.76);
+        const rh = Math.floor(vh * 0.28);
+
+        // Draw ROI → upscale → preprocess (grayscale + contrast + threshold)
+        const scale = 2.6; // upscaling helps small, low-contrast print on iPhone
+        c.width  = Math.max(320, Math.floor(rw * scale));
+        c.height = Math.max(180, Math.floor(rh * scale));
         const ctx = c.getContext("2d", { willReadFrequently: true });
-        ctx.drawImage(video, rx, ry, rw, rh, 0, 0, rw, rh);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(video, rx, ry, rw, rh, 0, 0, c.width, c.height);
+        preprocessForOcr(ctx, c.width, c.height);
 
         const { data } = await ocrWorker.recognize(c);
         const txt = String(data?.text||"").trim();
@@ -1413,6 +1425,51 @@ persist(); render();
       s.onload=resolve; s.onerror=reject;
       document.head.appendChild(s);
     });
+  }
+
+  // Image preprocessing to make the printed stamp text pop.
+  // (fast + deterministic, no heavy CV deps)
+  function preprocessForOcr(ctx, w, h){
+    try{
+      const img = ctx.getImageData(0,0,w,h);
+      const d = img.data;
+      // 1) grayscale + compute mean luminance
+      let sum = 0;
+      for(let i=0;i<d.length;i+=4){
+        const r=d[i], g=d[i+1], b=d[i+2];
+        const y = (0.299*r + 0.587*g + 0.114*b);
+        d[i]=d[i+1]=d[i+2]=y;
+        sum += y;
+      }
+      const mean = sum / (d.length/4);
+
+      // 2) contrast boost around mean
+      const contrast = 1.55; // tuned for the beige/grey banderole paper
+      for(let i=0;i<d.length;i+=4){
+        let y = d[i];
+        y = (y - mean) * contrast + mean;
+        d[i]=d[i+1]=d[i+2]=Math.max(0, Math.min(255, y));
+      }
+
+      // 3) threshold (adaptive-ish): slightly below mean to keep thin strokes
+      const thr = Math.max(70, Math.min(200, mean * 0.92));
+      for(let i=0;i<d.length;i+=4){
+        const y = d[i];
+        const v = (y < thr) ? 0 : 255;
+        d[i]=d[i+1]=d[i+2]=v;
+      }
+      ctx.putImageData(img,0,0);
+
+      // 4) Mild extra contrast filter (supported in modern browsers)
+      if("filter" in ctx){
+        ctx.filter = "contrast(1.15)";
+        const tmp = ctx.getImageData(0,0,w,h);
+        ctx.putImageData(tmp,0,0);
+        ctx.filter = "none";
+      }
+    }catch(e){
+      // If preprocessing fails, OCR still runs on raw image.
+    }
   }
 
   
