@@ -1253,38 +1253,75 @@ persist(); render();
 
   async function startScan(){
     if(scanning) return;
+
+    // Kamera braucht sicheren Kontext (https) – sonst blocken Browser (besonders iOS).
+    if(!(window.isSecureContext || location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1")){
+      showToast("Kamera blockiert", "Bitte die App über https (z.B. Vercel/GitHub Pages) öffnen – nicht als Datei.");
+      setHint("Kamera blockiert • Öffne die App über https");
+      return;
+    }
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      showToast("Kamera nicht verfügbar", "Dein Browser unterstützt keine Kamera-API.");
+      setHint("Kamera nicht verfügbar.");
+      return;
+    }
+
     scanning = true;
     ocrStop = false;
     setHint("Kamera wird gestartet…");
 
     try{
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode:{ ideal:"environment" }, width:{ideal:1920}, height:{ideal:1080} },
-        audio:false
-      });
+      // 1) Versuch: hohe Auflösung (besser für OCR auf Distanz)
+      try{
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode:{ ideal:"environment" }, width:{ideal:1920}, height:{ideal:1080} },
+          audio:false
+        });
+      }catch(e){
+        // 2) Fallback: minimale Constraints (hilft bei OverconstrainedError / einigen Androids)
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode:{ ideal:"environment" } },
+          audio:false
+        });
+      }
 
-      $("video").srcObject = stream;
-      await $("video").play().catch(()=>{});
+      const v = $("video");
+      v.srcObject = stream;
+
+      // iOS: play() kann rejecten, aber Stream läuft trotzdem – wir behandeln das soft.
+      await v.play().catch(()=>{});
 
       await applyTrackEnhancements();
       await setupTorchButton();
 
-      // OCR initialisieren (nicht blockierend, aber wir warten kurz)
+      // OCR initialisieren (einmalig) – wenn OCR nicht lädt, Kamera trotzdem laufen lassen,
+      // aber Hinweis anzeigen, damit du sofort weißt woran es liegt.
       const ok = await ensureOcrWorker();
       if(!ok){
-        scanning = false;
-        stopScan();
+        showToast("OCR nicht geladen", "Kamera läuft, aber OCR braucht einmal Internet/ohne Adblock. Tippe erneut auf Scan starten.");
+        setHint("OCR nicht geladen • Prüfe Internet/Adblock und starte erneut");
+        // Kamera weiterlaufen lassen, aber kein OCR-Loop
         return;
       }
 
       setHint("Scannen… Halte die Steuerbanderolle (Preis + Kategorie) in den Rahmen.");
-      // Start OCR loop
       ocrLoop();
     }catch(err){
       console.error(err);
       scanning = false;
-      setHint("Kamera nicht verfügbar.");
-      showToast("Kamera Fehler", "Bitte Kamera-Berechtigung prüfen.");
+
+      const name = (err && err.name) ? err.name : "";
+      if(name === "NotAllowedError" || name === "SecurityError"){
+        showToast("Keine Berechtigung", "Bitte Kamera-Zugriff erlauben (Browser/OS Einstellungen).");
+        setHint("Kamera-Berechtigung fehlt.");
+      }else if(name === "NotFoundError" || name === "OverconstrainedError"){
+        showToast("Keine Kamera gefunden", "Bitte Rückkamera wählen / anderes Gerät testen.");
+        setHint("Keine passende Kamera gefunden.");
+      }else{
+        showToast("Kamera Fehler", "Kamera konnte nicht gestartet werden. Prüfe Berechtigung & https.");
+        setHint("Kamera Fehler • Tippe erneut auf Scan starten");
+      }
+
       stopScan();
     }
   }
