@@ -363,11 +363,21 @@
   // ----------------------------
   // OCR Loop (crop + detect)
   // ----------------------------
-  let lastHitAt = 0;
+  // NOTE: We intentionally stabilize results to avoid "jumping" OCR.
+  // A result is considered stable if the same (cat, price) appears
+  // several times within a short window.
   let lastResult = { cat:null, price:null, text:'' };
+  let hitBuffer = []; // {key, cat, price, text, t}
+  let stableKey = null;
+  let stableSince = 0;
+  let lastAutoAddAt = 0;
+  let adding = false;
 
   function resetDetection(){
     lastResult = { cat:null, price:null, text:'' };
+    hitBuffer = [];
+    stableKey = null;
+    stableSince = 0;
     catOut.textContent = '–';
     priceOut.textContent = '–';
     textOut.textContent = '–';
@@ -459,7 +469,6 @@
       return;
     }
 
-    // throttle: no more than ~3 fps OCR
     const now = performance.now();
     if(!ocrBusy){
       ocrBusy = true;
@@ -473,26 +482,61 @@
         }
 
         if(text){
+          // Always show raw debug text (helps tuning).
+          textOut.textContent = text;
+
           const cat = parseCategory(text);
           const price = parsePrice(text);
 
-          // Update UI if something looks plausible
-          if(cat || price){
-            lastResult = { cat: cat || lastResult.cat, price: (price ?? lastResult.price), text };
-            catOut.textContent = lastResult.cat || '–';
-            priceOut.textContent = (lastResult.price != null) ? `${fmtEUR(lastResult.price)} €` : '–';
-            textOut.textContent = text;
+          // Only push complete candidates into buffer.
+          if(cat && price != null){
+            const key = `${cat}|${price}`;
+            hitBuffer.push({ key, cat, price, text, t: now });
           }
 
-          // Enable add if both are present
-          const canAdd = !!lastResult.cat && (lastResult.price != null);
-          btnAdd.disabled = !canAdd;
+          // Keep last ~2.5s.
+          hitBuffer = hitBuffer.filter(h => (now - h.t) <= 2500);
 
-          // Auto-add with cooldown (optional): if stable for > 800ms
-          if(canAdd){
-            if(now - lastHitAt > 1200){
-              // do nothing auto; user presses button. (safer)
-              lastHitAt = now;
+          // Pick most frequent key.
+          const counts = new Map();
+          for(const h of hitBuffer){
+            counts.set(h.key, (counts.get(h.key) || 0) + 1);
+          }
+          let bestKey = null;
+          let bestCount = 0;
+          for(const [k,c] of counts.entries()){
+            if(c > bestCount){ bestCount = c; bestKey = k; }
+          }
+
+          // Stabilization rule:
+          // - at least 3 hits of the same key
+          // - spread (first->last) >= 650ms
+          if(bestKey && bestCount >= 3){
+            const hits = hitBuffer.filter(h => h.key === bestKey).sort((a,b)=>a.t-b.t);
+            const spread = hits[hits.length-1].t - hits[0].t;
+            if(spread >= 650){
+              if(stableKey !== bestKey){
+                stableKey = bestKey;
+                stableSince = now;
+              }
+              const latest = hits[hits.length-1];
+              lastResult = { cat: latest.cat, price: latest.price, text: latest.text };
+
+              catOut.textContent = lastResult.cat;
+              priceOut.textContent = `${fmtEUR(lastResult.price)} €`;
+              btnAdd.disabled = false;
+
+              // Auto-add once the stable result persisted briefly.
+              // Prevents accidental double-scans.
+              if(!adding && (now - stableSince) >= 450 && (now - lastAutoAddAt) >= 1700){
+                lastAutoAddAt = now;
+                adding = true;
+                addCurrentResult(true);
+                // After adding, clear detection so the next pack can be scanned.
+                resetDetection();
+                // Short grace period to avoid immediate re-trigger on same pack.
+                setTimeout(()=>{ adding = false; }, 850);
+              }
             }
           }
         }
@@ -507,7 +551,7 @@
   // ----------------------------
   // Add to package
   // ----------------------------
-  function addCurrentResult(){
+  function addCurrentResult(fromAuto=false){
     const cat = lastResult.cat;
     const price = lastResult.price;
     if(!cat || price == null) return;
@@ -520,11 +564,13 @@
     saveState();
     render();
     ensureNewPkgIfNeeded();
-    setStatus('Hinzugefügt ✅', 'ok');
+    setStatus(fromAuto ? 'Automatisch hinzugefügt ✅' : 'Hinzugefügt ✅', 'ok');
 
-    // small cooldown to avoid double adds
-    btnAdd.disabled = true;
-    setTimeout(()=>{ btnAdd.disabled = !lastResult.cat || lastResult.price==null; }, 650);
+    // small cooldown to avoid double adds (manual)
+    if(!fromAuto){
+      btnAdd.disabled = true;
+      setTimeout(()=>{ btnAdd.disabled = !lastResult.cat || lastResult.price==null; }, 650);
+    }
   }
 
   btnAdd.addEventListener('click', addCurrentResult);
