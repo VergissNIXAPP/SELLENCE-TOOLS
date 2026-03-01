@@ -2,36 +2,124 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#0A1022" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="SELLENCE RETOURENSCANNER" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>Retouren-Scanner (Preis & Kategorie)</title>
   <link rel="manifest" href="manifest.webmanifest" />
-  <title>SELLENCE RETOURENSCANNER</title>
-  <style>
-    html,body{height:100%;margin:0;background:#0A1022;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    .wrap{height:100%;display:grid;place-items:center;padding:24px;text-align:center}
-    .card{max-width:560px;width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px}
-    h1{margin:0 0 10px;font-size:22px}
-    p{margin:0 0 16px;opacity:.85;line-height:1.4}
-    a.btn{display:inline-block;background:linear-gradient(135deg,#7C3AED,#22D3EE);color:#07121f;text-decoration:none;font-weight:800;padding:12px 16px;border-radius:14px}
-    .mini{margin-top:14px;font-size:12px;opacity:.65}
-  </style>
+  <link rel="icon" href="icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>SELLENCE RETOURENSCANNER</h1>
-      <p>EAN scannen → automatisch ins Retouren-Paket. Unbekannte EANs kannst du sofort mit Name, Preis & Kategorie speichern.</p>
-      <a class="btn" href="app.html">Starten</a>
-      <div class="mini">Offline-fähig (PWA). Daten bleiben lokal auf diesem Gerät.</div>
+  <header class="top">
+    <div class="brand">
+      <div class="dot"></div>
+      <div>
+        <div class="title">Retouren-Scanner</div>
+        <div class="sub">Preis + Kategorie vom Steuerband / Packung</div>
+      </div>
     </div>
-  </div>
+    <div class="actions">
+      <button id="btnCam" class="btn primary">Kamera starten</button>
+      <button id="btnTorch" class="btn" disabled>Taschenlampe</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="row">
+        <div class="status" id="status">Bereit.</div>
+        <div class="pill" id="securePill">https</div>
+      </div>
+
+      <div class="videoWrap" id="videoWrap" style="display:none;">
+        <video id="video" autoplay playsinline muted></video>
+        <div class="guide">
+          <div class="label">Steuerband hier rein</div>
+          <div class="box"></div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="mini">
+          <div class="k">Erkannt (Kategorie)</div>
+          <div class="v" id="catOut">–</div>
+        </div>
+        <div class="mini">
+          <div class="k">Erkannt (Preis)</div>
+          <div class="v" id="priceOut">–</div>
+        </div>
+        <div class="mini">
+          <div class="k">Debug Text</div>
+          <div class="v small" id="textOut">–</div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px; gap:10px; flex-wrap:wrap;">
+        <button id="btnAdd" class="btn primary" disabled>Zu Paket hinzufügen</button>
+        <button id="btnClear" class="btn">Erkennung zurücksetzen</button>
+        <button id="btnPerm" class="btn ghost">Berechtigung testen</button>
+      </div>
+
+      <div class="note" id="note" style="display:none"></div>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <div>
+          <div class="h">Paket</div>
+          <div class="muted">Automatisch wird bei 500 € ein neues Paket gestartet.</div>
+        </div>
+        <button id="btnReset" class="btn danger">Reset</button>
+      </div>
+
+      <div class="grid2">
+        <div class="mini">
+          <div class="k">Aktuelles Paket</div>
+          <div class="v"><span id="pkgIndex">1</span></div>
+        </div>
+        <div class="mini">
+          <div class="k">Summe Paket</div>
+          <div class="v"><span id="pkgSum">0,00</span> €</div>
+        </div>
+        <div class="mini">
+          <div class="k">Summe gesamt</div>
+          <div class="v"><span id="grandSum">0,00</span> €</div>
+        </div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Kategorie</th>
+              <th class="right">Preis</th>
+              <th class="right">Anz.</th>
+              <th class="right">Summe</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="row" style="margin-top:12px; gap:10px; flex-wrap:wrap;">
+        <button id="btnExport" class="btn">Export JSON</button>
+        <button id="btnCopy" class="btn">In Zwischenablage</button>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div class="muted">
+        Tipp: Für stabile Kamera bitte über <b>https</b> öffnen (Vercel/GitHub Pages). iPhone: Safari/Chrome nur mit https.
+      </div>
+    </footer>
+  </main>
+
+  <canvas id="canvas" class="hidden"></canvas>
+
+  <script src="app.js"></script>
   <script>
     if('serviceWorker' in navigator){
-      window.addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
     }
   </script>
 </body>

@@ -1,42 +1,36 @@
-/* SELLENCE RETOURENSCANNER – simple offline cache */
-const CACHE = "sellence-retourenscanner-v5";
+/* Simple offline cache */
+const CACHE = 'retouren-scan-v1';
 const ASSETS = [
-  "./",
-  "./index.html",
-  "./app.html",
-  "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png"
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './manifest.webmanifest',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
-self.addEventListener("install", (e) => {
-  e.waitUntil((async () => {
-    const c = await caches.open(CACHE);
-    await c.addAll(ASSETS);
-    self.skipWaiting();
-  })());
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())
+  );
 });
 
-self.addEventListener("activate", (e) => {
-  e.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.map(k => (k !== CACHE) ? caches.delete(k) : null));
-    self.clients.claim();
-  })());
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE ? caches.delete(k) : null)))
+      .then(() => self.clients.claim())
+  );
 });
 
-self.addEventListener("fetch", (e) => {
-  const req = e.request;
-  e.respondWith((async () => {
-    const cached = await caches.match(req);
-    if (cached) return cached;
-    try{
-      const res = await fetch(req);
-      const c = await caches.open(CACHE);
-      c.put(req, res.clone());
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if(req.method !== 'GET') return;
+  event.respondWith(
+    caches.match(req).then((cached) => cached || fetch(req).then((res) => {
+      const copy = res.clone();
+      caches.open(CACHE).then((c) => c.put(req, copy)).catch(()=>{});
       return res;
-    }catch(err){
-      return cached || new Response("Offline", {status: 503, headers: {"Content-Type":"text/plain"}});
-    }
-  })());
+    }).catch(() => cached))
+  );
 });
