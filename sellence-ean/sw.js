@@ -1,4 +1,4 @@
-const CACHE = "sellence-ean-v1";
+const CACHE = "sellence-ean-v2";
 const ASSETS = [
   "./",
   "./index.html",
