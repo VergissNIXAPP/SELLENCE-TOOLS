@@ -1,5 +1,5 @@
-const LS_KEY = "sellence_ean_selected_v1";
-const BRAND_ORDER_KEY = "sellence_ean_brand_order_v1";
+const LS_KEY = "sellence_ean_selected_v2";
+const BRAND_ORDER_KEY = "sellence_ean_group_order_v2";
 
 const byId = (id) => document.getElementById(id);
 const listEl = byId("list");
@@ -8,16 +8,42 @@ const selCountEl = byId("selCount");
 const selSubEl = byId("selSub");
 const countHintEl = byId("countHint");
 
-// Marken-Rahmenfarben (bessere Unterscheidung)
+// Gruppen-/Marken-Rahmenfarben
 const BRAND_COLORS = {
-  "IQOS": "#0B2A5B",        // dunkelblau
-  "TEREA": "#5BB8FF",       // hellblau
-  "MB": "#5a0000",          // dunkelrot
-  "LEVIA": "#7a3cff",       // violett
-  "MB CRAFTED": "#FFD200",  // gelb
-  "DELIA": "#FF3B30",       // rot
-  "VEEV": "#FF8A00"         // orange
+  "TEREA": "#5BB8FF",
+  "DELIA": "#FF3B30",
+  "LEVIA": "#7a3cff",
+  "VEEV": "#FF8A00",
+  "IQOS": "#0B2A5B",
+  "MB CRAFTED": "#FFD200",
+  "MB RED": "#7c1010",
+  "MB GOLD": "#d6b85a",
+  "MB MIX": "#b60d2b",
+  "MB SONSTIGE": "#8ea1c4",
+  "L&M RED": "#c4004a",
+  "L&M BLUE": "#3f69b5",
+  "CHESTERFIELD ORIGINAL": "#b30424",
+  "CHESTERFIELD BLUE": "#3f6fb7",
+  "F6 - PARLIAMENT - EVE": "#3aa2df"
 };
+
+const GROUP_ORDER_DEFAULT = [
+  "TEREA",
+  "DELIA",
+  "LEVIA",
+  "VEEV",
+  "IQOS",
+  "MB CRAFTED",
+  "MB RED",
+  "MB GOLD",
+  "MB MIX",
+  "MB SONSTIGE",
+  "L&M RED",
+  "L&M BLUE",
+  "CHESTERFIELD ORIGINAL",
+  "CHESTERFIELD BLUE",
+  "F6 - PARLIAMENT - EVE"
+];
 
 let selected = new Set();
 
@@ -38,17 +64,46 @@ function saveSelection(){
 
 function norm(s){ return (s||"").toLowerCase().trim(); }
 
+function classifyGroup(it){
+  const name = (it.name || "").toUpperCase();
+  const brand = (it.brand || "").toUpperCase();
+
+  if(brand === "TEREA") return "TEREA";
+  if(brand === "DELIA") return "DELIA";
+  if(brand === "LEVIA") return "LEVIA";
+  if(brand === "VEEV") return "VEEV";
+  if(brand === "IQOS") return "IQOS";
+
+  if(name.startsWith("MB CRAFTED") || brand === "MB CRAFTED") return "MB CRAFTED";
+  if(name.startsWith("MB RED")) return "MB RED";
+  if(name.startsWith("MB GOLD")) return "MB GOLD";
+  if(name.startsWith("MB MIX")) return "MB MIX";
+  if(name.startsWith("MB ")) return "MB SONSTIGE";
+
+  if(name.startsWith("L&M RED") || name.startsWith("L&M SIMPLY RED")) return "L&M RED";
+  if(name.startsWith("L&M BLUE") || name.startsWith("L&M SIMPLY BLUE")) return "L&M BLUE";
+
+  if(name.startsWith("CHESTERFIELD ORIGINAL")) return "CHESTERFIELD ORIGINAL";
+  if(name.startsWith("CHESTERFIELD BLUE")) return "CHESTERFIELD BLUE";
+
+  if(brand === "F6" || brand === "PARLIAMENT" || brand === "EVE") return "F6 - PARLIAMENT - EVE";
+
+  return it.brand || "SONSTIGE";
+}
+
 function groupByBrand(items){
   const map = new Map();
   for(const it of items){
-    if(!map.has(it.brand)) map.set(it.brand, []);
-    map.get(it.brand).push(it);
+    const group = classifyGroup(it);
+    if(!map.has(group)) map.set(group, []);
+    map.get(group).push(it);
   }
   return sortBrandEntries([...map.entries()]);
 }
 
 function getAllBrands(){
-  return [...new Set(PRODUCT_DATA.map(it=>it.brand))].sort((a,b)=>a.localeCompare(b,"de"));
+  const groups = [...new Set(PRODUCT_DATA.map(it=>classifyGroup(it)))];
+  return GROUP_ORDER_DEFAULT.filter(g=>groups.includes(g)).concat(groups.filter(g=>!GROUP_ORDER_DEFAULT.includes(g)).sort((a,b)=>a.localeCompare(b,"de")));
 }
 
 function loadBrandOrder(){
@@ -163,7 +218,7 @@ function makeCheckIcon(){
 }
 
 function itemKey(it){
-  return it.ean; // unique enough for your use-case
+  return `${it.name}__${it.ean}__${it.pack_ean||""}`;
 }
 
 function render(){
@@ -242,13 +297,12 @@ function render(){
 
       const ean = document.createElement("div");
       ean.className = "ean";
-      ean.textContent = `Gebinde: ${it.ean}`;
+      ean.textContent = `Packung: ${it.ean}`;
 
-      // optional: Packungs-EAN anzeigen (Gebinde bleibt immer die Haupt-EAN)
       if(it.pack_ean){
         const packEan = document.createElement("div");
         packEan.className = "subean";
-        packEan.textContent = `Packung: ${it.pack_ean}`;
+        packEan.textContent = `Gebinde: ${it.pack_ean}`;
         meta.append(name, ean, packEan);
       }else{
         meta.append(name, ean);
@@ -258,12 +312,7 @@ function render(){
       check.className = "check";
       check.innerHTML = makeCheckIcon();
 
-      if(it.pack){
-        const badge = document.createElement("div");
-        badge.className = "badge";
-        badge.textContent = it.pack;
-        card.appendChild(badge);
-      }
+      // Packungsanzeige entfernt
 
       function toggle(){
         const k = itemKey(it);

@@ -259,55 +259,6 @@ const PRODUCT_DATA = [
     "pack": ""
   },
   {
-    "name": "MB RED OP 9XL-BOX",
-    "ean": "4023500749886",
-    "pack_ean": "42492122",
-    "brand": "MB",
-    "pack": ""
-  },
-  {
-    "name": "MB CRAFTED RED OP",
-    "ean": "4023500757812",
-    "pack_ean": "42491880",
-    "brand": "MB CRAFTED",
-    "pack": ""
-  },
-  {
-    "name": "MB CRAFTED RED 2XL",
-    "ean": "4023500757829",
-    "pack_ean": "42492030",
-    "brand": "MB CRAFTED",
-    "pack": ""
-  },
-  {
-    "name": "MB CRAFTED RED 7XL",
-    "ean": "4023500757850",
-    "pack_ean": "42492337",
-    "brand": "MB CRAFTED",
-    "pack": ""
-  },
-  {
-    "name": "MB CRAFTED GOLD OP",
-    "ean": "4023500757836",
-    "pack_ean": "42492054",
-    "brand": "MB CRAFTED",
-    "pack": ""
-  },
-  {
-    "name": "MB CRAFTED GOLD 2XL",
-    "ean": "4023500757843",
-    "pack_ean": "42492153",
-    "brand": "MB CRAFTED",
-    "pack": ""
-  },
-  {
-    "name": "MB CRAFTED GOLD 7XL",
-    "ean": "4023500757867",
-    "pack_ean": "42492382",
-    "brand": "MB CRAFTED",
-    "pack": ""
-  },
-  {
     "name": "IQOS Breeze Blue",
     "ean": "7622100508939",
     "pack_ean": "",
@@ -341,5 +292,404 @@ const PRODUCT_DATA = [
     "pack_ean": "",
     "brand": "IQOS",
     "pack": ""
+  },
+  {
+    "name": "MB CRAFTED RED OP",
+    "ean": "42491880",
+    "pack_ean": "4023500757812",
+    "brand": "MB CRAFTED",
+    "pack": "20"
+  },
+  {
+    "name": "MB CRAFTED RED 2XL",
+    "ean": "42492030",
+    "pack_ean": "4023500757829",
+    "brand": "MB CRAFTED",
+    "pack": "26"
+  },
+  {
+    "name": "MB CRAFTED RED 7XL",
+    "ean": "42492337",
+    "pack_ean": "4023500757850",
+    "brand": "MB CRAFTED",
+    "pack": "58"
+  },
+  {
+    "name": "MB CRAFTED GOLD OP",
+    "ean": "42492054",
+    "pack_ean": "4023500757836",
+    "brand": "MB CRAFTED",
+    "pack": "20"
+  },
+  {
+    "name": "MB CRAFTED GOLD 2XL",
+    "ean": "42492153",
+    "pack_ean": "4023500757843",
+    "brand": "MB CRAFTED",
+    "pack": "26"
+  },
+  {
+    "name": "MB CRAFTED GOLD 7XL",
+    "ean": "42492382",
+    "pack_ean": "4023500757867",
+    "brand": "MB CRAFTED",
+    "pack": "58"
+  },
+  {
+    "name": "MB RED OP-BOX",
+    "ean": "42465959",
+    "pack_ean": "4023500757119",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB RED SOFT LABEL OP SOFT",
+    "ean": "42491910",
+    "pack_ean": "4023500749824",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB RED OP XL-BOX",
+    "ean": "42466444",
+    "pack_ean": "4023500757188",
+    "brand": "MB",
+    "pack": "22"
+  },
+  {
+    "name": "MB RED OP 2XL-BOX",
+    "ean": "42466475",
+    "pack_ean": "4023500757201",
+    "brand": "MB",
+    "pack": "28"
+  },
+  {
+    "name": "MB RED OP 3XL-BOX",
+    "ean": "42491941",
+    "pack_ean": "4023500749862",
+    "brand": "MB",
+    "pack": "34"
+  },
+  {
+    "name": "MB RED OP 7XL-BOX",
+    "ean": "42466697",
+    "pack_ean": "4023500757263",
+    "brand": "MB",
+    "pack": "54"
+  },
+  {
+    "name": "MB RED OP 9XL-BOX",
+    "ean": "42492122",
+    "pack_ean": "4023500749886",
+    "brand": "MB",
+    "pack": "76"
+  },
+  {
+    "name": "MB RED LONG OP-BOX",
+    "ean": "42465980",
+    "pack_ean": "4023500757126",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB GOLD OP-BOX",
+    "ean": "42466116",
+    "pack_ean": "4023500757133",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB GOLD SOFT LABEL OP SOFT",
+    "ean": "42491927",
+    "pack_ean": "4023500749848",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB GOLD OP XL-BOX",
+    "ean": "42466482",
+    "pack_ean": "4023500757195",
+    "brand": "MB",
+    "pack": "22"
+  },
+  {
+    "name": "MB GOLD OP 2XL-BOX",
+    "ean": "42466499",
+    "pack_ean": "4023500757218",
+    "brand": "MB",
+    "pack": "28"
+  },
+  {
+    "name": "MB GOLD OP 3XL-BOX",
+    "ean": "42492047",
+    "pack_ean": "4023500749879",
+    "brand": "MB",
+    "pack": "34"
+  },
+  {
+    "name": "MB GOLD OP 7XL-BOX",
+    "ean": "42466314",
+    "pack_ean": "4023500757270",
+    "brand": "MB",
+    "pack": "54"
+  },
+  {
+    "name": "MB GOLD LONG OP-BOX",
+    "ean": "42466246",
+    "pack_ean": "4023500757140",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB MIX OP-BOX",
+    "ean": "42466277",
+    "pack_ean": "4023500757157",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB MIX OP XL-BOX",
+    "ean": "42466390",
+    "pack_ean": "4023500757164",
+    "brand": "MB",
+    "pack": "22"
+  },
+  {
+    "name": "MB MIX OP 2XL-BOX",
+    "ean": "42466413",
+    "pack_ean": "4023500757171",
+    "brand": "MB",
+    "pack": "28"
+  },
+  {
+    "name": "MB SILVER BLUE OP-BOX",
+    "ean": "42466550",
+    "pack_ean": "4023500757256",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB WHITE OP-BOX",
+    "ean": "42466505",
+    "pack_ean": "4023500757225",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB SIMPLY RED OP-BOX",
+    "ean": "42466536",
+    "pack_ean": "4023500757232",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "MB SIMPLY BLUE OP-BOX",
+    "ean": "42466765",
+    "pack_ean": "4023500757249",
+    "brand": "MB",
+    "pack": "20"
+  },
+  {
+    "name": "L&M RED LABEL OP-BOX",
+    "ean": "42466659",
+    "pack_ean": "4023500757287",
+    "brand": "L&M",
+    "pack": "20"
+  },
+  {
+    "name": "L&M RED LABEL OP XL-BOX",
+    "ean": "42466727",
+    "pack_ean": "4023500757294",
+    "brand": "L&M",
+    "pack": "24"
+  },
+  {
+    "name": "L&M RED LABEL OP 2XL-BOX",
+    "ean": "42466109",
+    "pack_ean": "4023500757362",
+    "brand": "L&M",
+    "pack": "30"
+  },
+  {
+    "name": "L&M RED LABEL OP 4XL-BOX",
+    "ean": "42466086",
+    "pack_ean": "4023500757379",
+    "brand": "L&M",
+    "pack": "37"
+  },
+  {
+    "name": "L&M RED LABEL OP 7XL-BOX",
+    "ean": "42466185",
+    "pack_ean": "4023500757393",
+    "brand": "L&M",
+    "pack": "56"
+  },
+  {
+    "name": "L&M RED LABEL OP 9XL-BOX",
+    "ean": "42466208",
+    "pack_ean": "4023500757416",
+    "brand": "L&M",
+    "pack": "76"
+  },
+  {
+    "name": "L&M RED LABEL LONG OP-BOX",
+    "ean": "42465836",
+    "pack_ean": "4023500757300",
+    "brand": "L&M",
+    "pack": "20"
+  },
+  {
+    "name": "L&M SIMPLY RED OP-BOX",
+    "ean": "42466055",
+    "pack_ean": "4023500757348",
+    "brand": "L&M",
+    "pack": "20"
+  },
+  {
+    "name": "L&M BLUE LABEL OP-BOX",
+    "ean": "42465867",
+    "pack_ean": "4023500757317",
+    "brand": "L&M",
+    "pack": "20"
+  },
+  {
+    "name": "L&M BLUE LABEL OP XL-BOX",
+    "ean": "42466024",
+    "pack_ean": "4023500757324",
+    "brand": "L&M",
+    "pack": "24"
+  },
+  {
+    "name": "L&M BLUE LABEL OP 2XL-BOX",
+    "ean": "42466031",
+    "pack_ean": "4023500757331",
+    "brand": "L&M",
+    "pack": "30"
+  },
+  {
+    "name": "L&M BLUE LABEL OP 4XL-BOX",
+    "ean": "42466123",
+    "pack_ean": "4023500757386",
+    "brand": "L&M",
+    "pack": "37"
+  },
+  {
+    "name": "L&M BLUE LABEL OP 7XL-BOX",
+    "ean": "42466192",
+    "pack_ean": "4023500757409",
+    "brand": "L&M",
+    "pack": "56"
+  },
+  {
+    "name": "L&M SIMPLY BLUE OP-BOX",
+    "ean": "42466062",
+    "pack_ean": "4023500757355",
+    "brand": "L&M",
+    "pack": "20"
+  },
+  {
+    "name": "CHESTERFIELD ORIGINAL OP-BOX",
+    "ean": "42466611",
+    "pack_ean": "4023500757485",
+    "brand": "CHESTERFIELD",
+    "pack": "20"
+  },
+  {
+    "name": "CHESTERFIELD ORIGINAL OP XL-BOX",
+    "ean": "42466673",
+    "pack_ean": "4023500757492",
+    "brand": "CHESTERFIELD",
+    "pack": "24"
+  },
+  {
+    "name": "CHESTERFIELD ORIGINAL OP 2XL-BOX",
+    "ean": "42466680",
+    "pack_ean": "4023500757508",
+    "brand": "CHESTERFIELD",
+    "pack": "30"
+  },
+  {
+    "name": "CHESTERFIELD BLUE OP BOX",
+    "ean": "42466819",
+    "pack_ean": "4023500757515",
+    "brand": "CHESTERFIELD",
+    "pack": "20"
+  },
+  {
+    "name": "CHESTERFIELD BLUE OP XL-BOX",
+    "ean": "42466703",
+    "pack_ean": "4023500757522",
+    "brand": "CHESTERFIELD",
+    "pack": "24"
+  },
+  {
+    "name": "CHESTERFIELD BLUE OP 2XL-BOX",
+    "ean": "42466598",
+    "pack_ean": "4023500757539",
+    "brand": "CHESTERFIELD",
+    "pack": "30"
+  },
+  {
+    "name": "CHESTERFIELD BLUE OP 4XL-BOX",
+    "ean": "42466604",
+    "pack_ean": "4023500757546",
+    "brand": "CHESTERFIELD",
+    "pack": "37"
+  },
+  {
+    "name": "F6 ORIGINAL OP-BOX",
+    "ean": "42466222",
+    "pack_ean": "4023500757423",
+    "brand": "F6",
+    "pack": "20"
+  },
+  {
+    "name": "F6 ORIGINAL OP XL-BOX",
+    "ean": "42466378",
+    "pack_ean": "4023500757447",
+    "brand": "F6",
+    "pack": "24"
+  },
+  {
+    "name": "F6 ORIGINAL OP 2XL-BOX",
+    "ean": "42466291",
+    "pack_ean": "4023500757430",
+    "brand": "F6",
+    "pack": "30"
+  },
+  {
+    "name": "F6 ORIGINAL OP 7XL-BOX",
+    "ean": "42466369",
+    "pack_ean": "4023500757454",
+    "brand": "F6",
+    "pack": "56"
+  },
+  {
+    "name": "F6 BLUE OP XL-BOX",
+    "ean": "42466383",
+    "pack_ean": "4023500757461",
+    "brand": "F6",
+    "pack": "24"
+  },
+  {
+    "name": "F6 BLUE OP 7XL-BOX",
+    "ean": "42466451",
+    "pack_ean": "4023500757478",
+    "brand": "F6",
+    "pack": "56"
+  },
+  {
+    "name": "PARLIAMENT NIGHT BLUE LONG OP-BOX",
+    "ean": "42492535",
+    "pack_ean": "4023500749954",
+    "brand": "PARLIAMENT",
+    "pack": "20"
+  },
+  {
+    "name": "EVE 120 OP-BOX",
+    "ean": "42492191",
+    "pack_ean": "4023500749947",
+    "brand": "EVE",
+    "pack": "20"
   }
 ];
