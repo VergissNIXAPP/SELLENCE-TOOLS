@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0c1222" />
+  <title>NINOX BERICHT</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar glass">
+      <div class="brand-wrap">
+        <div class="brand-badge"><img src="icon-192.png" alt="Ninox Bericht Icon"></div>
+        <div>
+          <p class="eyebrow">AUSSENDIENST TOOL</p>
+          <h1>NINOX BERICHT</h1>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <a class="ghost-btn back-link" href="../index.html">← SELLENCE TOOLS</a>
+        <button class="ghost-btn" id="toggleCreatorBtn" type="button">Button erstellen</button>
+        <button class="ghost-btn" id="clearReportBtn" type="button">Auswahl leeren</button>
+        <button class="ghost-btn" id="exportBtn" type="button">Export</button>
+        <label class="ghost-btn import-label" for="importInput">Import</label>
+        <input id="importInput" type="file" accept="application/json" hidden />
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="panel buttons-panel glass" id="buttonsPanel">
+        <div class="panel-head sticky-head">
+          <div>
+            <p class="eyebrow">HAUPTSEITE</p>
+            <h2>Schnellbausteine</h2>
+          </div>
+          <div class="focus-tools">
+            <div class="counter" id="buttonCount">0 Buttons</div>
+          </div>
+        </div>
+
+        <div class="buttons-grid" id="buttonArea"></div>
+      </section>
+
+      <aside class="panel summary-panel glass" id="summaryPanel">
+        <div class="panel-head sticky-head">
+          <div>
+            <p class="eyebrow">AUSWAHL</p>
+            <h2>Kurzansicht</h2>
+          </div>
+          <div class="counter" id="lineCount">0 Zeilen</div>
+        </div>
+
+        <textarea id="reportText" class="report-text" placeholder="Deine gewählten Punkte erscheinen hier…" readonly></textarea>
+
+        <div class="report-actions">
+          <button class="secondary-btn" id="undoBtn" type="button">Letzte entfernen</button>
+          <button class="finish-btn" id="finishBtn" type="button">FERTIG</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <section class="creator-drawer glass hidden" id="creatorDrawer">
+    <div class="drawer-head">
+      <div>
+        <p class="eyebrow">ERSTELLEN</p>
+        <h2 id="drawerTitle">Neuen Bericht-Button anlegen</h2>
+      </div>
+      <button class="ghost-btn" id="closeCreatorBtn" type="button">Schließen</button>
+    </div>
+
+    <div class="creator-content" id="creatorContent">
+      <div class="form-grid">
+        <label class="field">
+          <span>Button-Text</span>
+          <textarea id="btnText" rows="4" placeholder="z. B. Ware nachgeräumt und Zweitplatzierung kontrolliert."></textarea>
+        </label>
+
+        <div class="row">
+          <label class="field compact">
+            <span>Farbe</span>
+            <input id="btnColor" type="color" value="#5b8cff" />
+          </label>
+
+          <label class="field compact">
+            <span>Kurzname</span>
+            <input id="btnLabel" type="text" maxlength="28" placeholder="z. B. Nachräumen" />
+          </label>
+        </div>
+
+        <div class="cta-row">
+          <button class="primary-btn" id="createBtn" type="button">+ Button hinzufügen</button>
+          <button class="secondary-btn hidden" id="cancelEditBtn" type="button">Bearbeiten abbrechen</button>
+        </div>
+      </div>
+
+      <div class="tips">
+        <span class="tip-chip">16 Buttons möglich</span>
+        <span class="tip-chip">Bearbeiten & Reihenfolge</span>
+      </div>
+    </div>
+  </section>
+
+  <template id="buttonTemplate">
+    <article class="smart-card">
+      <button class="smart-button" type="button"></button>
+      <div class="smart-label"></div>
+      <div class="smart-actions">
+        <button class="mini-btn move-left-btn" type="button" title="Nach links">←</button>
+        <button class="mini-btn move-right-btn" type="button" title="Nach rechts">→</button>
+        <button class="mini-btn edit-btn" type="button" title="Bearbeiten">✎</button>
+        <button class="mini-btn delete-btn" type="button" title="Löschen">✕</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

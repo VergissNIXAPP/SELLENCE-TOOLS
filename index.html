@@ -3,53 +3,45 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0A1022">
+  <meta name="theme-color" content="#0b1220">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>SELLENCE Tools</title>
-
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="tools.css">
-
-  <style>
-    /* small page-specific tweaks */
-    .heroTitle{margin:0;font-size:clamp(22px,3.2vw,30px);font-weight:900;letter-spacing:-.01em;}
-    .heroText{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.45;}
-    .topPad{padding:14px;}
-    .footSplit{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-    /* reorder mode */
-    .tiles{position:relative;}
-    .tile{position:relative;}
-    .reorderCtrls{position:absolute;right:12px;top:12px;display:none;gap:6px;z-index:2;}
-    body.reorderMode .reorderCtrls{display:flex;}
-    .reBtn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(10,16,34,.65);color:#fff;display:grid;place-items:center;font-weight:900;}
-    .reBtn:active{transform:scale(.98);}
-  </style>
 </head>
 <body>
   <main class="container">
-    <header class="header" role="banner">
-      <div class="brandLine">SELLENCE</div>
-      <div class="appLine">TOOLS</div>
-        <p class="heroText">Digital - Einfach - Arbeiten</p>
+    <header class="hero" role="banner">
+      <div class="hero__glow hero__glow--a"></div>
+      <div class="hero__glow hero__glow--b"></div>
+      <div class="heroCopy heroCopy--centered">
+        <h1 class="heroTitle heroTitle--sellence">
+          <span class="heroTitleMain">SELLENCE</span>
+          <span class="heroTitleSub">TOOLS</span>
+        </h1>
+        <p class="heroText heroText--tagline heroText--taglineCenter">Digital · Einfach · Arbeiten</p>
+      </div>
     </header>
 
-    <section class="card" aria-label="Tool Auswahl">
-      <div class="topPad" style="text-align:center">
-        <h1 class="heroTitle">Was möchtest du starten?</h1>
+    <section class="surface" aria-label="Tool Auswahl">
+      <div class="sectionHead sectionHead--center">
+        <div>
+          <h2><span style="font-size:1.25em;font-weight:600;">Was möchtest du starten?</span></h2>
+          
+        </div>
       </div>
 
-
       <div class="newTop" aria-label="App Neuheit">
-        <a class="newTop__link" href="./sellence-ean/index.html" aria-label="SELLENCE EAN Übersicht öffnen">
+        <a class="newTop__link" href="./sellence-ninox-bericht/index.html" aria-label="SELLENCE Ninox Bericht öffnen">
           <div class="newTop__badge">APP NEUHEIT</div>
           <div class="newTop__row">
-            <div class="newTop__iconWrap"><img src="assets/ean-icon.png" alt="SELLENCE EAN Icon"></div>
+            <div class="newTop__iconWrap"><img src="./sellence-ninox-bericht/icon-192.png" alt="Ninox Bericht Icon"></div>
             <div class="newTop__text">
-              <div class="newTop__title">EAN ÜBERSICHT</div>
-              <div class="newTop__sub">Produkte & EAN in Sekunden finden und EXPORT Datei erstellen für Katasymbol Label-Drucker </div>
+              <div class="newTop__title">NINOX-BERICHT</div>
+              <div class="newTop__sub">Buttons mit eigenem Text erstellen und in Sekunden ist dein NINOX Bericht erstellt!</div>
             </div>
             <div class="newTop__go" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg>
@@ -59,24 +51,24 @@
       </div>
 
       <div class="highlights" aria-label="App Highlights">
-<a class="tile tile--highlight" data-tool="touren" href="./touren/index.html" aria-label="Tourenplaner öffnen">
-          <div class="thumb thumb--highlight"><img src="assets/touren-icon.png" alt="Tourenplaner Icon"></div>
+        <a class="tile tile--highlight" data-tool="ean" href="./sellence-ean/index.html" aria-label="EAN  öffnen">
+          <div class="thumb thumb--highlight thumb--ean"><span>EAN</span></div>
           <div class="meta">
             <div class="kicker kicker--highlight">APP HIGHLIGHT</div>
-            <p class="name name--highlight">Tourenplaner</p>
-            <p class="desc">Automatische Routenplanung und mit Google Maps oder Apple Karten starten.</p>
+            <p class="name name--highlight">EAN </p>
+            <p class="desc">Produkte, EANs und Exportdateien schnell finden und direkt für den Label-Druck vorbereiten.</p>
           </div>
           <div class="go" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg>
           </div>
         </a>
 
-        <a class="tile tile--highlight" data-tool="retouren-scanner" href="./retouren-scanner/index.html" aria-label="Retouren Scanner öffnen">
-          <div class="thumb thumb--highlight"><img src="assets/scan-icon.png" alt="Retouren Scanner Icon"></div>
+        <a class="tile tile--highlight" data-tool="stempeluhr-highlight" href="./stempeluhr/index.html" aria-label="Stempeluhr öffnen">
+          <div class="thumb thumb--highlight thumb--time"><span>24</span></div>
           <div class="meta">
             <div class="kicker kicker--highlight">APP HIGHLIGHT</div>
-            <p class="name name--highlight">Retouren Scanner</p>
-            <p class="desc">EAN scannen, Pakete automatisch füllen, 500€-Limit.</p>
+            <p class="name name--highlight">Stempeluhr</p>
+            <p class="desc">Ein- und Ausstempeln, Tagesliste, Netto-Stunden und Export mit klarer SELLENCE-Optik.</p>
           </div>
           <div class="go" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg>
@@ -84,21 +76,26 @@
         </a>
       </div>
 
+      <div class="sectionHead sectionHead--compact">
+        <div>
+          <div class="sectionKicker sectionKicker--apps">WEITERE APPS</div>
+          <h3></h3>
+        </div>
+      </div>
+
       <div class="tiles" id="tiles">
-        <a class="tile" data-tool="stempeluhr" href="./stempeluhr/index.html" aria-label="Stempeluhr öffnen">
+        <a class="tile" data-tool="touren" href="./touren/index.html" aria-label="Tourenplaner öffnen">
           <div class="reorderCtrls" aria-hidden="true">
             <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
             <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
           </div>
-          <div class="thumb"><img src="assets/stempeluhr-icon.png" alt="Stempeluhr Icon"></div>
+          <div class="thumb thumb--route"><span>TP</span></div>
           <div class="meta">
-            <div class="kicker">Arbeitszeit</div>
-            <p class="name">Stempeluhr</p>
-            <p class="desc">Ein- & Ausstempeln, Tagesliste, Netto-Stunden inkl. Pause und Excel/CSV Export.</p>
+            <div class="kicker kicker--planung">Planung</div>
+            <p class="name">Tourenplaner</p>
+            <p class="desc">Automatische Routenplanung mit schneller Navigation über Google Maps oder Apple Karten.</p>
           </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
         </a>
 
         <a class="tile" data-tool="vwhelfer" href="./sellence-vw-helfer/index.html" aria-label="VW Helfer öffnen">
@@ -106,79 +103,44 @@
             <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
             <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
           </div>
-          <div class="thumb"><img src="sellence-vw-helfer/assets/vw-icon.png" alt="VW Helfer Icon"></div>
+          <div class="thumb thumb--vw"><span>VW</span></div>
           <div class="meta">
-            <div class="kicker">VW · Tipps & Tricks</div>
+            <div class="kicker kicker--tipps">Tipps &amp; Tricks</div>
             <p class="name">VW Helfer</p>
-            <p class="desc">Schnelle Hilfe: Funktionen, Shortcuts und kleine Alltags-Hacks.</p>
+            <p class="desc">Kurzhilfen, Shortcuts und praktische Unterstützung für den täglichen Einsatz.</p>
           </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
         </a>
-<a class="tile" data-tool="oos" href="./oos/index.html" aria-label="OOS Scanner öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb"><img src="assets/oos-icon.png" alt="OOS Scanner Icon"></div>
-          <div class="meta">
-            <div class="kicker">Out of Stock</div>
-            <p class="name">OOS Scanner</p>
-            <p class="desc">Screenshot auswählen, EANs erkennen und OOS schnell dokumentieren.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-<a class="tile" data-tool="mto" href="./mto/index.html" aria-label="MTO Rechner öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-<div class="thumb"><img src="assets/mto-icon.png" alt="MTO Rechner Icon"></div>
-          <div class="meta">
-            <div class="kicker">MTO</div>
-            <p class="name">MTO Rechner</p>
-            <p class="desc">Schnell berechnen und dokumentieren – übersichtlich & sofort einsatzbereit.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-
-        <a class="tile" data-tool="picos" href="./picos-pos/index.html" aria-label="PICOS POS Rechner öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb"><img src="assets/picos-icon.png" alt="PICOS POS Rechner Icon"></div>
-          <div class="meta">
-            <div class="kicker">HÄNDLER PROVISION</div>
-            <p class="name">Provision's Rechner</p>
-            <p class="desc">Produkte auswählen und direkt ausrechnen – ideal für schnelle Kalkulationen unterwegs.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-
 
         <a class="tile" data-tool="retourenrechner" href="./retouren/index.html" aria-label="Retourenrechner öffnen">
           <div class="reorderCtrls" aria-hidden="true">
             <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
             <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
           </div>
-          <div class="thumb"><img src="retouren/icon-192.png" alt="Retourenrechner Icon"></div>
+          <div class="thumb thumb--return"><span>R</span></div>
           <div class="meta">
-            <div class="kicker">Retouren</div>
+            <div class="kicker kicker--retouren">Retouren</div>
             <p class="name">Retourenrechner</p>
-            <p class="desc">Kartons & Pakete berechnen – schnell & übersichtlich.</p>
+            <p class="desc">Kartons und Pakete schnell berechnen – klar strukturiert und sofort einsatzbereit.</p>
           </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
         </a>
+
+        <a class="tile" data-tool="mto" href="./mto/index.html" aria-label="MTO Rechner öffnen">
+          <div class="reorderCtrls" aria-hidden="true">
+            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
+            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
+          </div>
+          <div class="thumb thumb--mto"><span>M</span></div>
+          <div class="meta">
+            <div class="kicker kicker--mto">MTO</div>
+            <p class="name">MTO Rechner</p>
+            <p class="desc">Schnell berechnen und dokumentieren – übersichtlich, reduziert und direkt startklar.</p>
+          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
+        </a>
+
+        
       </div>
 
       <div class="footerRow">
@@ -188,28 +150,18 @@
         </div>
       </div>
     </section>
-  
+
     <section class="privacy">
       <h3>Datenschutz</h3>
-      <p>
-        Der Schutz deiner Daten ist uns wichtig.
-        Die SELLENCE-TOOLS WebApp funktioniert vollständig lokal auf deinem Gerät.
-      </p>
+      <p>Die SELLENCE-TOOLS WebApp funktioniert lokal auf deinem Gerät. Eingaben bleiben auf dem Gerät und werden nicht an externe Server übertragen.</p>
       <ul>
-        <li>Es werden <strong>keine Daten an Server übertragen</strong>.</li>
-        <li>Alle Eingaben bleiben <strong>ausschließlich auf deinem iPhone oder iPad</strong>.</li>
-        <li>Die Nutzung ist <strong>jederzeit offline</strong> möglich.</li>
-        <li>Es werden <strong>keine personenbezogenen Daten</strong> erhoben oder gespeichert.</li>
-        <li>Gespeicherte Inhalte können jederzeit durch einen Reset oder das Entfernen der App gelöscht werden.</li>
+        <li>Keine Übertragung personenbezogener Daten.</li>
+        <li>Offline-Nutzung weiterhin möglich.</li>
+        <li>Gespeicherte Inhalte können jederzeit per Reset oder durch Entfernen der App gelöscht werden.</li>
       </ul>
-      <p class="privacy-note">
-        SELLENCE-TOOLS dient ausschließlich als digitales Arbeits- und Rechenhilfsmittel.
-      </p>
     </section>
+  </main>
 
-</main>
-
-  <!-- Login Overlay -->
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Passcode Dialog">
     <div class="sheet">
       <div class="sheetHead">
@@ -225,7 +177,7 @@
         </div>
         <div class="err" id="err">Falscher Passcode.</div>
         <button class="ghostBtn" id="clearBtn" type="button">Login zurücksetzen</button>
-        <div class="small">Hinweis: Login wird im Browser (localStorage) gespeichert.</div>
+        <div class="small">Hinweis: Login wird im Browser gespeichert.</div>
       </div>
     </div>
   </div>
@@ -233,32 +185,24 @@
   <script>
     const AUTH_KEY="sellence_auth";
     const PASSCODE="sellence";
+    const ORDER_KEY = "sellence_tools_order";
 
     const overlay=document.getElementById("overlay");
     const passEl=document.getElementById("pass");
     const errEl=document.getElementById("err");
     const goBtn=document.getElementById("goBtn");
+    const clearBtn=document.getElementById("clearBtn");
     const logout=document.getElementById("logout");
     const reorderBtn=document.getElementById("reorderBtn");
-    const clearBtn=document.getElementById("clearBtn");
+    const tilesWrap=document.getElementById("tiles");
 
-    // ---- Tool order (per-device, localStorage) ----
-    const ORDER_KEY = "sellence_tools_order";
-    const tilesWrap = document.getElementById("tiles");
-    const tileEls = ()=>Array.from(tilesWrap?.querySelectorAll(".tile")||[]);
+    function tileEls(){ return [...tilesWrap.querySelectorAll('.tile[data-tool]')]; }
+    function readOrder(){ try{ return JSON.parse(localStorage.getItem(ORDER_KEY)||"[]") }catch{ return [] } }
+    function writeOrder(ids){ try{ localStorage.setItem(ORDER_KEY, JSON.stringify(ids)); }catch(e){} }
 
-    function readOrder(){
-      try{ return JSON.parse(localStorage.getItem(ORDER_KEY)||"[]") }catch{ return [] }
-    }
-    function writeOrder(ids){
-      try{ localStorage.setItem(ORDER_KEY, JSON.stringify(ids)); }catch(e){}
-    }
     function applyOrder(){
-      if(!tilesWrap) return;
-
       const pinnedLast = ["mto","picos"];
-      const baseDefault = ["touren","stempeluhr","vwhelfer","retouren","oos","lagerbestand"];
-
+      const baseDefault = ["touren","vwhelfer","retourenrechner"];
       let order = readOrder();
 
       if(!Array.isArray(order) || !order.length){
@@ -268,47 +212,25 @@
         const cleaned = [];
         for(const id of order){
           if(!id) continue;
-          if(pinnedLast.includes(id)) continue; // always pinned to the bottom
+          if(pinnedLast.includes(id)) continue;
           if(seen.has(id)) continue;
+          if(![...baseDefault, ...pinnedLast].includes(id)) continue;
           cleaned.push(id);
           seen.add(id);
         }
-        // ensure base tools exist (if user had an older saved order)
         for(const id of baseDefault){
           if(seen.has(id)) continue;
-
-          // NEW tool: VW Helfer should default to position 3 (after Tourenplaner + Stempeluhr)
-          if(id==="vwhelfer"){
-            const idx = cleaned.indexOf("stempeluhr");
-            if(idx>=0) cleaned.splice(idx+1, 0, id);
-            else cleaned.push(id);
-            seen.add(id);
-            continue;
-          }
-
           cleaned.push(id);
           seen.add(id);
         }
         order = [...cleaned, ...pinnedLast];
       }
 
-      // persist (also fixes old saved orders automatically)
       writeOrder(order);
-
       const map = new Map(tileEls().map(el=>[el.dataset.tool, el]));
-      // known ids first
       order.forEach(id=>{ const el=map.get(id); if(el) tilesWrap.appendChild(el); });
-      // append any new tools not in saved order (but still keep pinnedLast last)
-      const pinnedSet = new Set(pinnedLast);
-      tileEls().forEach(el=>{
-        if(pinnedSet.has(el.dataset.tool)) return;
-        tilesWrap.appendChild(el);
-      });
-      pinnedLast.forEach(id=>{
-        const el = map.get(id);
-        if(el) tilesWrap.appendChild(el);
-      });
     }
+
     function persistCurrentOrder(){
       const ids = tileEls().map(el=>el.dataset.tool).filter(Boolean);
       writeOrder(ids);
@@ -320,23 +242,12 @@
 
     applyOrder();
 
-    // placeholder tiles (coming soon)
-    tilesWrap?.addEventListener("click", (e)=>{
-      const a = e.target.closest?.("a.tile--soon");
-      if(!a) return;
-      if(document.body.classList.contains("reorderMode")) return;
-      e.preventDefault();
-      alert("Die SELLENCE Lagerbestand App ist bald verfügbar 🙂");
-    });
-
-    // prevent navigation while reordering
     document.addEventListener("click", (e)=>{
       if(!document.body.classList.contains("reorderMode")) return;
       const a = e.target.closest?.("a.tile");
       if(a){ e.preventDefault(); }
     }, true);
 
-    // reorder controls
     tilesWrap?.addEventListener("click", (e)=>{
       const btn = e.target.closest?.(".reBtn");
       if(!btn) return;
@@ -358,10 +269,8 @@
     function isAuthed(){try{return localStorage.getItem(AUTH_KEY)==="1"}catch(e){return false}}
     function setAuthed(){try{localStorage.setItem(AUTH_KEY,"1")}catch(e){}}
     function clearAuth(){try{localStorage.removeItem(AUTH_KEY)}catch(e){}}
-
     function showLogin(){overlay.classList.add("show");setTimeout(()=>passEl.focus(),50)}
     function hideLogin(){overlay.classList.remove("show");errEl.style.display="none";passEl.value="";}
-
     function attempt(){
       const v=(passEl.value||"").trim().toLowerCase();
       if(v===PASSCODE){setAuthed();hideLogin();}
@@ -372,18 +281,12 @@
     passEl.addEventListener("keydown",(e)=>{if(e.key==="Enter") attempt();});
     logout.addEventListener("click",()=>{clearAuth();showLogin();});
     clearBtn.addEventListener("click",()=>{clearAuth();passEl.value="";errEl.style.display="none";passEl.focus();});
-
     if(!isAuthed()) showLogin();
-
     if("serviceWorker" in navigator){
       window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
     }
   </script>
 
-<footer class="app-footer">
-  <span>© Andre Schorn</span>
-</footer>
-
+  <footer class="app-footer"><span>© Andre Schorn</span></footer>
 </body>
 </html>
-
