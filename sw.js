@@ -1,5 +1,5 @@
 /* SELLENCE Tools - Service Worker */
-const CACHE = "sellence-tools-v25";
+const CACHE = "sellence-tools-v26";
 
 /**
  * Core assets to pre-cache.
