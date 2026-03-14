@@ -90,16 +90,11 @@
     </div>
   </div>
 
-<script src="data.js"></script>
-  <script src="app.js"></script>
-
-
   <!-- Anleitung Modal -->
   <div id="guideModal" class="modal" aria-hidden="true">
     <div class="modalBackdrop" data-close="1"></div>
     <div class="modalCard guideCard" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
       <div class="modalTitle" id="guideTitle">Anleitung</div>
-      <div class="modalText">Lege später einfach die Datei <b>assets/anleitung.mp4</b> ab. Das Video kann direkt abgespielt und vor- oder zurückgespult werden.</div>
       <div class="guideVideoWrap">
         <video id="guideVideo" class="guideVideo" controls preload="metadata" playsinline>
           <source src="assets/anleitung.mp4" type="video/mp4" />
@@ -111,5 +106,8 @@
       </div>
     </div>
   </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
