@@ -245,6 +245,22 @@ body{
     rgba(255,255,255,.06);
   border:1px solid rgba(255,255,255,.12);
   flex: 0 0 auto;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+}
+
+.thumbImg{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
+/* legacy thumbs with old white padding now fill the tile cleaner */
+.thumb{
+  background: rgba(255,255,255,.98);
 }
 
 .meta{ flex:1 1 auto; min-width:0; padding-right:0; }
@@ -427,4 +443,21 @@ body{
   opacity:.35;
   cursor:not-allowed;
   filter: grayscale(1);
+}
+
+
+.guideCard{
+  width:min(900px, calc(100vw - 24px));
+}
+.guideVideoWrap{
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.35);
+}
+.guideVideo{
+  display:block;
+  width:100%;
+  max-height:min(70vh, 680px);
+  background:#000;
 }

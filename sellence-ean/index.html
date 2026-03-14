@@ -40,6 +40,7 @@
         <input id="search" class="search" type="search" placeholder="Suchen… (z.B. TEREA, MB, Bronze, 7XL)" autocomplete="off" />
         <button id="clearSel" class="btn ghost" type="button" title="Auswahl löschen">Leeren</button>
         <button id="brandOrderBtn" class="btn ghost" type="button" title="Marken-Reihenfolge einstellen">Marken</button>
+        <button id="guideBtn" class="btn ghost" type="button" title="Anleitung anzeigen">Anleitung</button>
       </div>
       <div class="hint" id="countHint"></div>
     </section>
@@ -91,5 +92,24 @@
 
 <script src="data.js"></script>
   <script src="app.js"></script>
+
+
+  <!-- Anleitung Modal -->
+  <div id="guideModal" class="modal" aria-hidden="true">
+    <div class="modalBackdrop" data-close="1"></div>
+    <div class="modalCard guideCard" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+      <div class="modalTitle" id="guideTitle">Anleitung</div>
+      <div class="modalText">Lege später einfach die Datei <b>assets/anleitung.mp4</b> ab. Das Video kann direkt abgespielt und vor- oder zurückgespult werden.</div>
+      <div class="guideVideoWrap">
+        <video id="guideVideo" class="guideVideo" controls preload="metadata" playsinline>
+          <source src="assets/anleitung.mp4" type="video/mp4" />
+          Dein Browser kann dieses Video nicht abspielen.
+        </video>
+      </div>
+      <div class="modalBtns" style="margin-top:14px;">
+        <button id="guideCloseBtn" class="btn primary" type="button">Schließen</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

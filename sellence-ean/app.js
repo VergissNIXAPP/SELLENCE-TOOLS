@@ -45,6 +45,17 @@ const GROUP_ORDER_DEFAULT = [
   "F6 - PARLIAMENT - EVE"
 ];
 
+
+
+function slugifyName(name){
+  return String(name || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 let selected = new Set();
 
 function loadSelection(){
@@ -288,6 +299,15 @@ function render(){
       const thumb = document.createElement("div");
       thumb.className = "thumb";
 
+      const imageSlug = slugifyName(it.name);
+      const thumbImg = document.createElement("img");
+      thumbImg.className = "thumbImg";
+      thumbImg.src = `assets/thumbs/${imageSlug}.png`;
+      thumbImg.alt = "";
+      thumbImg.loading = "lazy";
+      thumbImg.addEventListener("error", ()=>{ thumbImg.remove(); }, { once:true });
+      thumb.appendChild(thumbImg);
+
       const meta = document.createElement("div");
       meta.className = "meta";
 
@@ -427,6 +447,32 @@ function registerSW(){
   }
 }
 
+
+
+function showGuideModal(){
+  const modal = byId("guideModal");
+  const video = byId("guideVideo");
+  if(!modal) return;
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+  if(video){
+    video.load();
+    const p = video.play();
+    if(p && typeof p.catch === "function") p.catch(()=>{});
+  }
+}
+
+function hideGuideModal(){
+  const modal = byId("guideModal");
+  const video = byId("guideVideo");
+  if(!modal) return;
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden","true");
+  if(video){
+    video.pause();
+  }
+}
+
 loadSelection();
 updateFooter();
 render();
@@ -510,3 +556,24 @@ if(brandModal){
 searchEl.addEventListener("input", ()=>{
   render();
 });
+
+
+const guideBtn = byId("guideBtn");
+const guideModal = byId("guideModal");
+const guideCloseBtn = byId("guideCloseBtn");
+
+if(guideBtn){
+  guideBtn.addEventListener("click", showGuideModal);
+}
+if(guideCloseBtn){
+  guideCloseBtn.addEventListener("click", hideGuideModal);
+}
+if(guideModal){
+  guideModal.addEventListener("click", (e)=>{
+    const t = e.target;
+    if(t && t.getAttribute && t.getAttribute("data-close")==="1") hideGuideModal();
+  });
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape") hideGuideModal();
+  });
+}
