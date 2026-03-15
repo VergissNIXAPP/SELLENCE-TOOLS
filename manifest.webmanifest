@@ -1,6 +1,6 @@
 {
   "name": "SELLENCE Tools",
-  "short_name": "SELLENCE",
+  "short_name": "SELLENCE Tools",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b1220",
