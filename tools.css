@@ -249,7 +249,7 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
 .heroTitle--sellence{display:flex;flex-direction:column;align-items:center;gap:0;margin:0}
 .heroTitleMain{
   font-family:"Montserrat",sans-serif;
-  font-size:48px;
+  font-size:56px;
   font-weight:800;
   letter-spacing:2px;
   line-height:1;
@@ -264,7 +264,7 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   margin-top:10px;
   padding-top:14px;
   font-family:"Montserrat",sans-serif;
-  font-size:20px;
+  font-size:24px;
   font-weight:700;
   letter-spacing:4px;
   line-height:1;
@@ -281,8 +281,8 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.22), rgba(255,255,255,0));
 }
 .heroText--taglineCenter{
-  margin-top:10px;
-  font-size:11px;
+  margin-top:12px;
+  font-size:13px;
   font-weight:400;
   line-height:1.2;
   color:#cbd5e1;
@@ -423,130 +423,3 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
 .newTop__link{
   border:1px solid rgba(255,215,0,.6) !important;
 }
-
-
-/* ===============================
-   Harmonische Meta-Leiste unter Titel
-================================ */
-
-.heroCopy--centered{
-  gap:0;
-}
-
-.heroMeta{
-  margin-top:16px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  padding:10px 16px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.10);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  box-shadow:
-    0 12px 34px rgba(0,0,0,.20),
-    inset 0 1px 0 rgba(255,255,255,.05);
-  position:relative;
-  overflow:hidden;
-}
-
-.heroMeta::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:linear-gradient(135deg, rgba(255,255,255,.10), transparent 36%, transparent 70%, rgba(255,255,255,.04));
-}
-
-.heroMeta__item{
-  position:relative;
-  z-index:1;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  min-height:24px;
-  white-space:nowrap;
-}
-
-.heroMeta__icon{
-  display:inline-grid;
-  place-items:center;
-  width:24px;
-  height:24px;
-  border-radius:999px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.08);
-  font-size:13px;
-  flex:0 0 auto;
-}
-
-.heroMeta__label{
-  font-size:10px;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:#94a7c7;
-  font-weight:800;
-}
-
-.heroMeta__item strong{
-  color:#f4f8ff;
-  font-size:13px;
-  font-weight:800;
-}
-
-.heroMeta__divider{
-  width:1px;
-  height:18px;
-  background:linear-gradient(180deg, transparent, rgba(255,255,255,.18), transparent);
-  position:relative;
-  z-index:1;
-}
-
-.heroMeta__item--time .heroMeta__icon{
-  box-shadow:0 0 12px rgba(83,215,255,.10);
-}
-.heroMeta__item--date .heroMeta__icon{
-  box-shadow:0 0 12px rgba(125,92,255,.10);
-}
-.heroMeta__item--weather .heroMeta__icon{
-  box-shadow:0 0 12px rgba(243,201,120,.12);
-}
-
-#weatherCityWrap{
-  color:#c7d3e8;
-  font-weight:700;
-}
-
-@media (max-width:860px){
-  .heroMeta{
-    flex-wrap:wrap;
-    row-gap:10px;
-    column-gap:12px;
-    border-radius:24px;
-    padding:12px 14px;
-  }
-  .heroMeta__divider{
-    display:none;
-  }
-}
-
-@media (max-width:620px){
-  .heroMeta{
-    width:min(100%, 360px);
-    display:grid;
-    grid-template-columns:1fr;
-    justify-items:start;
-    padding:12px 14px;
-    border-radius:20px;
-  }
-  .heroMeta__item{
-    width:100%;
-  }
-  .heroMeta__label{
-    min-width:56px;
-  }
-}
-
