@@ -362,3 +362,30 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   border:1px solid rgba(255,46,166,.7) !important;
   box-shadow:0 0 16px rgba(255,46,166,.32), 0 14px 34px rgba(0,0,0,.24) !important;
 }
+
+/* ===============================
+   APP NEUHEIT GOLD
+================================ */
+
+/* Badge */
+.newTop__badge{
+  background: linear-gradient(135deg,#ffd700,#f3c978,#fff2b0) !important;
+  color:#09111d !important;
+  border:1px solid rgba(255,215,0,.85) !important;
+  box-shadow:0 0 16px rgba(255,215,0,.45);
+}
+
+/* Icon Rahmen */
+.newTop__iconWrap{
+  border:2px solid rgba(255,215,0,.9) !important;
+  box-shadow:
+    0 0 20px rgba(255,215,0,.45),
+    0 14px 34px rgba(0,0,0,.24) !important;
+}
+
+/* Hover Glow */
+.newTop__link:hover .newTop__iconWrap{
+  box-shadow:
+    0 0 28px rgba(255,215,0,.6),
+    0 16px 40px rgba(0,0,0,.35) !important;
+}
