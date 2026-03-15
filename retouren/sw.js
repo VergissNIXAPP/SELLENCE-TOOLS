@@ -1,4 +1,4 @@
-const CACHE = "retourenrechner-v10";
+const CACHE = "retourenrechner-v11";
 const ASSETS = [
   "./",
   "./index.html",
