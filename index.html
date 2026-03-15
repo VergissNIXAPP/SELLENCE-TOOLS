@@ -23,6 +23,27 @@
           <span class="heroTitleSub">TOOLS</span>
         </h1>
         <p class="heroText heroText--tagline heroText--taglineCenter">Digital · Einfach · Arbeiten</p>
+
+        <div class="heroMeta" aria-label="Uhrzeit, Datum und Wetter">
+          <div class="heroMeta__item heroMeta__item--time">
+            <span class="heroMeta__icon" aria-hidden="true">🕒</span>
+            <span class="heroMeta__label">Uhrzeit</span>
+            <strong id="time">--:--</strong>
+          </div>
+          <span class="heroMeta__divider" aria-hidden="true"></span>
+          <div class="heroMeta__item heroMeta__item--date">
+            <span class="heroMeta__icon" aria-hidden="true">📅</span>
+            <span class="heroMeta__label">Datum</span>
+            <strong id="date">--</strong>
+          </div>
+          <span class="heroMeta__divider" aria-hidden="true"></span>
+          <div class="heroMeta__item heroMeta__item--weather">
+            <span class="heroMeta__icon" id="weatherIcon" aria-hidden="true">☀️</span>
+            <span class="heroMeta__label">Wetter</span>
+            <strong><span id="weatherTemp">--°C</span><span id="weatherCityWrap"> · <span id="weatherCity">Standort</span></span></strong>
+          </div>
+        </div>
+
       </div>
     </header>
 
@@ -285,7 +306,60 @@
     if("serviceWorker" in navigator){
       window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
     }
-  </script>
+  
+    
+
+  
+// Uhrzeit + Datum
+function updateTime(){
+  const now = new Date()
+  const time = now.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})
+  const date = now.toLocaleDateString("de-DE",{weekday:"short",day:"numeric",month:"long"})
+  const t=document.getElementById("time")
+  const d=document.getElementById("date")
+  if(t) t.textContent=time
+  if(d) d.textContent=date
+}
+setInterval(updateTime,1000)
+updateTime()
+
+// Wetter + echter Standortname
+navigator.geolocation.getCurrentPosition(async pos=>{
+
+  const lat = pos.coords.latitude
+  const lon = pos.coords.longitude
+
+  try{
+
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+    const data = await res.json()
+
+    const temp = Math.round(data.current_weather.temperature)
+    const tempEl=document.getElementById("weatherTemp")
+    if(tempEl) tempEl.textContent=temp+"°C"
+
+    const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=de`)
+    const gdata = await geo.json()
+
+    const cityEl=document.getElementById("weatherCity")
+    const wrap=document.getElementById("weatherCityWrap")
+
+    if(gdata.results && gdata.results.length>0){
+        const city = gdata.results[0].name || gdata.results[0].admin1
+        if(cityEl) cityEl.textContent=city
+        if(wrap) wrap.style.display="inline"
+    }else{
+        if(wrap) wrap.style.display="none"
+    }
+
+  }catch(e){
+      const wrap=document.getElementById("weatherCityWrap")
+      if(wrap) wrap.style.display="none"
+  }
+
+})
+
+</script>
 
   <footer class="app-footer"><span>© Andre Schorn</span></footer>
 </body>
