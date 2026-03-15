@@ -290,7 +290,9 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   .heroText--taglineCenter{font-size:10px;}
 }
 
-/* SELLENCE Kategorie Badges */
+/* ===============================
+   SELLENCE Kategorie Badges
+================================ */
 
 .kicker--zeit{
   background: linear-gradient(135deg,#2ecc71,#1abc9c) !important;
@@ -299,7 +301,7 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(46,204,113,.35);
 }
 
-/* Planung → Rot */
+/* Planung */
 .kicker--planung{
   background: linear-gradient(135deg,#ff4d6d,#ff003c) !important;
   color:#ffffff !important;
@@ -307,7 +309,7 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(255,77,109,.35);
 }
 
-/* VW Tipps → Dunkelblau */
+/* VW Tipps */
 .kicker--tipps{
   background: linear-gradient(135deg,#0f2a6b,#1e3fa3) !important;
   color:#ffffff !important;
@@ -315,7 +317,7 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(30,63,163,.35);
 }
 
-/* MTO → Orange */
+/* MTO */
 .kicker--mto{
   background: linear-gradient(135deg,#ff9f1a,#ff6a00) !important;
   color:#fff !important;
@@ -323,9 +325,45 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(255,159,26,.35);
 }
 
+/* App Highlight */
 .kicker--highlight{
   background: linear-gradient(135deg,#ff2ea6,#ff6ec7) !important;
   color:#fff !important;
   border:1px solid rgba(255,46,166,.7) !important;
   box-shadow:0 0 12px rgba(255,46,166,.45);
+}
+
+
+/* ===============================
+   App Rahmen gleiche Farbe
+================================ */
+
+/* Planung → Tourenplaner */
+.tile[data-tool="touren"]{
+  border:1px solid rgba(255,77,109,.6) !important;
+  box-shadow:0 0 14px rgba(255,77,109,.25);
+}
+
+/* VW Helfer */
+.tile[data-tool="vwhelfer"]{
+  border:1px solid rgba(30,63,163,.6) !important;
+  box-shadow:0 0 14px rgba(30,63,163,.25);
+}
+
+/* Stempeluhr */
+.tile[data-tool="stempeluhr"]{
+  border:1px solid rgba(46,204,113,.6) !important;
+  box-shadow:0 0 14px rgba(46,204,113,.25);
+}
+
+/* MTO Rechner */
+.tile[data-tool="mto"]{
+  border:1px solid rgba(255,159,26,.6) !important;
+  box-shadow:0 0 14px rgba(255,159,26,.25);
+}
+
+/* Highlight Apps */
+.tile--highlight{
+  border:1px solid rgba(255,46,166,.6) !important;
+  box-shadow:0 0 18px rgba(255,46,166,.35);
 }
