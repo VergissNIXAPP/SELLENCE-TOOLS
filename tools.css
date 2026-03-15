@@ -299,10 +299,10 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(46,204,113,.35);
 }
 
-/* Planung → Türkis */
+/* Planung → Rot */
 .kicker--planung{
   background: linear-gradient(135deg,#00c9a7,#00e0ff) !important;
-  color:#ffffff !important;
+  color:#ff4d6d !important;
   border:1px solid rgba(0,201,167,.7) !important;
   box-shadow:0 0 10px rgba(0,201,167,.35);
 }
