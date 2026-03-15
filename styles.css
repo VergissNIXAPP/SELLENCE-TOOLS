@@ -466,3 +466,13 @@ input:focus{border-color:rgba(91,46,255,.55);box-shadow:0 0 0 4px rgba(91,46,255
   background: rgba(58, 220, 155, .10);
 }
 .btn.ok:hover{ filter: brightness(1.06); }
+
+
+/* Kategorie Farbe: Stempeluhr ZEIT */
+.kicker--zeit{
+  background: linear-gradient(135deg,#2ecc71,#1abc9c);
+  color:#fff;
+  border-radius:6px;
+  padding:2px 8px;
+  font-weight:700;
+}
