@@ -289,6 +289,7 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   .heroTitleSub::before{width:180px;}
   .heroText--taglineCenter{font-size:10px;}
 }
+
 /* SELLENCE Kategorie Badges */
 
 .kicker--zeit{
@@ -298,17 +299,26 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(46,204,113,.35);
 }
 
+/* Planung → Türkis */
 .kicker--planung{
-  background: linear-gradient(135deg,#1e8bff,#5b2eff) !important;
-  color:#fff !important;
+  background: linear-gradient(135deg,#00c9a7,#00e0ff) !important;
+  color:#ffffff !important;
+  border:1px solid rgba(0,201,167,.7) !important;
+  box-shadow:0 0 10px rgba(0,201,167,.35);
 }
 
+/* VW Tipps → Dunkelblau */
 .kicker--tipps{
-  background: linear-gradient(135deg,#8e44ad,#5b2eff) !important;
-  color:#fff !important;
+  background: linear-gradient(135deg,#0f2a6b,#1e3fa3) !important;
+  color:#ffffff !important;
+  border:1px solid rgba(30,63,163,.7) !important;
+  box-shadow:0 0 10px rgba(30,63,163,.35);
 }
 
+/* MTO → Orange */
 .kicker--mto{
   background: linear-gradient(135deg,#ff9f1a,#ff6a00) !important;
   color:#fff !important;
+  border:1px solid rgba(255,159,26,.7) !important;
+  box-shadow:0 0 10px rgba(255,159,26,.35);
 }
