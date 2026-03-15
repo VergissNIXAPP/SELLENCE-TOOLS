@@ -1,4 +1,4 @@
-const CACHE = "sellence-tools-v58";
+const CACHE = "sellence-tools-v59";
 const CORE = [
   "./",
   "./index.html",
