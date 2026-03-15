@@ -10,156 +10,439 @@
 <link href="icon-192.png" rel="apple-touch-icon"/>
 <title>SELLENCE Retourenrechner</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
 
+<style>
+  :root{
+    --bg1:#040814;
+    --bg2:#090f1f;
+    --bg3:#0f172d;
+    --card:rgba(10,16,33,.62);
+    --card-2:rgba(15,23,42,.72);
+    --stroke:rgba(255,255,255,.10);
+    --stroke-strong:rgba(255,255,255,.18);
+    --text:rgba(248,250,255,.96);
+    --muted:rgba(216,225,255,.74);
+    --muted2:rgba(188,198,232,.58);
+    --accent:#7c3aed;
+    --accent2:#22d3ee;
+    --accent3:#f472b6;
+    --accent4:#60a5fa;
+    --danger:#fb7185;
+    --ok:#22c55e;
+    --warn:#f59e0b;
+    --shadow:0 24px 80px rgba(0,0,0,.42);
+    --shadow-soft:0 12px 34px rgba(0,0,0,.28);
+    --glow:0 0 0 1px rgba(255,255,255,.04), 0 20px 50px rgba(124,58,237,.18);
+    --r1:28px;
+    --r2:22px;
+    --r3:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  html{background:#050815}
+  body{
+    margin:0;
+    color:var(--text);
+    font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    background:
+      radial-gradient(1100px 800px at 8% -10%, rgba(124,58,237,.33), transparent 60%),
+      radial-gradient(900px 700px at 100% 0%, rgba(34,211,238,.24), transparent 55%),
+      radial-gradient(800px 600px at 50% 115%, rgba(244,114,182,.13), transparent 60%),
+      linear-gradient(180deg, var(--bg1), var(--bg2) 48%, var(--bg3));
+    padding:max(env(safe-area-inset-top),14px) 14px max(env(safe-area-inset-bottom),18px);
+    overflow-x:hidden;
+  }
+  body::before,
+  body::after{
+    content:"";
+    position:fixed;
+    inset:auto;
+    pointer-events:none;
+    z-index:0;
+    filter:blur(22px);
+    opacity:.65;
+    animation:floatGlow 16s ease-in-out infinite;
+  }
+  body::before{
+    width:42vw;height:42vw;left:-8vw;top:18vh;
+    background:radial-gradient(circle at 35% 35%, rgba(124,58,237,.28), transparent 62%);
+  }
+  body::after{
+    width:38vw;height:38vw;right:-6vw;top:8vh;
+    background:radial-gradient(circle at 35% 35%, rgba(34,211,238,.24), transparent 62%);
+    animation-duration:19s;
+    animation-direction:alternate;
+  }
+  @keyframes floatGlow{
+    0%,100%{transform:translate3d(0,0,0) scale(1)}
+    50%{transform:translate3d(0,-18px,0) scale(1.04)}
+  }
 
-  <style>
-    :root{
-      --bg1:#0A1022;
-      --bg2:#060812;
-      --card:rgba(255,255,255,.065);
-      --stroke:rgba(255,255,255,.12);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.66);
-      --muted2:rgba(255,255,255,.52);
-      --accent:#5b2bd1;
-      --accent2:#2dd4ff;
-      --danger:#EF4444;
-      --shadow: 0 18px 50px rgba(0,0,0,.40);
-      --r1:22px;
-      --r2:18px;
-    }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      color:var(--text);
-      font-family: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 700px at 20% -10%, rgba(91,43,209,.35), transparent 60%),
-        radial-gradient(900px 600px at 90% 20%, rgba(45,212,255,.28), transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
-      padding: max(env(safe-area-inset-top), 12px) 12px max(env(safe-area-inset-bottom), 16px);
-    }
-    .topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;max-width:1100px;margin:0 auto 10px;}
-    .leftActions{display:flex;align-items:center;gap:10px;justify-self:start;}
-    .rightActions{display:flex;align-items:center;gap:10px;justify-self:end;}
-    .backLink{display:inline-flex;align-items:center;gap:8px;text-decoration:none;}
-    .backLink 
-    .backLink{padding:10px 12px;border-radius:14px;gap:0;min-width:44px;justify-content:center}
-    .backIcon{font-size:18px;opacity:.9}
+  button,input{font:inherit}
+  main,.topbar,.toast{position:relative;z-index:1}
 
-    .backIcon{width:22px;height:22px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;background:rgba(91,43,209,.18);border:1px solid rgba(255,255,255,.10);font-weight:900;}
-    .brand{text-align:center;user-select:none;justify-self:center;}
-    .brandMark{font-family:Montserrat, "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-weight:900;letter-spacing:.22em;font-size:18px;line-height:1;background:linear-gradient(180deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 14px 28px rgba(0,0,0,.40);}
-    .brandSub{margin-top:4px;font-weight:700;letter-spacing:.10em;color:rgba(255,255,255,.72);font-size:11px;}
-    .ghost{border:1px solid var(--stroke);background:rgba(255,255,255,.06);color:var(--text);padding:10px 12px;border-radius:999px;font-weight:800;letter-spacing:.02em;cursor:pointer;-webkit-tap-highlight-color: transparent;}
-    .ghost:active{transform:translateY(1px);} 
-    .ghost.danger{border-color: rgba(239,68,68,.35);} 
-    .wrap{max-width:1100px;margin:0 auto;display:grid;gap:12px;}
-    .summaryCard,.inputCard,.packsCard,.tableCard{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r1);box-shadow:var(--shadow);padding:14px;backdrop-filter:blur(10px);} 
-    .dt{color:var(--muted2);font-weight:700;font-size:12px;letter-spacing:.06em;}
-    .summaryNums{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;}
-    .sumBox{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--r2);padding:12px;}
-    .label{color:var(--muted);font-weight:800;font-size:12px;letter-spacing:.03em;}
-    .value{margin-top:6px;font-size:26px;font-weight:900;letter-spacing:.01em;}
-    .subline{margin-top:10px;color:var(--muted);font-weight:700;font-size:12px;display:flex;justify-content:center;gap:10px;}
-    .inputTitle{font-weight:900;font-size:14px;letter-spacing:.08em;text-transform:uppercase;}
-    .hint{color:var(--muted);margin-top:6px;font-weight:650;font-size:12px;}
-    .grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;margin-top:12px;}
-    .grid2.tight{grid-template-columns:1fr 1fr;margin-top:0;}
-    .field{display:grid;gap:6px;}
-    .field span{color:var(--muted);font-weight:800;font-size:12px;}
-    select,input{width:100%;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.22);color:var(--text);padding:12px 12px;font-size:16px;outline:none;}
-    select:focus,input:focus{border-color:rgba(91,43,209,.55);box-shadow:0 0 0 4px rgba(91,43,209,.12);} 
-    .actions{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-    .btnRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-    .primary{border:0;border-radius:999px;padding:12px 16px;font-weight:900;letter-spacing:.03em;cursor:pointer;background:linear-gradient(135deg, rgba(91,43,209,.95), rgba(45,212,255,.88));color:white;box-shadow:0 14px 34px rgba(0,0,0,.35);} 
-    button{transition:transform .12s ease, filter .18s ease, border-color .18s ease, background .18s ease;}
-    .primary:active{transform:translateY(1px);} 
-    .chipBtn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text);padding:12px 14px;border-radius:999px;font-weight:900;letter-spacing:.02em;cursor:pointer;-webkit-tap-highlight-color: transparent;}
-    .chipBtn:hover{border-color:rgba(255,255,255,.20);}
-    .chipBtn:active{transform:translateY(1px);} 
-    .chipBtn.ok{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.08);} 
-    .chipBtn.warn{border-color:rgba(91,43,209,.35);background:rgba(91,43,209,.10);} 
-    .chipBtn.danger{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10);} 
-    .progress{color:var(--muted);font-weight:800;}
-    .packsHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
-    .packsTitle{font-weight:900;font-size:14px;letter-spacing:.08em;text-transform:uppercase;}
-    .packsHint{color:var(--muted);margin-top:6px;font-weight:650;font-size:12px;max-width:70ch;}
-    .packagesGrid{margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;}
-    .packTile{text-align:left;width:100%;border-radius:22px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);padding:12px;cursor:pointer;color:var(--text);-webkit-tap-highlight-color: transparent;transition:transform .12s ease, border-color .18s ease, background .18s ease;}
-    .packTile:hover{transform:translateY(-1px);} 
-    .packTile.active{border-color:rgba(91,43,209,.55);box-shadow:0 0 0 4px rgba(91,43,209,.12);background:rgba(91,43,209,.10);} 
-    .tileTop{display:flex;justify-content:space-between;align-items:center;gap:10px;}
-    .tileTitle{font-weight:900;font-size:14px;letter-spacing:.04em;}
-    .pill{font-weight:900;font-size:11px;letter-spacing:.09em;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.18);} 
-    .pill.ok{border-color:rgba(34,197,94,.38);} 
-    .pill.warn{border-color:rgba(91,43,209,.38);} 
-    .tileNums{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-    .mini{color:var(--muted);font-weight:800;font-size:11px;letter-spacing:.04em;}
-    .big{font-weight:900;font-size:18px;font-family:"Montserrat", "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;margin-top:4px;}
-    .tileSplit{margin-top:10px;color:var(--muted);font-weight:700;font-size:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-    .tileCats{margin-top:10px;display:grid;gap:6px;}
-    .catLine{display:flex;justify-content:space-between;gap:10px;color:rgba(255,255,255,.78);font-weight:650;font-size:12px;}
-    .moreLine{color:var(--muted2);font-weight:700;font-size:12px;}
-    .tableHeader{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-    .packWindowActions{display:flex;align-items:center;gap:10px;justify-self:end;}
-    .pill.btn{cursor:pointer;}
-    .pill[role="button"], #btnPackStatus{cursor:pointer;}
-    .iconBtn{width:42px;height:42px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.18);color:rgba(255,255,255,.92);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color: transparent;}
-    .iconBtn:hover{border-color:rgba(255,255,255,.24);} 
-    .iconBtn:active{transform:translateY(1px);} 
-    .iconBtn.danger{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10);} 
+  .topbar{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:12px;
+    max-width:1340px;
+    margin:0 auto 14px;
+    padding:10px 12px;
+    border:1px solid rgba(255,255,255,.08);
+    background:linear-gradient(180deg, rgba(10,16,33,.70), rgba(10,16,33,.42));
+    backdrop-filter:blur(18px);
+    border-radius:24px;
+    box-shadow:var(--shadow-soft);
+  }
+  .leftActions,.rightActions{display:flex;align-items:center;gap:10px}
+  .rightActions{justify-self:end}
+  .backLink{
+    display:inline-flex;align-items:center;justify-content:center;min-width:48px;
+    padding:10px 12px;border-radius:16px;text-decoration:none
+  }
+  .backIcon{
+    width:26px;height:26px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg, rgba(124,58,237,.28), rgba(34,211,238,.16));
+    border:1px solid rgba(255,255,255,.10);
+    box-shadow:0 10px 24px rgba(124,58,237,.20);
+    font-weight:900;color:var(--text)
+  }
+  .brand{text-align:center;user-select:none;justify-self:center}
+  .brandMark{
+    font-family:Montserrat,ui-sans-serif,system-ui;
+    font-weight:900;letter-spacing:.24em;font-size:20px;line-height:1;
+    background:linear-gradient(135deg,#fff 5%, #8be9ff 35%, #d8b4fe 65%, #f9a8d4 96%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 14px 28px rgba(0,0,0,.42)
+  }
+  .brandSub{
+    margin-top:5px;font-weight:800;letter-spacing:.18em;color:rgba(221,229,255,.7);font-size:10px
+  }
 
-    .packWinActions{display:flex;align-items:center;gap:10px;justify-content:flex-end;}
-    .iconBtn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer;font-size:18px;line-height:1;-webkit-tap-highlight-color: transparent;}
-    .iconBtn:hover{border-color:rgba(255,255,255,.22);}
-    .iconBtn:active{transform:translateY(1px);}
-    .iconBtn.danger{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10);}
-    .pillBtn{cursor:pointer;}
+  .ghost,.pillBtn,.primary,.priceKey,.modeBtn,.catBtn,.stepBtn,.manageBtn,.segBtn,.smallBtn,.packTile,.xBtn,.iconBtn,.qtyBtn{
+    transition:transform .16s ease, filter .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .ghost,.smallBtn,.manageBtn,.segBtn,.pillBtn,.xBtn,.iconBtn,.qtyBtn{
+    border:1px solid var(--stroke);
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+    color:var(--text);
+  }
+  .ghost,.smallBtn,.manageBtn,.segBtn,.pillBtn,.xBtn,.iconBtn,.qtyBtn{
+    border-radius:16px;padding:11px 13px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.14)
+  }
+  .primary{
+    border:1px solid rgba(255,255,255,.14);
+    background:linear-gradient(135deg, rgba(124,58,237,.90), rgba(34,211,238,.84));
+    color:white;border-radius:18px;padding:12px 15px;font-weight:900;cursor:pointer;
+    box-shadow:0 16px 34px rgba(34,211,238,.18), 0 12px 30px rgba(124,58,237,.24);
+  }
+  .ghost:hover,.smallBtn:hover,.manageBtn:hover,.segBtn:hover,.pillBtn:hover,.xBtn:hover,.iconBtn:hover,.qtyBtn:hover,
+  .primary:hover,.priceKey:hover,.modeBtn:hover,.catBtn:hover,.packTile:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.03);
+  }
+  .ghost:active,.smallBtn:active,.manageBtn:active,.segBtn:active,.pillBtn:active,.xBtn:active,.iconBtn:active,.qtyBtn:active,
+  .primary:active,.priceKey:active,.modeBtn:active,.catBtn:active,.packTile:active{
+    transform:translateY(1px) scale(.992);
+  }
+  .ghost.danger,.iconBtn.danger,.xBtn.danger{
+    border-color:rgba(251,113,133,.34);
+    background:linear-gradient(180deg, rgba(251,113,133,.18), rgba(251,113,133,.08));
+  }
+  .wrap{max-width:1340px;margin:0 auto;display:grid;gap:14px}
 
-    .tableTitle{font-weight:900;letter-spacing:.06em;}
-    .tableHint{color:var(--muted);font-weight:650;font-size:12px;}
-    .tableWrap{overflow:auto;margin-top:10px;border-radius:16px;border:1px solid rgba(255,255,255,.12);} 
-    table{width:100%;border-collapse:collapse;min-width:650px;background:rgba(0,0,0,.12);} 
-    th,td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;} 
-    th{text-align:left;color:var(--muted);font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:11px;} 
-    td.num,th.num{text-align:right;} 
-    .xBtn{border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.18);color:rgba(255,255,255,.9);border-radius:12px;padding:6px 10px;cursor:pointer;font-weight:900;} 
-    .xBtn:active{transform:translateY(1px);} 
-    .modal{position:fixed;inset:0;display:none;} 
-    .modal[aria-hidden="false"]{display:block;} 
-    .modalBackdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);} 
-    .modalSheet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(720px, calc(100% - 24px));max-height:min(78vh, 900px);overflow:auto;background:rgba(15,23,42,.92);border:1px solid rgba(255,255,255,.14);border-radius:26px;box-shadow:var(--shadow);padding:14px;backdrop-filter:blur(12px);} 
-    .modalTop{display:flex;justify-content:space-between;align-items:center;gap:10px;} 
-    .modalTitle{font-weight:900;letter-spacing:.06em;} 
-    .packsList{margin-top:12px;display:grid;gap:10px;} 
-    .packRow{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.06);cursor:pointer;} 
-    .rowTitle{font-weight:900;} 
-    .rowMeta{color:var(--muted);font-weight:650;font-size:12px;margin-top:2px;} 
-    .rowRight{text-align:right;} 
-    .rowNum{font-weight:900;} 
-    .rowNum.sub{color:var(--muted);font-weight:800;font-size:12px;margin-top:2px;} 
-    .toast{position:fixed;left:12px;right:12px;bottom:max(env(safe-area-inset-bottom), 12px);display:none;} 
-    .toast[aria-hidden="false"]{display:block;} 
-    .toastInner{max-width:740px;margin:0 auto;background:rgba(15,23,42,.92);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:12px;box-shadow:var(--shadow);backdrop-filter:blur(12px);} 
-    .toastTitle{font-weight:900;} 
-    .toastText{color:var(--muted);font-weight:650;margin-top:4px;} 
-    .toastBtnWrap{margin-top:10px;} 
-    .toastBtn{width:100%;border:0;border-radius:14px;padding:10px 12px;font-weight:900;cursor:pointer;background:rgba(91,43,209,.20);color:white;border:1px solid rgba(91,43,209,.28);} 
-    @media (max-width: 720px){ .summaryNums{grid-template-columns:1fr;} .grid2{grid-template-columns:1fr;} table{min-width:520px;} }
-  </style>
+  .summaryCard,.keyboardCard,.packsCard,.tableCard,.modalSheet{
+    position:relative;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)),
+      linear-gradient(180deg, rgba(10,16,33,.72), rgba(10,16,33,.55));
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:var(--r1);
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(16px);
+    overflow:hidden;
+  }
+  .summaryCard::before,.keyboardCard::before,.packsCard::before,.tableCard::before,.modalSheet::before{
+    content:"";
+    position:absolute;inset:0 0 auto 0;height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+    pointer-events:none;
+  }
+  .summaryCard,.keyboardCard,.packsCard,.tableCard{padding:16px}
+  .dt{
+    color:var(--muted2);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  }
+  .summaryGrid{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;margin-top:12px}
+  .summaryBoxes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .sumBox{
+    position:relative;
+    background:
+      radial-gradient(120px 120px at 100% 0%, rgba(255,255,255,.08), transparent 55%),
+      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--r2);
+    padding:14px;
+    min-height:118px;
+    box-shadow:var(--shadow-soft);
+  }
+  .sumBox:nth-child(1){box-shadow:0 16px 34px rgba(96,165,250,.10)}
+  .sumBox:nth-child(2){box-shadow:0 16px 34px rgba(34,211,238,.10)}
+  .sumBox:nth-child(3){box-shadow:0 16px 34px rgba(124,58,237,.14)}
+  .label{color:var(--muted);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .value{
+    margin-top:8px;font-size:31px;font-weight:900;letter-spacing:-.02em;
+    font-family:Montserrat,ui-sans-serif,system-ui
+  }
+  .subValue{margin-top:6px;color:var(--muted);font-weight:800;font-size:12px}
+  .modePanel{
+    background:
+      radial-gradient(200px 120px at 100% 0%, rgba(124,58,237,.18), transparent 50%),
+      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:14px
+  }
+  .modeTitle{font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+  .hint{color:var(--muted);margin-top:7px;font-weight:650;font-size:12px;line-height:1.45}
+  .modeRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .modeBtn{
+    position:relative;overflow:hidden;
+    border:1px solid rgba(255,255,255,.14);
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+    color:var(--text);padding:16px;border-radius:20px;cursor:pointer;text-align:left;
+    box-shadow:var(--shadow-soft)
+  }
+  .modeBtn::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(135deg, rgba(124,58,237,.18), rgba(34,211,238,.10));
+    opacity:0;transition:opacity .18s ease;pointer-events:none
+  }
+  .modeBtn.active{
+    border-color:rgba(124,58,237,.50);
+    box-shadow:0 0 0 4px rgba(124,58,237,.12), 0 16px 40px rgba(124,58,237,.18);
+    background:linear-gradient(180deg, rgba(124,58,237,.18), rgba(34,211,238,.08));
+  }
+  .modeBtn.active::after,.modeBtn:hover::after{opacity:1}
+  .modeBtn strong{position:relative;z-index:1;display:block;font-size:18px}
+  .modeBtn span{position:relative;z-index:1;display:block;margin-top:5px;color:var(--muted);font-weight:700;font-size:12px}
+  .subline{
+    margin-top:12px;color:var(--muted);font-weight:700;font-size:12px;
+    display:flex;justify-content:flex-start;gap:10px;flex-wrap:wrap
+  }
+
+  .keyboardCard{display:grid;gap:14px}
+  .kbdTop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .kbdTitle{
+    font-weight:900;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:rgba(221,229,255,.92)
+  }
+  .kbdActions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .lastEntry{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 15px;border-radius:22px;
+    border:1px solid rgba(255,255,255,.12);
+    background:
+      radial-gradient(280px 120px at 100% 0%, rgba(34,211,238,.12), transparent 52%),
+      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+  }
+  .lastEntry strong{display:block;font-size:16px}
+  .lastEntry span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+  .quickRight{display:flex;gap:10px;flex-wrap:wrap}
+
+  .priceGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:12px}
+  .priceKey{
+    position:relative;overflow:hidden;
+    border:1px solid rgba(255,255,255,.12);
+    background:
+      radial-gradient(120px 100px at 100% 0%, rgba(255,255,255,.12), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    color:var(--text);padding:18px 12px;border-radius:24px;cursor:pointer;text-align:center;
+    min-height:92px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 18px 30px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.05)
+  }
+  .priceKey::before{
+    content:"";position:absolute;inset:auto -10% -45% auto;width:110px;height:110px;border-radius:50%;
+    background:radial-gradient(circle, rgba(124,58,237,.28), transparent 62%);
+    pointer-events:none
+  }
+  .priceKey::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(135deg, rgba(124,58,237,.11), rgba(34,211,238,.06) 50%, rgba(244,114,182,.08));
+    mix-blend-mode:screen;
+  }
+  .priceKey:nth-child(4n+2)::before{background:radial-gradient(circle, rgba(34,211,238,.26), transparent 62%)}
+  .priceKey:nth-child(4n+3)::before{background:radial-gradient(circle, rgba(244,114,182,.22), transparent 62%)}
+  .priceKey:nth-child(4n+4)::before{background:radial-gradient(circle, rgba(96,165,250,.24), transparent 62%)}
+  .priceKey strong{
+    position:relative;z-index:1;font-size:27px;line-height:1.08;font-weight:900;
+    font-family:Montserrat,ui-sans-serif,system-ui;letter-spacing:-.02em
+  }
+  .priceKey small{
+    position:relative;z-index:1;display:block;margin-top:7px;color:rgba(228,235,255,.76);
+    font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase
+  }
+
+  .packsHeader,.tableHeader{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .packsTitle,.tableTitle{
+    font-weight:900;font-size:13px;letter-spacing:.16em;text-transform:uppercase
+  }
+  .packagesGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
+  .packTile{
+    position:relative;text-align:left;padding:14px;border-radius:24px;cursor:pointer;
+    border:1px solid rgba(255,255,255,.11);
+    background:
+      radial-gradient(180px 100px at 100% 0%, rgba(124,58,237,.18), transparent 56%),
+      linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+    color:var(--text);
+    box-shadow:0 16px 34px rgba(0,0,0,.18);
+  }
+  .packTile.active{
+    border-color:rgba(124,58,237,.44);
+    box-shadow:0 0 0 4px rgba(124,58,237,.12), 0 22px 44px rgba(124,58,237,.18);
+  }
+  .tileTop,.tileNums,.tileSplit{display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .tileTop{margin-bottom:12px}
+  .tileTitle{font-weight:900;font-size:19px;font-family:Montserrat,ui-sans-serif,system-ui}
+  .pill{
+    border-radius:999px;padding:7px 10px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.06)
+  }
+  .pill.ok{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.26)}
+  .pill.warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.28)}
+  .tileNums{align-items:flex-end}
+  .mini{color:var(--muted2);font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  .big{margin-top:4px;font-size:20px;font-weight:900;font-family:Montserrat,ui-sans-serif,system-ui}
+  .tileSplit{
+    margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);
+    color:var(--muted);font-size:12px;font-weight:700;flex-wrap:wrap
+  }
+  .tileCats{margin-top:12px;display:grid;gap:7px}
+  .catLine,.moreLine{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}
+  .catLine span:last-child,.moreLine{font-weight:800;color:var(--text)}
+
+  .tableWrap{
+    margin-top:14px;border-radius:22px;overflow:auto;border:1px solid rgba(255,255,255,.10);
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02))
+  }
+  table{width:100%;border-collapse:collapse;min-width:640px}
+  th,td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even){background:rgba(255,255,255,.025)}
+  th{text-align:left;color:var(--muted);font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:10px}
+  td{font-weight:700}
+  td.num,th.num{text-align:right}
+
+  .modal{position:fixed;inset:0;display:none;z-index:30}
+  .modal[aria-hidden="false"]{display:block}
+  .modalBackdrop{
+    position:absolute;inset:0;background:rgba(2,6,23,.68);backdrop-filter:blur(8px)
+  }
+  .modalSheet{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(780px,calc(100% - 24px));max-height:min(88vh,1000px);overflow:auto;padding:16px
+  }
+  .modalTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .modalTitle{font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  .packsList,.manageList{margin-top:14px;display:grid;gap:10px}
+  .packRow,.manageRow{
+    display:flex;justify-content:space-between;gap:12px;align-items:center;padding:13px 14px;
+    border:1px solid rgba(255,255,255,.10);border-radius:20px;
+    background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03))
+  }
+  .rowTitle{font-weight:900}
+  .rowMeta{color:var(--muted);margin-top:3px;font-size:12px;font-weight:700}
+  .rowRight{text-align:right}
+  .rowNum{font-weight:900}
+  .rowNum.sub{color:var(--muted);font-weight:800;font-size:12px;margin-top:2px}
+
+  .categorySheet .modalSheet{width:min(700px,calc(100% - 24px))}
+  .categoryBlock{margin-top:16px;display:grid;gap:14px}
+  .priceDisplay{
+    padding:18px;border-radius:24px;
+    background:
+      radial-gradient(220px 120px at 100% 0%, rgba(124,58,237,.20), transparent 52%),
+      linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+    border:1px solid rgba(255,255,255,.12);text-align:center
+  }
+  .priceDisplay strong{display:block;font-size:42px;font-family:Montserrat,ui-sans-serif,system-ui;letter-spacing:-.03em}
+  .priceDisplay span{
+    display:inline-flex;align-items:center;justify-content:center;margin-top:8px;
+    color:var(--muted);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase
+  }
+  .qtyWrap{display:flex;align-items:center;justify-content:center;gap:12px}
+  .qtyBtn{
+    width:56px;height:56px;border-radius:18px;padding:0;font-size:26px;
+    display:inline-flex;align-items:center;justify-content:center
+  }
+  .qtyValue{
+    min-width:102px;text-align:center;font-size:34px;font-family:Montserrat,ui-sans-serif,system-ui;font-weight:900
+  }
+  .categoryButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .catBtn{
+    position:relative;overflow:hidden;
+    border:1px solid rgba(255,255,255,.14);color:var(--text);padding:20px 16px;border-radius:24px;cursor:pointer;text-align:left;
+    background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+    box-shadow:var(--shadow-soft)
+  }
+  .catBtn:nth-child(1){background:linear-gradient(180deg, rgba(96,165,250,.22), rgba(255,255,255,.04))}
+  .catBtn:nth-child(2){background:linear-gradient(180deg, rgba(34,211,238,.20), rgba(255,255,255,.04))}
+  .catBtn:nth-child(3){background:linear-gradient(180deg, rgba(124,58,237,.24), rgba(255,255,255,.04))}
+  .catBtn strong{display:block;font-size:20px}
+  .catBtn span{display:block;margin-top:7px;color:var(--muted);font-size:12px;font-weight:700}
+  .manageRow strong{font-size:18px;font-family:Montserrat,ui-sans-serif,system-ui}
+  .manageActions{display:flex;gap:8px;flex-wrap:wrap}
+  .manageAdd{margin-top:14px;display:grid;grid-template-columns:1fr auto auto;gap:10px}
+  .manageAdd input{
+    width:100%;border-radius:18px;border:1px solid rgba(255,255,255,.14);
+    background:rgba(3,7,18,.55);color:var(--text);padding:13px 13px;font-size:16px;outline:none
+  }
+  .manageAdd input:focus{
+    border-color:rgba(124,58,237,.55);box-shadow:0 0 0 4px rgba(124,58,237,.12)
+  }
+
+  .toast{position:fixed;left:12px;right:12px;bottom:max(env(safe-area-inset-bottom),12px);display:none;z-index:40}
+  .toast[aria-hidden="false"]{display:block}
+  .toastInner{
+    max-width:760px;margin:0 auto;
+    background:linear-gradient(180deg, rgba(11,16,32,.98), rgba(10,16,33,.94));
+    border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:13px;box-shadow:var(--shadow)
+  }
+  .toastTitle{font-weight:900}
+  .toastText{color:var(--muted);font-weight:650;margin-top:4px}
+  .toastBtnWrap{margin-top:10px}
+  .toastBtn{
+    width:100%;border:0;border-radius:16px;padding:11px 12px;font-weight:900;cursor:pointer;color:white;
+    background:linear-gradient(135deg, rgba(124,58,237,.92), rgba(34,211,238,.82));
+    border:1px solid rgba(255,255,255,.10)
+  }
+
+  @media (max-width:980px){
+    .summaryGrid{grid-template-columns:1fr}
+    .summaryBoxes{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:760px){
+    body{padding-left:10px;padding-right:10px}
+    .topbar{grid-template-columns:auto 1fr auto;padding:10px}
+    .brandMark{font-size:18px;letter-spacing:.18em}
+    .summaryBoxes,.modeRow,.categoryButtons,.manageAdd{grid-template-columns:1fr}
+    .priceGrid{grid-template-columns:repeat(2,1fr)}
+    .priceKey{min-height:88px;border-radius:22px}
+    .packagesGrid{grid-template-columns:1fr}
+    table{min-width:560px}
+    .priceDisplay strong{font-size:34px}
+    .value{font-size:28px}
+  }
+</style>
 
 </head>
-
 <body>
   <div class="topbar">
     <div class="leftActions">
-      <a class="ghost backLink" href="../index.html" title="Zurück zur SELLENCE Tools Seite">
-        <span class="backIcon">←</span></a>
-</div>
+      <a class="ghost backLink" href="../index.html" title="Zurück zur SELLENCE Tools Seite"><span class="backIcon">←</span></a>
+    </div>
     <div class="brand">
       <div class="brandMark">SELLENCE</div>
       <div class="brandSub">RETOURENRECHNER</div>
@@ -172,67 +455,83 @@
   <main class="wrap">
     <section class="summaryCard">
       <div class="dt" id="dt"></div>
-      <div class="summaryNums">
-        <div class="sumBox">
-          <div class="label">Summe Gesamt (Retoure)</div>
-          <div class="value" id="totalKvp">0,00 €</div>
+      <div class="summaryGrid">
+        <div>
+          <div class="summaryBoxes">
+            <div class="sumBox">
+              <div class="label">Summe Gesamt (Retoure)</div>
+              <div class="value" id="totalKvp">0,00 €</div>
+              <div class="subValue"><span id="countItems">0</span> Positionen</div>
+            </div>
+            <div class="sumBox">
+              <div class="label">Summe Rückerstattung</div>
+              <div class="value" id="totalRefund">0,00 €</div>
+              <div class="subValue">Modus: <span id="refundModeLabel">90%</span></div>
+            </div>
+            <div class="sumBox">
+              <div class="label">Aktives Paket</div>
+              <div class="value" id="activePackValue">Paket 1</div>
+              <div class="subValue" id="progressText">Bis Paket voll: –</div>
+            </div>
+          </div>
+          <div class="subline">
+            <span id="packCounter">Paket 1</span>
+            <span>•</span>
+            <span id="modeExplain">90% Gutschrift aktiv</span>
+          </div>
         </div>
-        <div class="sumBox">
-          <div class="label">Summe Rückerstattung (gesamt)</div>
-          <div class="value" id="totalRefund">0,00 €</div>
+        <div class="modePanel">
+          <div class="modeTitle">Gutschrift-Modus</div>
+          <div class="hint">Ein Durchlauf ist immer entweder 55% oder 90% – nie kombiniert.</div>
+          <div class="modeRow">
+            <button class="modeBtn" id="mode55" type="button">
+              <strong>55%</strong>
+              <span>Für komplette 55%-Retoure</span>
+            </button>
+            <button class="modeBtn" id="mode90" type="button">
+              <strong>90%</strong>
+              <span>Für komplette 90%-Retoure</span>
+            </button>
+          </div>
+          <div class="hint" style="margin-top:10px">Nach dem Preis öffnet sich direkt die Kategorie-Auswahl. Gleiche Preise/Kategorien werden automatisch zusammengefasst.</div>
         </div>
-      </div>
-      <div class="subline">
-        <span id="countItems">0</span> Einträge • <span id="packCounter">Paket 1</span>
       </div>
     </section>
 
-    <section class="inputCard">
-      <div class="inputTitle">Eingabe</div>
-      <div class="hint">Kategorie wählen → Packs & € eingeben → hinzufügen</div>
-
-      <div class="grid2">
-        <label class="field">
-          <span>Kategorie</span>
-          <select id="category">
-            <option value="ZIGARETTEN">Zigaretten (PEGS 90%)</option>
-            <option value="KVP_ZIGARETTEN">KVP-Zigaretten (55%)</option>
-            <option value="PEGS_UTP">PEGS-UTP (90%)</option>
-            <option value="KVP_UTP">KVP-UTP (55%)</option>
-            <option value="HEETS_TEREA">HEETS/TEREA (90%)</option>
-          </select>
-        </label>
-
-        <div class="grid2 tight">
-          <label class="field">
-            <span>Packs</span>
-            <input id="packs" inputmode="numeric" placeholder="z.B. 6" />
-          </label>
-          <label class="field">
-            <span>Euro</span>
-            <input id="price" inputmode="decimal" placeholder="z.B. 7,40" />
-          </label>
+    <section class="keyboardCard">
+      <div class="kbdTop">
+        <div>
+          <div class="kbdTitle">Schnell-Eingabe</div>
+          <div class="hint">Preis antippen → Kategorie wählen → fertig. Optional kannst du im Popup auch direkt mehrere Stück eingeben.</div>
+        </div>
+        <div class="kbdActions">
+          <button id="btnManualPrice" class="manageBtn" type="button">Freier Preis</button>
+          <button id="btnManagePrices" class="manageBtn" type="button">Preis-Tasten bearbeiten</button>
         </div>
       </div>
 
-      <div class="actions">
-        <div class="btnRow">
-          <button id="btnAdd" class="primary">Hinzufügen</button>
-          <button id="btnNewPack" class="chipBtn" title="Aktuelles Paket abschließen & neues starten">Neues Paket</button>
-                  </div>
-        <div class="progress" id="progressText">Bis Paket voll: –</div>
+      <div class="lastEntry">
+        <div>
+          <strong id="lastEntryTitle">Noch kein letzter Eintrag</strong>
+          <span id="lastEntryText">Tippe einfach auf einen Preis-Button.</span>
+        </div>
+        <div class="quickRight">
+          <button id="btnUndoLast" class="pillBtn" type="button">Letzten Eintrag löschen</button>
+          <button id="btnNewPack" class="pillBtn" type="button">Neues Paket</button>
+        </div>
       </div>
+
+      <div id="priceGrid" class="priceGrid"></div>
     </section>
 
     <section class="packsCard">
       <div class="packsHeader">
         <div>
           <div class="packsTitle">Pakete</div>
-          <div class="packsHint">Ein neues Paket entsteht automatisch, sobald das aktuelle Paket ≥ 500,00 € KVP erreicht.</div>
+          <div class="hint">Die 500€-Logik bleibt erhalten. Sobald ein Paket voll ist, wird automatisch das nächste geöffnet.</div>
         </div>
-        <button id="btnPacks" class="ghost">Übersicht</button>
+        <button id="btnPacks" class="ghost" type="button">Übersicht</button>
       </div>
-
       <div id="packagesGrid" class="packagesGrid"></div>
     </section>
 
@@ -240,21 +539,20 @@
       <div class="tableHeader">
         <div>
           <div class="tableTitle">Positionen – <span id="activePackTitle">Paket 1</span></div>
-          <div class="tableHint">Tippe auf eine Paket-Kachel, um das Paket zu öffnen.</div>
+          <div class="tableHint">Gleiche Kategorie + gleicher Preis werden automatisch zusammengeführt.</div>
         </div>
-        <div class="packWindowActions">
-          <button id="btnPackStatus" class="pill warn" type="button" title="Status umschalten">OFFEN</button>
-          <button id="btnDeletePack" class="iconBtn danger" type="button" title="Paket löschen" aria-label="Paket löschen">🗑</button>
+        <div class="quickRight">
+          <button id="btnPackStatus" class="pillBtn" type="button">OFFEN</button>
+          <button id="btnDeletePack" class="iconBtn danger" type="button" aria-label="Paket löschen">🗑</button>
         </div>
       </div>
-
       <div class="tableWrap">
         <table>
           <thead>
             <tr>
-              <th>Typ</th>
+              <th>Kategorie</th>
               <th class="num">Packs</th>
-              <th class="num">€</th>
+              <th class="num">Preis</th>
               <th class="num">KVP</th>
               <th class="num">Erstattung</th>
               <th class="num">✕</th>
@@ -271,9 +569,55 @@
     <div class="modalSheet" role="dialog" aria-modal="true">
       <div class="modalTop">
         <div class="modalTitle">Paket-Übersicht</div>
-        <button class="ghost" id="closeModal">Schließen</button>
+        <button class="ghost" id="closePacksModal" type="button">Schließen</button>
       </div>
       <div id="packsList" class="packsList"></div>
+    </div>
+  </div>
+
+  <div class="modal categorySheet" id="categoryModal" aria-hidden="true">
+    <div class="modalBackdrop" data-close-category="1"></div>
+    <div class="modalSheet" role="dialog" aria-modal="true">
+      <div class="modalTop">
+        <div class="modalTitle">Kategorie wählen</div>
+        <button class="ghost" id="closeCategoryModal" type="button">Abbrechen</button>
+      </div>
+      <div class="categoryBlock">
+        <div class="priceDisplay">
+          <strong id="selectedPriceLabel">0,00 €</strong>
+          <span>Gewählter Preis</span>
+        </div>
+        <div>
+          <div class="hint" style="text-align:center;margin-bottom:8px">Stückzahl</div>
+          <div class="qtyWrap">
+            <button id="qtyMinus" class="qtyBtn" type="button">−</button>
+            <div id="selectedQty" class="qtyValue">1</div>
+            <button id="qtyPlus" class="qtyBtn" type="button">+</button>
+          </div>
+        </div>
+        <div class="categoryButtons">
+          <button class="catBtn" data-category="ZIGARETTEN" type="button"><strong>Zigaretten</strong><span>Preis übernehmen</span></button>
+          <button class="catBtn" data-category="UTP" type="button"><strong>UTP</strong><span>Preis übernehmen</span></button>
+          <button class="catBtn" data-category="HEETS_TEREA" type="button"><strong>HEETS/TEREA</strong><span>Preis übernehmen</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="managePricesModal" aria-hidden="true">
+    <div class="modalBackdrop" data-close-manage="1"></div>
+    <div class="modalSheet" role="dialog" aria-modal="true">
+      <div class="modalTop">
+        <div class="modalTitle">Preis-Tasten bearbeiten</div>
+        <button class="ghost" id="closeManageModal" type="button">Schließen</button>
+      </div>
+      <div class="hint" style="margin-top:10px">Hier kannst du Preise ändern, löschen oder neue Buttons anlegen. Änderungen werden gespeichert.</div>
+      <div id="manageList" class="manageList"></div>
+      <div class="manageAdd">
+        <input id="newPriceInput" inputmode="decimal" placeholder="z.B. 8,40" />
+        <button id="btnAddPrice" class="primary" type="button">Neu anlegen</button>
+        <button id="btnResetPrices" class="ghost" type="button">Standard</button>
+      </div>
     </div>
   </div>
 
@@ -282,7 +626,7 @@
       <div class="toastTitle" id="toastTitle">Info</div>
       <div class="toastText" id="toastText"></div>
       <div class="toastBtnWrap" id="toastBtnWrap">
-        <button class="toastBtn" id="toastBtn">Rückgängig</button>
+        <button class="toastBtn" id="toastBtn" type="button">Rückgängig</button>
       </div>
     </div>
   </div>
@@ -290,127 +634,181 @@
 <script>
 (() => {
   const AUTH_KEY = "sellence_auth";
-  function isAuthed(){
-    try{ return localStorage.getItem(AUTH_KEY) === "1"; }catch(e){ return false; }
-  }
-  if(!isAuthed()){
+  if((() => { try { return localStorage.getItem(AUTH_KEY) === "1"; } catch(e){ return false; } })() === false){
     location.replace("./index.html");
     return;
   }
 
-  const dtEl = document.getElementById("dt");
-  function setDT(){
-    const d = new Date();
-    const pad = n => String(n).padStart(2,"0");
-    dtEl.textContent = `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} • ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
-  setDT(); setInterval(setDT, 15000);
-
-  const CATEGORY = {
-    ZIGARETTEN:      { label: "Zigaretten",      program: "PEGS", rate: 0.90 },
-    KVP_ZIGARETTEN:  { label: "KVP-Zigaretten",  program: "KVP",  rate: 0.55 },
-    PEGS_UTP:        { label: "PEGS-UTP",        program: "PEGS", rate: 0.90 },
-    KVP_UTP:         { label: "KVP-UTP",         program: "KVP",  rate: 0.55 },
-    HEETS_TEREA:     { label: "HEETS/TEREA",     program: "PEGS", rate: 0.90 },
-  };
-  const MAX_PACKAGE_VALUE = 500;
-  const MAX_PACKAGES = 10;
-
-  const STORAGE_KEY = "sellence_retouren_state_v4";
-  let state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 };
-  let undo = null;
-
-  const $ = (id)=> document.getElementById(id);
-  const fmt = (n)=> (Number(n)||0).toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
-  const parseNum = (s)=> {
-    const v = String(s||"").trim().replace(/\./g,"").replace(",",".");
-    const n = Number(v);
+  const $ = id => document.getElementById(id);
+  const fmt = n => (Number(n) || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+  const parseNum = value => {
+    const cleaned = String(value ?? "").trim().replace(/€/g, "").replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
+    const n = Number(cleaned);
     return Number.isFinite(n) ? n : NaN;
   };
-  function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} }
+  const generateId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  const MAX_PACKAGE_VALUE = 500;
+  const MAX_PACKAGES = 10;
+  const STORAGE_KEY = "sellence_retouren_state_v5";
+  const LEGACY_STORAGE_KEY = "sellence_retouren_state_v4";
+  const DEFAULT_PRICE_BUTTONS = [6.00, 6.50, 6.80, 7.00, 7.50, 7.80, 8.00, 8.10, 8.20, 8.30, 8.40, 8.50, 8.60, 8.70, 8.80, 8.90, 9.10, 9.20, 9.30, 9.40, 9.50, 9.60, 9.70, 9.80, 9.90, 10.00, 11.00, 12.00, 15.00, 18.00, 19.00, 19.10, 19.20, 19.30, 19.40, 19.50, 19.60, 19.70, 19.80, 19.90, 20.00];
+  const CATEGORY = {
+    ZIGARETTEN: { label: "Zigaretten" },
+    UTP: { label: "UTP" },
+    HEETS_TEREA: { label: "HEETS/TEREA" }
+  };
+
+  let state = {
+    refundMode: 0.90,
+    priceButtons: [...DEFAULT_PRICE_BUTTONS],
+    packages: [{ id: 1, createdAt: Date.now(), packed: false, items: [] }],
+    activeId: 1,
+    lastEntry: null
+  };
+  let undo = null;
+  let selection = { price: null, qty: 1 };
+
+  function persist(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+  }
+
+  function normalizeState(obj){
+    if(!obj || !Array.isArray(obj.packages) || !obj.packages.length) return null;
+    obj.refundMode = (obj.refundMode === 0.55 || obj.refundMode === 0.9 || obj.refundMode === 0.90) ? Number(obj.refundMode) : 0.90;
+    obj.priceButtons = Array.isArray(obj.priceButtons) && obj.priceButtons.length
+      ? obj.priceButtons.map(Number).filter(n => Number.isFinite(n) && n > 0)
+      : [...DEFAULT_PRICE_BUTTONS];
+    obj.priceButtons = Array.from(new Set(obj.priceButtons.map(v => Number(v.toFixed(2))))).sort((a,b) => a-b);
+    obj.activeId = obj.packages.some(p => p.id === obj.activeId) ? obj.activeId : obj.packages[0].id;
+    obj.lastEntry = obj.lastEntry || null;
+    for(const pack of obj.packages){
+      pack.items = Array.isArray(pack.items) ? pack.items : [];
+      pack.packed = Boolean(pack.packed);
+      for(const item of pack.items){
+        item.id = item.id || generateId();
+        item.catKey = ["ZIGARETTEN","UTP","HEETS_TEREA"].includes(item.catKey) ? item.catKey : (item.catKey === "PEGS_UTP" || item.catKey === "KVP_UTP" ? "UTP" : item.catKey === "HEETS_TEREA" ? "HEETS_TEREA" : "ZIGARETTEN");
+        item.catLabel = CATEGORY[item.catKey]?.label || item.catLabel || "Zigaretten";
+        item.rate = Number(item.rate);
+        if(!(item.rate === 0.55 || item.rate === 0.90)) item.rate = obj.refundMode;
+        item.program = item.rate === 0.55 ? "55%" : "90%";
+        item.packs = Math.max(1, Number(item.packs) || 1);
+        item.price = Number(item.price) || 0;
+        item.kvp = Number(item.kvp) || (item.packs * item.price);
+        item.refund = Number(item.refund) || (item.kvp * item.rate);
+        item.at = Number(item.at) || Date.now();
+      }
+    }
+    return obj;
+  }
+
   function restore(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return;
-      const obj = JSON.parse(raw);
-      if(!obj || !Array.isArray(obj.packages) || !obj.packages.length) return;
-      state = obj;
+      if(raw){
+        const normalized = normalizeState(JSON.parse(raw));
+        if(normalized){ state = normalized; return; }
+      }
+    }catch(e){}
+    try{
+      const raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if(raw){
+        const obj = JSON.parse(raw);
+        if(obj && Array.isArray(obj.packages) && obj.packages.length){
+          state = normalizeState({
+            refundMode: 0.90,
+            priceButtons: [...DEFAULT_PRICE_BUTTONS],
+            packages: obj.packages,
+            activeId: obj.activeId,
+            lastEntry: null
+          }) || state;
+        }
+      }
     }catch(e){}
   }
-  function getPack(id){ return state.packages.find(p=>p.id===id) || state.packages[0]; }
-  function currentPack(){ return getPack(state.activeId); }
+
+  function currentPack(){
+    return state.packages.find(p => p.id === state.activeId) || state.packages[0];
+  }
 
   function packTotals(pack){
-    const totals = { kvp:0, refund:0, byProgram:{PEGS:0, KVP:0}, byCat:{} };
+    const totals = { kvp: 0, refund: 0, byRate: { "55%": 0, "90%": 0 }, byCat: {} };
     for(const it of pack.items){
-      totals.kvp += it.kvp; totals.refund += it.refund;
-      totals.byProgram[it.program] = (totals.byProgram[it.program]||0) + it.kvp;
-      totals.byCat[it.catLabel] = (totals.byCat[it.catLabel]||0) + it.kvp;
+      totals.kvp += it.kvp;
+      totals.refund += it.refund;
+      const rateKey = it.rate === 0.55 ? "55%" : "90%";
+      totals.byRate[rateKey] = (totals.byRate[rateKey] || 0) + it.kvp;
+      totals.byCat[it.catLabel] = (totals.byCat[it.catLabel] || 0) + it.kvp;
     }
     return totals;
   }
+
   function allTotals(){
-    const t = { kvp:0, refund:0, items:0 };
-    for(const p of state.packages){
-      const pt = packTotals(p);
-      t.kvp += pt.kvp; t.refund += pt.refund; t.items += p.items.length;
+    const totals = { kvp: 0, refund: 0, items: 0 };
+    for(const pack of state.packages){
+      const pt = packTotals(pack);
+      totals.kvp += pt.kvp;
+      totals.refund += pt.refund;
+      totals.items += pack.items.length;
     }
-    return t;
+    return totals;
   }
 
   function showToast(title, text, withUndo=false){
     $("toastTitle").textContent = title || "Info";
     $("toastText").textContent = text || "";
     $("toastBtnWrap").style.display = withUndo ? "block" : "none";
-    $("toast").setAttribute("aria-hidden","false");
-    setTimeout(()=> $("toast").setAttribute("aria-hidden","true"), 2200);
+    $("toast").setAttribute("aria-hidden", "false");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => $("toast").setAttribute("aria-hidden", "true"), 2400);
   }
-  $("toastBtn").addEventListener("click", ()=>{
-    if(!undo) return;
-    undo(); undo=null;
-    $("toast").setAttribute("aria-hidden","true");
-    persist(); render();
-  });
 
-  function openModal(){ $("packsModal").setAttribute("aria-hidden","false"); renderPacksList(); }
-  function closeModal(){ $("packsModal").setAttribute("aria-hidden","true"); }
-  $("btnPacks").addEventListener("click", openModal);
-  $("closeModal").addEventListener("click", closeModal);
-  $("packsModal").addEventListener("click", (e)=>{ if(e.target?.dataset?.close==="1") closeModal(); });
+  function renderModeButtons(){
+    $("mode55").classList.toggle("active", state.refundMode === 0.55);
+    $("mode90").classList.toggle("active", state.refundMode === 0.90);
+    $("refundModeLabel").textContent = state.refundMode === 0.55 ? "55%" : "90%";
+    $("modeExplain").textContent = `${state.refundMode === 0.55 ? "55%" : "90%"} Gutschrift aktiv`;
+  }
 
-  function render(){
+  function renderSummary(){
     const totals = allTotals();
+    const active = currentPack();
+    const pt = packTotals(active);
     $("totalKvp").textContent = fmt(totals.kvp);
     $("totalRefund").textContent = fmt(totals.refund);
     $("countItems").textContent = String(totals.items);
-
-    const active = currentPack();
-    const at = packTotals(active);
     $("packCounter").textContent = `Paket ${active.id} von ${state.packages.length}`;
     $("activePackTitle").textContent = `Paket ${active.id}`;
-
-    const left = Math.max(0, MAX_PACKAGE_VALUE - at.kvp);
+    $("activePackValue").textContent = `Paket ${active.id}`;
+    const left = Math.max(0, MAX_PACKAGE_VALUE - pt.kvp);
     $("progressText").textContent = active.packed ? "Paket ist gepackt ✓" : `Bis Paket voll: ${fmt(left)}`;
-
-    // Paketfenster-Status (oben rechts)
     const stBtn = $("btnPackStatus");
-    if(stBtn){
-      if(active.packed){
-        stBtn.textContent = "GEPACKT";
-        stBtn.classList.remove("warn");
-        stBtn.classList.add("ok");
-        stBtn.title = "Klicken: wieder OFFEN setzen";
-      }else{
-        stBtn.textContent = "OFFEN";
-        stBtn.classList.remove("ok");
-        stBtn.classList.add("warn");
-        stBtn.title = "Klicken: als GEPACKT markieren";
-      }
+    stBtn.textContent = active.packed ? "GEPACKT" : "OFFEN";
+    stBtn.style.borderColor = active.packed ? "rgba(34,197,94,.35)" : "rgba(91,43,209,.35)";
+    stBtn.style.background = active.packed ? "rgba(34,197,94,.10)" : "rgba(91,43,209,.10)";
+  }
+
+  function renderLastEntry(){
+    const last = state.lastEntry;
+    if(!last){
+      $("lastEntryTitle").textContent = "Noch kein letzter Eintrag";
+      $("lastEntryText").textContent = "Tippe einfach auf einen Preis-Button.";
+      return;
     }
+    $("lastEntryTitle").textContent = `${last.qty}× ${fmt(last.price)} · ${CATEGORY[last.catKey]?.label || last.catKey}`;
+    $("lastEntryText").textContent = `Paket ${last.packId} · ${last.modeLabel} · KVP ${fmt(last.kvp)} · Erstattung ${fmt(last.refund)}`;
+  }
 
-
-    renderPackagesGrid();
-    renderItemsTable();
+  function renderPriceGrid(){
+    const grid = $("priceGrid");
+    grid.innerHTML = "";
+    for(const price of state.priceButtons){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "priceKey";
+      btn.innerHTML = `<div><strong>${fmt(price)}</strong><small>Kategorie wählen</small></div>`;
+      btn.addEventListener("click", () => openCategoryModal(price));
+      grid.appendChild(btn);
+    }
   }
 
   function renderPackagesGrid(){
@@ -421,8 +819,8 @@
       const isActive = p.id === state.activeId;
       const status = p.packed ? "GEPACKT" : (pt.kvp >= MAX_PACKAGE_VALUE ? "VOLL" : "OFFEN");
       const el = document.createElement("button");
-      el.type="button";
-      el.className = "packTile" + (isActive ? " active" : "");
+      el.type = "button";
+      el.className = `packTile${isActive ? " active" : ""}`;
       el.innerHTML = `
         <div class="tileTop">
           <div class="tileTitle">Paket ${p.id}</div>
@@ -433,16 +831,16 @@
           <div><div class="mini">Erstattung</div><div class="big">${fmt(pt.refund)}</div></div>
         </div>
         <div class="tileSplit">
-          <span>PEGS: <b>${fmt(pt.byProgram.PEGS||0)}</b></span>
+          <span>90%: <b>${fmt(pt.byRate["90%"] || 0)}</b></span>
           <span>•</span>
-          <span>KVP: <b>${fmt(pt.byProgram.KVP||0)}</b></span>
+          <span>55%: <b>${fmt(pt.byRate["55%"] || 0)}</b></span>
         </div>
         <div class="tileCats">
           ${Object.entries(pt.byCat).slice(0,3).map(([k,v]) => `<div class="catLine"><span>${k}</span><span>${fmt(v)}</span></div>`).join("")}
           ${Object.keys(pt.byCat).length > 3 ? `<div class="moreLine">+ ${Object.keys(pt.byCat).length - 3} weitere</div>` : ""}
         </div>
       `;
-      el.addEventListener("click", ()=>{ state.activeId = p.id; persist(); render(); });
+      el.addEventListener("click", () => { state.activeId = p.id; persist(); render(); });
       grid.appendChild(el);
     }
   }
@@ -456,19 +854,12 @@
       tr.innerHTML = `
         <td>${it.catLabel}</td>
         <td class="num">${it.packs}</td>
-        <td class="num">${(Number(it.price)||0).toLocaleString("de-DE",{minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td class="num">${fmt(it.price)}</td>
         <td class="num"><b>${fmt(it.kvp)}</b></td>
         <td class="num">${fmt(it.refund)}</td>
-        <td class="num"><button class="xBtn" title="Entfernen">✕</button></td>
+        <td class="num"><button class="xBtn" type="button">✕</button></td>
       `;
-      tr.querySelector("button").addEventListener("click", ()=>{
-        const idx = pack.items.findIndex(x=>x.id===it.id);
-        if(idx<0) return;
-        const removed = pack.items.splice(idx,1)[0];
-        undo = ()=> pack.items.splice(idx,0,removed);
-        showToast("Entfernt", "Eintrag gelöscht.", true);
-        persist(); render();
-      });
+      tr.querySelector("button").addEventListener("click", () => removeItem(it.id));
       tb.appendChild(tr);
     }
   }
@@ -478,10 +869,10 @@
     list.innerHTML = "";
     for(const p of state.packages){
       const pt = packTotals(p);
-      const card = document.createElement("div");
-      card.className = "packRow";
-      card.innerHTML = `
-        <div class="rowLeft">
+      const row = document.createElement("div");
+      row.className = "packRow";
+      row.innerHTML = `
+        <div>
           <div class="rowTitle">Paket ${p.id}</div>
           <div class="rowMeta">${p.packed ? "Gepackt ✓" : "Offen"} • ${p.items.length} Einträge</div>
         </div>
@@ -490,162 +881,367 @@
           <div class="rowNum sub">${fmt(pt.refund)}</div>
         </div>
       `;
-      card.addEventListener("click", ()=>{ state.activeId=p.id; persist(); closeModal(); render(); });
-      list.appendChild(card);
+      row.addEventListener("click", () => { state.activeId = p.id; persist(); closeModal("packsModal"); render(); });
+      list.appendChild(row);
     }
+  }
+
+  function renderManageList(){
+    const list = $("manageList");
+    list.innerHTML = "";
+    state.priceButtons.forEach((price, index) => {
+      const row = document.createElement("div");
+      row.className = "manageRow";
+      row.innerHTML = `
+        <div><strong>${fmt(price)}</strong><div class="rowMeta">Preis-Button ${index + 1}</div></div>
+        <div class="manageActions">
+          <button class="smallBtn" type="button" data-edit="${index}">Ändern</button>
+          <button class="smallBtn danger" type="button" data-delete="${index}">Löschen</button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+    list.querySelectorAll("[data-edit]").forEach(btn => btn.addEventListener("click", () => editPriceButton(Number(btn.dataset.edit))));
+    list.querySelectorAll("[data-delete]").forEach(btn => btn.addEventListener("click", () => deletePriceButton(Number(btn.dataset.delete))));
+  }
+
+  function render(){
+    renderModeButtons();
+    renderSummary();
+    renderLastEntry();
+    renderPriceGrid();
+    renderPackagesGrid();
+    renderItemsTable();
+    renderPacksList();
+    renderManageList();
+  }
+
+  function openModal(id){ $(id).setAttribute("aria-hidden", "false"); }
+  function closeModal(id){ $(id).setAttribute("aria-hidden", "true"); }
+
+  function setRefundMode(rate){
+    if(!(rate === 0.55 || rate === 0.90)) return;
+    const hasAnyItems = state.packages.some(p => p.items.length);
+    if(hasAnyItems){
+      const ok = confirm(`Aktuell sind schon Einträge vorhanden. Wirklich auf ${rate === 0.55 ? "55%" : "90%"} umschalten? Bereits erfasste Einträge bleiben unverändert.`);
+      if(!ok) return;
+    }
+    state.refundMode = rate;
+    persist();
+    renderModeButtons();
+    renderSummary();
+    showToast("Modus gewechselt", `${rate === 0.55 ? "55%" : "90%"} Gutschrift ist jetzt aktiv.`);
+  }
+
+  function openCategoryModal(price){
+    const pack = currentPack();
+    if(pack.packed){
+      showToast("Paket ist gepackt", "Bitte ein offenes Paket wählen oder ein neues Paket starten.");
+      return;
+    }
+    selection.price = Number(price);
+    selection.qty = 1;
+    $("selectedPriceLabel").textContent = fmt(selection.price);
+    $("selectedQty").textContent = String(selection.qty);
+    openModal("categoryModal");
+  }
+
+  function closeCategoryModal(){
+    closeModal("categoryModal");
+    selection = { price: null, qty: 1 };
   }
 
   function ensureNextPackageIfNeeded(){
     const pack = currentPack();
+    if(!pack || pack.packed) return;
     const pt = packTotals(pack);
-    if(pack.packed) return;
     if(pt.kvp >= MAX_PACKAGE_VALUE){
       pack.packed = true;
       if(state.packages.length < MAX_PACKAGES){
-        const nextId = state.packages[state.packages.length-1].id + 1;
-        state.packages.push({id:nextId, createdAt:Date.now(), packed:false, items:[]});
+        const nextId = state.packages[state.packages.length - 1].id + 1;
+        state.packages.push({ id: nextId, createdAt: Date.now(), packed: false, items: [] });
         state.activeId = nextId;
-        showToast("Paket gepackt", `Paket ${pack.id} gepackt – Paket ${nextId} gestartet.`);
-      }else{
-        showToast("Paket voll", `Paket ${pack.id} hat ≥ ${MAX_PACKAGE_VALUE} € erreicht. Max. ${MAX_PACKAGES} Pakete.`);
+        showToast("Paket gepackt", `Paket ${pack.id} ist voll. Paket ${nextId} wurde automatisch gestartet.`);
+      } else {
+        showToast("Paket voll", `Paket ${pack.id} hat ${fmt(pt.kvp)} erreicht. Maximale Paketanzahl erreicht.`);
       }
     }
   }
 
-  
-  function startNewPackage(manual=false){
-    const cur = currentPack();
-    if(!cur) return;
-    if(!cur.packed){
-      cur.packed = true;
-      if(manual){
-        showToast("Paket abgeschlossen", `Paket ${cur.id} wurde manuell abgeschlossen.`);
-      }
-    }
-    if(state.packages.length >= MAX_PACKAGES){
-      showToast("Limit erreicht", `Maximal ${MAX_PACKAGES} Pakete möglich.`);
-      return;
-    }
-    const nextId = state.packages[state.packages.length-1].id + 1;
-    state.packages.push({id:nextId, createdAt:Date.now(), packed:false, items:[]});
-    state.activeId = nextId;
-    persist(); render();
-    if(manual){
-      showToast("Neues Paket", `Paket ${nextId} gestartet.`);
-    }
-  }
-
-  function togglePackedActive(){
-    const p = currentPack();
-    if(!p) return;
-    p.packed = !p.packed;
-    if(p.packed){
-      showToast("Gepackt", `Paket ${p.id} ist jetzt gepackt.`);
-    }else{
-      showToast("Wieder offen", `Paket ${p.id} ist wieder offen.`);
-    }
-    persist(); render();
-  }
-
-  function deleteActivePackage(){
-    const p = currentPack();
-    if(!p) return;
-    const packIndex = state.packages.findIndex(x=>x.id===p.id);
-    if(packIndex < 0) return;
-
-    const msg = p.items?.length
-      ? `Paket ${p.id} wirklich löschen? (${p.items.length} Einträge gehen verloren)`
-      : `Paket ${p.id} wirklich löschen?`;
-    if(!confirm(msg)) return;
-
-    state.packages.splice(packIndex, 1);
-
-    // ensure at least one package exists
-    if(state.packages.length === 0){
-      state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 };
-      undo = null;
-      persist(); render();
-      showToast("Gelöscht", "Paket gelöscht.");
-      return;
-    }
-
-    // choose a sane next active pack
-    const next = state.packages[Math.min(packIndex, state.packages.length-1)];
-    state.activeId = next.id;
-    persist(); render();
-    showToast("Gelöscht", `Paket ${p.id} gelöscht.`);
-  }
-function addItem(){
-    const catKey = $("category").value;
+  function addQuickItem(catKey){
     const cat = CATEGORY[catKey];
-    const packsRaw = parseNum($("packs").value);
-    const packs = Number.isFinite(packsRaw) ? Math.max(1, Math.floor(packsRaw)) : NaN;
-    const price = parseNum($("price").value);
-    if(!cat || !Number.isFinite(price) || !Number.isFinite(packs)){
-      showToast("Eingabe prüfen", "Bitte Packs & Euro korrekt eingeben.");
-      return;
-    }
-
+    if(!cat || !Number.isFinite(selection.price)) return;
     const pack = currentPack();
     if(pack.packed){
-      showToast("Paket ist gepackt", "Dieses Paket ist abgeschlossen. Bitte ein offenes Paket wählen oder ein neues starten.");
+      showToast("Paket ist gepackt", "Bitte ein offenes Paket wählen oder ein neues Paket starten.");
       return;
     }
-
-    const kvp = packs * price;
-    const refund = kvp * cat.rate;
-
-    // Streng: Paket darf 500 € NICHT überschreiten
+    const qty = Math.max(1, Math.floor(Number(selection.qty) || 1));
+    const price = Number(selection.price);
+    const kvp = qty * price;
+    const refund = kvp * state.refundMode;
     const pt = packTotals(pack);
     if(pt.kvp + kvp > MAX_PACKAGE_VALUE){
       const left = Math.max(0, MAX_PACKAGE_VALUE - pt.kvp);
-      showToast("Zu viel fürs Paket", `Es passen nur noch ${fmt(left)} in dieses Paket. Starte ggf. „Neues Paket“.`);
+      showToast("Zu viel fürs Paket", `Es passen nur noch ${fmt(left)} in dieses Paket.`);
       return;
     }
-
-    // Gleiche €-Werte innerhalb der gleichen Kategorie zusammenführen
-    const existing = pack.items.find(it => it.catKey === catKey && Number(it.price) === Number(price));
+    const existing = pack.items.find(it => it.catKey === catKey && Number(it.price) === price && Number(it.rate) === state.refundMode);
     if(existing){
-      existing.packs += packs;
+      existing.packs += qty;
       existing.kvp += kvp;
       existing.refund += refund;
       existing.at = Date.now();
-    }else{
-      const id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
-      pack.items.push({ id, catKey, catLabel:cat.label, program:cat.program, rate:cat.rate, packs, price, kvp, refund, at:Date.now() });
+    } else {
+      pack.items.push({
+        id: generateId(),
+        catKey,
+        catLabel: cat.label,
+        program: state.refundMode === 0.55 ? "55%" : "90%",
+        rate: state.refundMode,
+        packs: qty,
+        price,
+        kvp,
+        refund,
+        at: Date.now()
+      });
     }
-
-    $("packs").value = ""; $("price").value = ""; $("packs").focus();
-    persist(); render();
-
-    // Auto: wenn exakt voll → automatisch packen & nächstes Paket starten
+    state.lastEntry = {
+      itemId: existing ? existing.id : pack.items[pack.items.length - 1].id,
+      packId: pack.id,
+      catKey,
+      qty,
+      price,
+      kvp,
+      refund,
+      modeLabel: state.refundMode === 0.55 ? "55%" : "90%"
+    };
+    persist();
+    closeCategoryModal();
+    render();
     ensureNextPackageIfNeeded();
-    persist(); render();
+    persist();
+    render();
   }
 
-  $("btnAdd").addEventListener("click", addItem);
-  $("price").addEventListener("keydown", (e)=>{ if(e.key==="Enter") addItem(); });
-  $("packs").addEventListener("keydown", (e)=>{ if(e.key==="Enter") $("price").focus(); });
+  function removeItem(itemId){
+    const pack = currentPack();
+    const idx = pack.items.findIndex(it => it.id === itemId);
+    if(idx < 0) return;
+    const removed = pack.items.splice(idx, 1)[0];
+    undo = () => pack.items.splice(idx, 0, removed);
+    if(state.lastEntry?.itemId === removed.id) state.lastEntry = null;
+    persist();
+    render();
+    showToast("Entfernt", "Eintrag gelöscht.", true);
+  }
 
-  $("btnNewPack").addEventListener("click", ()=>{ startNewPackage(true); });
-  $("btnPackStatus").addEventListener("click", togglePackedActive);
+  function undoLastEntry(){
+    const last = state.lastEntry;
+    if(!last){
+      showToast("Nichts zu löschen", "Es gibt keinen letzten Eintrag.");
+      return;
+    }
+    const pack = state.packages.find(p => p.id === last.packId);
+    if(!pack){
+      state.lastEntry = null;
+      persist();
+      render();
+      return;
+    }
+    const item = pack.items.find(it => it.id === last.itemId);
+    if(!item){
+      state.lastEntry = null;
+      persist();
+      render();
+      return;
+    }
+    const snapshot = { ...item };
+    if(item.packs <= last.qty){
+      const idx = pack.items.findIndex(it => it.id === item.id);
+      if(idx >= 0){
+        pack.items.splice(idx, 1);
+        undo = () => pack.items.splice(idx, 0, snapshot);
+      }
+    } else {
+      item.packs -= last.qty;
+      item.kvp -= last.kvp;
+      item.refund -= last.refund;
+      undo = () => Object.assign(item, snapshot);
+    }
+    state.lastEntry = null;
+    persist();
+    render();
+    showToast("Letzter Eintrag gelöscht", "Der letzte Schnell-Eintrag wurde entfernt.", true);
+  }
+
+  function startNewPackage(manual=false){
+    const cur = currentPack();
+    if(!cur) return;
+    if(!cur.packed) cur.packed = true;
+    if(state.packages.length >= MAX_PACKAGES){
+      showToast("Limit erreicht", `Maximal ${MAX_PACKAGES} Pakete möglich.`);
+      persist();
+      render();
+      return;
+    }
+    const nextId = state.packages[state.packages.length - 1].id + 1;
+    state.packages.push({ id: nextId, createdAt: Date.now(), packed: false, items: [] });
+    state.activeId = nextId;
+    persist();
+    render();
+    if(manual) showToast("Neues Paket", `Paket ${nextId} gestartet.`);
+  }
+
+  function togglePackedActive(){
+    const pack = currentPack();
+    if(!pack) return;
+    pack.packed = !pack.packed;
+    persist();
+    render();
+    showToast(pack.packed ? "Gepackt" : "Wieder offen", `Paket ${pack.id} ist jetzt ${pack.packed ? "gepackt" : "offen"}.`);
+  }
+
+  function deleteActivePackage(){
+    const pack = currentPack();
+    if(!pack) return;
+    const msg = pack.items.length ? `Paket ${pack.id} wirklich löschen? (${pack.items.length} Einträge gehen verloren)` : `Paket ${pack.id} wirklich löschen?`;
+    if(!confirm(msg)) return;
+    const idx = state.packages.findIndex(p => p.id === pack.id);
+    if(idx < 0) return;
+    state.packages.splice(idx, 1);
+    if(!state.packages.length){
+      state.packages = [{ id: 1, createdAt: Date.now(), packed: false, items: [] }];
+      state.activeId = 1;
+    } else {
+      state.activeId = state.packages[Math.min(idx, state.packages.length - 1)].id;
+    }
+    persist();
+    render();
+    showToast("Gelöscht", `Paket ${pack.id} wurde gelöscht.`);
+  }
+
+  function sortPriceButtons(){
+    state.priceButtons = Array.from(new Set(state.priceButtons.map(v => Number(Number(v).toFixed(2))))).filter(v => Number.isFinite(v) && v > 0).sort((a,b) => a-b);
+  }
+
+  function addPriceButtonFromInput(){
+    const value = parseNum($("newPriceInput").value);
+    if(!Number.isFinite(value) || value <= 0){
+      showToast("Preis prüfen", "Bitte einen gültigen Preis eingeben.");
+      return;
+    }
+    state.priceButtons.push(Number(value.toFixed(2)));
+    sortPriceButtons();
+    $("newPriceInput").value = "";
+    persist();
+    render();
+    showToast("Preis angelegt", `${fmt(value)} wurde als Button hinzugefügt.`);
+  }
+
+  function editPriceButton(index){
+    const oldValue = state.priceButtons[index];
+    const next = prompt("Neuen Preis eingeben", oldValue.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    if(next == null) return;
+    const value = parseNum(next);
+    if(!Number.isFinite(value) || value <= 0){
+      showToast("Preis prüfen", "Bitte einen gültigen Preis eingeben.");
+      return;
+    }
+    state.priceButtons[index] = Number(value.toFixed(2));
+    sortPriceButtons();
+    persist();
+    render();
+    showToast("Preis geändert", `${fmt(oldValue)} wurde auf ${fmt(value)} geändert.`);
+  }
+
+  function deletePriceButton(index){
+    if(state.priceButtons.length <= 1){
+      showToast("Nicht möglich", "Mindestens ein Preis-Button muss bestehen bleiben.");
+      return;
+    }
+    const value = state.priceButtons[index];
+    state.priceButtons.splice(index, 1);
+    persist();
+    render();
+    showToast("Preis gelöscht", `${fmt(value)} wurde entfernt.`);
+  }
+
+  function resetPriceButtons(){
+    if(!confirm("Preis-Tasten auf Standard zurücksetzen?")) return;
+    state.priceButtons = [...DEFAULT_PRICE_BUTTONS];
+    persist();
+    render();
+    showToast("Zurückgesetzt", "Standard-Preis-Tasten wurden wiederhergestellt.");
+  }
+
+  function addManualPrice(){
+    const raw = prompt("Preis eingeben", "8,40");
+    if(raw == null) return;
+    const value = parseNum(raw);
+    if(!Number.isFinite(value) || value <= 0){
+      showToast("Preis prüfen", "Bitte einen gültigen Preis eingeben.");
+      return;
+    }
+    openCategoryModal(Number(value.toFixed(2)));
+  }
+
+  function setDT(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2, "0");
+    $("dt").textContent = `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} • ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  $("toastBtn").addEventListener("click", () => {
+    if(!undo) return;
+    undo();
+    undo = null;
+    persist();
+    render();
+    $("toast").setAttribute("aria-hidden", "true");
+  });
+
+  $("mode55").addEventListener("click", () => setRefundMode(0.55));
+  $("mode90").addEventListener("click", () => setRefundMode(0.90));
+  $("btnManualPrice").addEventListener("click", addManualPrice);
+  $("btnManagePrices").addEventListener("click", () => openModal("managePricesModal"));
+  $("closeManageModal").addEventListener("click", () => closeModal("managePricesModal"));
+  $("btnAddPrice").addEventListener("click", addPriceButtonFromInput);
+  $("newPriceInput").addEventListener("keydown", e => { if(e.key === "Enter") addPriceButtonFromInput(); });
+  $("btnResetPrices").addEventListener("click", resetPriceButtons);
+  $("btnUndoLast").addEventListener("click", undoLastEntry);
+  $("btnNewPack").addEventListener("click", () => startNewPackage(true));
   $("btnPackStatus").addEventListener("click", togglePackedActive);
   $("btnDeletePack").addEventListener("click", deleteActivePackage);
-
-  $("btnReset").addEventListener("click", ()=>{
+  $("btnPacks").addEventListener("click", () => openModal("packsModal"));
+  $("closePacksModal").addEventListener("click", () => closeModal("packsModal"));
+  $("closeCategoryModal").addEventListener("click", closeCategoryModal);
+  $("qtyMinus").addEventListener("click", () => { selection.qty = Math.max(1, selection.qty - 1); $("selectedQty").textContent = String(selection.qty); });
+  $("qtyPlus").addEventListener("click", () => { selection.qty += 1; $("selectedQty").textContent = String(selection.qty); });
+  document.querySelectorAll(".catBtn").forEach(btn => btn.addEventListener("click", () => addQuickItem(btn.dataset.category)));
+  $("packsModal").addEventListener("click", e => { if(e.target?.dataset?.close === "1") closeModal("packsModal"); });
+  $("categoryModal").addEventListener("click", e => { if(e.target?.dataset?.closeCategory === "1") closeCategoryModal(); });
+  $("managePricesModal").addEventListener("click", e => { if(e.target?.dataset?.closeManage === "1") closeModal("managePricesModal"); });
+  $("btnReset").addEventListener("click", () => {
     if(!confirm("Alles löschen?")) return;
-    state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 };
-    undo=null;
-    persist(); render();
-    showToast("Reset", "Alles gelöscht.");
+    state = {
+      refundMode: state.refundMode,
+      priceButtons: [...state.priceButtons],
+      packages: [{ id: 1, createdAt: Date.now(), packed: false, items: [] }],
+      activeId: 1,
+      lastEntry: null
+    };
+    undo = null;
+    persist();
+    render();
+    showToast("Reset", "Alle Pakete und Einträge wurden gelöscht.");
   });
-restore();
-  if(!state.packages || !state.packages.length){ state = { packages:[{id:1, createdAt:Date.now(), packed:false, items:[]}], activeId:1 }; }
-  if(!state.packages.some(p=>p.id===state.activeId)) state.activeId = state.packages[0].id;
 
+  restore();
+  setDT();
+  setInterval(setDT, 15000);
   render();
 })();
 </script>
 </body>
-
 </html>
