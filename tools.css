@@ -357,10 +357,11 @@ box-shadow:0 0 10px rgba(200,200,200,.35);
   box-shadow:0 0 14px rgba(255,159,26,.28), 0 14px 34px rgba(0,0,0,.24) !important;
 }
 
-/* Highlights oben */
 .tile--highlight .thumb{
-  border:1px solid rgba(255,46,166,.7) !important;
-  box-shadow:0 0 16px rgba(255,46,166,.32), 0 14px 34px rgba(0,0,0,.24) !important;
+border:1px solid rgba(210,210,210,.85) !important;
+box-shadow:
+0 0 16px rgba(210,210,210,.45),
+0 14px 34px rgba(0,0,0,.24) !important;
 }
 
 /* ===============================
