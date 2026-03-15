@@ -301,7 +301,6 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(46,204,113,.35);
 }
 
-/* Planung */
 .kicker--planung{
   background: linear-gradient(135deg,#ff4d6d,#ff003c) !important;
   color:#ffffff !important;
@@ -309,7 +308,6 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(255,77,109,.35);
 }
 
-/* VW Tipps */
 .kicker--tipps{
   background: linear-gradient(135deg,#0f2a6b,#1e3fa3) !important;
   color:#ffffff !important;
@@ -317,7 +315,6 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(30,63,163,.35);
 }
 
-/* MTO */
 .kicker--mto{
   background: linear-gradient(135deg,#ff9f1a,#ff6a00) !important;
   color:#fff !important;
@@ -325,7 +322,6 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 10px rgba(255,159,26,.35);
 }
 
-/* App Highlight */
 .kicker--highlight{
   background: linear-gradient(135deg,#ff2ea6,#ff6ec7) !important;
   color:#fff !important;
@@ -333,37 +329,36 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   box-shadow:0 0 12px rgba(255,46,166,.45);
 }
 
-
 /* ===============================
-   App Rahmen gleiche Farbe
+   Icon-Umrahmung gleiche Farbe
 ================================ */
 
-/* Planung → Tourenplaner */
-.tile[data-tool="touren"]{
-  border:1px solid rgba(255,77,109,.6) !important;
-  box-shadow:0 0 14px rgba(255,77,109,.25);
-}
-
-/* VW Helfer */
-.tile[data-tool="vwhelfer"]{
-  border:1px solid rgba(30,63,163,.6) !important;
-  box-shadow:0 0 14px rgba(30,63,163,.25);
-}
-
 /* Stempeluhr */
-.tile[data-tool="stempeluhr"]{
-  border:1px solid rgba(46,204,113,.6) !important;
-  box-shadow:0 0 14px rgba(46,204,113,.25);
+.tile[data-tool="stempeluhr"] .thumb{
+  border:1px solid rgba(46,204,113,.7) !important;
+  box-shadow:0 0 14px rgba(46,204,113,.28), 0 14px 34px rgba(0,0,0,.24) !important;
 }
 
-/* MTO Rechner */
-.tile[data-tool="mto"]{
-  border:1px solid rgba(255,159,26,.6) !important;
-  box-shadow:0 0 14px rgba(255,159,26,.25);
+/* Tourenplaner / Planung */
+.tile[data-tool="touren"] .thumb{
+  border:1px solid rgba(255,77,109,.7) !important;
+  box-shadow:0 0 14px rgba(255,77,109,.28), 0 14px 34px rgba(0,0,0,.24) !important;
 }
 
-/* Highlight Apps */
-.tile--highlight{
-  border:1px solid rgba(255,46,166,.6) !important;
-  box-shadow:0 0 18px rgba(255,46,166,.35);
+/* VW Helfer / Tipps */
+.tile[data-tool="vwhelfer"] .thumb{
+  border:1px solid rgba(30,63,163,.7) !important;
+  box-shadow:0 0 14px rgba(30,63,163,.28), 0 14px 34px rgba(0,0,0,.24) !important;
+}
+
+/* MTO */
+.tile[data-tool="mto"] .thumb{
+  border:1px solid rgba(255,159,26,.7) !important;
+  box-shadow:0 0 14px rgba(255,159,26,.28), 0 14px 34px rgba(0,0,0,.24) !important;
+}
+
+/* Highlights oben */
+.tile--highlight .thumb{
+  border:1px solid rgba(255,46,166,.7) !important;
+  box-shadow:0 0 16px rgba(255,46,166,.32), 0 14px 34px rgba(0,0,0,.24) !important;
 }
