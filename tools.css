@@ -301,10 +301,10 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
 
 /* Planung → Rot */
 .kicker--planung{
-  background: linear-gradient(135deg,#00c9a7,#00e0ff) !important;
-  color:#ff4d6d !important;
-  border:1px solid rgba(0,201,167,.7) !important;
-  box-shadow:0 0 10px rgba(0,201,167,.35);
+  background: linear-gradient(135deg,#ff4d6d,#ff003c) !important;
+  color:#ffffff !important;
+  border:1px solid rgba(255,77,109,.7) !important;
+  box-shadow:0 0 10px rgba(255,77,109,.35);
 }
 
 /* VW Tipps → Dunkelblau */
