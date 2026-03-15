@@ -322,3 +322,10 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
   border:1px solid rgba(255,159,26,.7) !important;
   box-shadow:0 0 10px rgba(255,159,26,.35);
 }
+
+.kicker--highlight{
+  background: linear-gradient(135deg,#ff2ea6,#ff6ec7) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,46,166,.7) !important;
+  box-shadow:0 0 12px rgba(255,46,166,.45);
+}
