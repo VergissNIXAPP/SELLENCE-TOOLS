@@ -1,5 +1,33 @@
 const PRODUCT_DATA = [
   {
+    "name": "VEEV ONE Watermelon X",
+    "ean": "4023500057745",
+    "pack_ean": "4023500757744",
+    "brand": "VEEV",
+    "pack": ""
+  },
+  {
+    "name": "VEEV ONE Mango X",
+    "ean": "4023500057721",
+    "pack_ean": "4023500757720",
+    "brand": "VEEV",
+    "pack": ""
+  },
+  {
+    "name": "VEEV ONE Blueberry X",
+    "ean": "4023500057738",
+    "pack_ean": "4023500757737",
+    "brand": "VEEV",
+    "pack": ""
+  },
+  {
+    "name": "VEEV ONE Strawberry X",
+    "ean": "4023500057752",
+    "pack_ean": "4023500757751",
+    "brand": "VEEV",
+    "pack": ""
+  },
+  {
     "name": "VEEV ONE Ice Mint",
     "ean": "4023500747554",
     "pack_ean": "4023500047555",
