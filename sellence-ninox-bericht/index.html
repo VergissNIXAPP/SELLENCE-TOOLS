@@ -36,14 +36,14 @@
         <div class="panel-head sticky-head">
           <div>
             <p class="eyebrow">HAUPTSEITE</p>
-            <h2>Schnellbausteine</h2>
+            <h2>Schnellbausteine nach Kategorie</h2>
           </div>
           <div class="focus-tools">
             <div class="counter" id="buttonCount">0 Buttons</div>
           </div>
         </div>
 
-        <div class="buttons-grid" id="buttonArea"></div>
+        <div class="category-stack" id="buttonArea"></div>
       </section>
 
       <aside class="panel summary-panel glass" id="summaryPanel">
@@ -52,8 +52,31 @@
             <p class="eyebrow">AUSWAHL</p>
             <h2>Kurzansicht</h2>
           </div>
-          <div class="counter" id="lineCount">0 Zeilen</div>
+          <div class="counter" id="lineCount">0 Einträge</div>
         </div>
+
+        <section class="free-entry-box">
+          <div class="mini-head">
+            <strong>Freier Zusatz</strong>
+            <span>Für individuelle Punkte ohne extra Button</span>
+          </div>
+
+          <label class="field">
+            <span>Kategorie</span>
+            <select id="freeEntryCategory">
+              <option value="UMGESETZT">UMGESETZT</option>
+              <option value="NICHT UMGESETZT">NICHT UMGESETZT</option>
+              <option value="WEITERES VORGEHEN">WEITERES VORGEHEN</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Freitext</span>
+            <textarea id="freeEntryText" rows="3" placeholder="z. B. Kurze Zusatzinfo, die heute individuell wichtig war."></textarea>
+          </label>
+
+          <button class="secondary-btn" id="addFreeEntryBtn" type="button">Freitext hinzufügen</button>
+        </section>
 
         <textarea id="reportText" class="report-text" placeholder="Deine gewählten Punkte erscheinen hier…" readonly></textarea>
 
@@ -81,6 +104,15 @@
           <textarea id="btnText" rows="4" placeholder="z. B. Ware nachgeräumt und Zweitplatzierung kontrolliert."></textarea>
         </label>
 
+        <label class="field">
+          <span>Kategorie</span>
+          <select id="btnCategory">
+            <option value="UMGESETZT">UMGESETZT</option>
+            <option value="NICHT UMGESETZT">NICHT UMGESETZT</option>
+            <option value="WEITERES VORGEHEN">WEITERES VORGEHEN</option>
+          </select>
+        </label>
+
         <div class="row">
           <label class="field compact">
             <span>Farbe</span>
@@ -100,7 +132,8 @@
       </div>
 
       <div class="tips">
-        <span class="tip-chip">16 Buttons möglich</span>
+        <span class="tip-chip">3 Bericht-Kategorien</span>
+        <span class="tip-chip">Freitext + Buttons</span>
         <span class="tip-chip">Bearbeiten & Reihenfolge</span>
       </div>
     </div>

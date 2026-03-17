@@ -1,6 +1,13 @@
-const STORAGE_KEY = "sellenceNinoxButtonsV6";
+const STORAGE_KEY = "sellenceNinoxButtonsV7";
+const LEGACY_STORAGE_KEY = "sellenceNinoxButtonsV6";
 const DRAWER_KEY = "ninoxCreatorOpen";
-const buttons = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+const ENTRIES_KEY = "ninoxReportEntriesV1";
+const CATEGORIES = ["UMGESETZT", "NICHT UMGESETZT", "WEITERES VORGEHEN"];
+const DEFAULT_CATEGORY = "UMGESETZT";
+
+const storedButtons = JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY) || "[]");
+const buttons = Array.isArray(storedButtons) ? storedButtons.map(normalizeButton).filter(Boolean) : [];
+const reportEntries = JSON.parse(localStorage.getItem(ENTRIES_KEY) || "[]").map(normalizeEntry).filter(Boolean);
 
 let editIndex = null;
 
@@ -9,6 +16,7 @@ const reportText = document.getElementById("reportText");
 const btnText = document.getElementById("btnText");
 const btnColor = document.getElementById("btnColor");
 const btnLabel = document.getElementById("btnLabel");
+const btnCategory = document.getElementById("btnCategory");
 const buttonCount = document.getElementById("buttonCount");
 const lineCount = document.getElementById("lineCount");
 const template = document.getElementById("buttonTemplate");
@@ -19,15 +27,44 @@ const creatorDrawer = document.getElementById("creatorDrawer");
 const createBtn = document.getElementById("createBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 const drawerTitle = document.getElementById("drawerTitle");
+const freeEntryCategory = document.getElementById("freeEntryCategory");
+const freeEntryText = document.getElementById("freeEntryText");
+const addFreeEntryBtn = document.getElementById("addFreeEntryBtn");
+
+function normalizeButton(item){
+  if (!item || typeof item.text !== "string") return null;
+  const text = item.text.trim();
+  if (!text) return null;
+  const category = CATEGORIES.includes(item.category) ? item.category : DEFAULT_CATEGORY;
+  return {
+    text,
+    label: typeof item.label === "string" ? item.label.trim() : "",
+    color: typeof item.color === "string" ? item.color : "#5b8cff",
+    category
+  };
+}
+
+function normalizeEntry(item){
+  if (!item || typeof item.text !== "string") return null;
+  const text = item.text.trim();
+  if (!text) return null;
+  return {
+    text,
+    category: CATEGORIES.includes(item.category) ? item.category : DEFAULT_CATEGORY
+  };
+}
 
 function saveButtons(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(buttons));
 }
 
+function saveEntries(){
+  localStorage.setItem(ENTRIES_KEY, JSON.stringify(reportEntries));
+}
+
 function updateStats(){
   buttonCount.textContent = `${buttons.length} Button${buttons.length === 1 ? "" : "s"}`;
-  const lines = reportText.value.trim() ? reportText.value.trim().split("\n").length : 0;
-  lineCount.textContent = `${lines} Zeile${lines === 1 ? "" : "n"}`;
+  lineCount.textContent = `${reportEntries.length} Eintrag${reportEntries.length === 1 ? "" : "e"}`;
 }
 
 function shadeColor(hex, percent){
@@ -42,8 +79,33 @@ function shadeColor(hex, percent){
   return "#" + (b | (g << 8) | (r << 16)).toString(16).padStart(6, "0");
 }
 
+function buildCategorySection(category){
+  const wrap = document.createElement("section");
+  wrap.className = "button-category";
+  wrap.dataset.category = category;
+
+  const header = document.createElement("div");
+  header.className = "category-head";
+  header.innerHTML = `<h3>${category}</h3><span class="category-count">0 Buttons</span>`;
+
+  const grid = document.createElement("div");
+  grid.className = "buttons-grid";
+  grid.dataset.gridCategory = category;
+
+  wrap.append(header, grid);
+  return wrap;
+}
+
 function renderButtons(){
   buttonArea.innerHTML = "";
+  const grids = {};
+
+  CATEGORIES.forEach((category) => {
+    const section = buildCategorySection(category);
+    buttonArea.appendChild(section);
+    grids[category] = section.querySelector(".buttons-grid");
+  });
+
   buttons.forEach((item, index) => {
     const fragment = template.content.cloneNode(true);
     const cardBtn = fragment.querySelector(".smart-button");
@@ -57,7 +119,7 @@ function renderButtons(){
     cardBtn.textContent = item.label || item.text;
     label.textContent = item.text;
 
-    cardBtn.addEventListener("click", () => addLine(item.text));
+    cardBtn.addEventListener("click", () => addEntry(item.text, item.category));
 
     deleteBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -76,23 +138,60 @@ function renderButtons(){
 
     moveLeftBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      moveButton(index, -1);
+      moveWithinCategory(index, -1);
     });
 
     moveRightBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      moveButton(index, 1);
+      moveWithinCategory(index, 1);
     });
 
-    buttonArea.appendChild(fragment);
+    grids[item.category].appendChild(fragment);
+  });
+
+  document.querySelectorAll(".button-category").forEach((section) => {
+    const category = section.dataset.category;
+    const count = buttons.filter(btn => btn.category === category).length;
+    section.querySelector(".category-count").textContent = `${count} Button${count === 1 ? "" : "s"}`;
   });
 
   updateStats();
 }
 
-function addLine(text){
-  reportText.value += (reportText.value ? "\n" : "") + text;
+function renderReport(){
+  const chunks = [];
+
+  CATEGORIES.forEach((category) => {
+    const entries = reportEntries.filter(entry => entry.category === category);
+    if (!entries.length) return;
+    chunks.push(`${category}:`);
+    entries.forEach(entry => chunks.push(`- ${entry.text}`));
+    chunks.push("");
+  });
+
+  reportText.value = chunks.join("\n").trim();
   updateStats();
+}
+
+function addEntry(text, category){
+  const entry = normalizeEntry({ text, category });
+  if (!entry) return;
+  reportEntries.push(entry);
+  saveEntries();
+  renderReport();
+}
+
+function addFreeEntry(){
+  const text = freeEntryText.value.trim();
+  if (!text) {
+    alert("Bitte zuerst einen freien Zusatz eingeben.");
+    freeEntryText.focus();
+    return;
+  }
+
+  addEntry(text, freeEntryCategory.value);
+  freeEntryText.value = "";
+  freeEntryText.focus();
 }
 
 function openDrawer(){
@@ -110,6 +209,7 @@ function resetEditor(){
   btnText.value = "";
   btnLabel.value = "";
   btnColor.value = "#5b8cff";
+  btnCategory.value = DEFAULT_CATEGORY;
   createBtn.textContent = "+ Button hinzufügen";
   drawerTitle.textContent = "Neuen Bericht-Button anlegen";
   cancelEditBtn.classList.add("hidden");
@@ -121,6 +221,7 @@ function startEdit(index){
   btnText.value = item.text;
   btnLabel.value = item.label || "";
   btnColor.value = item.color || "#5b8cff";
+  btnCategory.value = item.category || DEFAULT_CATEGORY;
   createBtn.textContent = "Änderungen speichern";
   drawerTitle.textContent = "Button bearbeiten";
   cancelEditBtn.classList.remove("hidden");
@@ -132,6 +233,7 @@ function createOrUpdateButton(){
   const text = btnText.value.trim();
   const color = btnColor.value;
   const label = btnLabel.value.trim();
+  const category = btnCategory.value;
 
   if (!text){
     alert("Bitte einen Button-Text eingeben.");
@@ -139,12 +241,13 @@ function createOrUpdateButton(){
     return;
   }
 
-  const payload = { text, color, label };
+  const payload = normalizeButton({ text, color, label, category });
 
   if (editIndex !== null){
     buttons[editIndex] = payload;
   } else {
-    buttons.unshift(payload);
+    const insertIndex = findInsertIndexForCategory(category);
+    buttons.splice(insertIndex, 0, payload);
   }
 
   saveButtons();
@@ -153,15 +256,30 @@ function createOrUpdateButton(){
   closeDrawer();
 }
 
-function moveButton(index, direction){
-  const target = index + direction;
-  if (target < 0 || target >= buttons.length) return;
-  [buttons[index], buttons[target]] = [buttons[target], buttons[index]];
+function findInsertIndexForCategory(category){
+  const lastIndex = buttons.map(btn => btn.category).lastIndexOf(category);
+  return lastIndex === -1 ? buttons.length : lastIndex + 1;
+}
+
+function moveWithinCategory(index, direction){
+  const category = buttons[index]?.category;
+  if (!category) return;
+  const sameCategoryIndexes = buttons
+    .map((btn, idx) => ({ category: btn.category, idx }))
+    .filter(item => item.category === category)
+    .map(item => item.idx);
+
+  const position = sameCategoryIndexes.indexOf(index);
+  const targetPosition = position + direction;
+  if (position === -1 || targetPosition < 0 || targetPosition >= sameCategoryIndexes.length) return;
+
+  const targetIndex = sameCategoryIndexes[targetPosition];
+  [buttons[index], buttons[targetIndex]] = [buttons[targetIndex], buttons[index]];
   saveButtons();
   renderButtons();
 
-  if (editIndex === index) editIndex = target;
-  else if (editIndex === target) editIndex = index;
+  if (editIndex === index) editIndex = targetIndex;
+  else if (editIndex === targetIndex) editIndex = index;
 }
 
 function copyReport(){
@@ -194,14 +312,7 @@ function importButtons(file){
     try {
       const data = JSON.parse(reader.result);
       if (!Array.isArray(data)) throw new Error("Ungültiges Format");
-      const cleaned = data
-        .filter(item => item && typeof item.text === "string")
-        .map(item => ({
-          text: item.text.trim(),
-          label: typeof item.label === "string" ? item.label.trim() : "",
-          color: typeof item.color === "string" ? item.color : "#5b8cff"
-        }))
-        .filter(item => item.text);
+      const cleaned = data.map(normalizeButton).filter(Boolean);
 
       buttons.length = 0;
       buttons.push(...cleaned);
@@ -220,17 +331,17 @@ createBtn.addEventListener("click", createOrUpdateButton);
 cancelEditBtn.addEventListener("click", resetEditor);
 document.getElementById("finishBtn").addEventListener("click", copyReport);
 document.getElementById("undoBtn").addEventListener("click", () => {
-  if (!reportText.value.trim()) return;
-  const lines = reportText.value.split("\n");
-  lines.pop();
-  reportText.value = lines.join("\n").trim();
-  updateStats();
+  if (!reportEntries.length) return;
+  reportEntries.pop();
+  saveEntries();
+  renderReport();
 });
 document.getElementById("clearReportBtn").addEventListener("click", () => {
-  if (!reportText.value.trim()) return;
+  if (!reportEntries.length) return;
   if (confirm("Komplette Auswahl leeren?")) {
-    reportText.value = "";
-    updateStats();
+    reportEntries.length = 0;
+    saveEntries();
+    renderReport();
   }
 });
 document.getElementById("exportBtn").addEventListener("click", exportButtons);
@@ -240,9 +351,13 @@ closeCreatorBtn.addEventListener("click", () => {
   closeDrawer();
   resetEditor();
 });
+addFreeEntryBtn.addEventListener("click", addFreeEntry);
 
 btnText.addEventListener("keydown", (event) => {
   if ((event.metaKey || event.ctrlKey) && event.key === "Enter") createOrUpdateButton();
+});
+freeEntryText.addEventListener("keydown", (event) => {
+  if ((event.metaKey || event.ctrlKey) && event.key === "Enter") addFreeEntry();
 });
 
 if (localStorage.getItem(DRAWER_KEY) === "1") openDrawer();
@@ -250,4 +365,5 @@ else closeDrawer();
 
 resetEditor();
 renderButtons();
+renderReport();
 updateStats();
