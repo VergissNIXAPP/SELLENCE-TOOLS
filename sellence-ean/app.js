@@ -392,23 +392,26 @@ function hideExportModal(){
 function doExportCSV(mode){
   const chosen = PRODUCT_DATA.filter(it => selected.has(itemKey(it)));
 
-  // mode: "pack" => Packungs-EAN, sonst Gebinde-EAN
-  let missingPack = 0;
+  // mode: "pack" => Packungs-EAN (it.ean), sonst Gebinde-EAN (it.pack_ean)
+  let missingGebinde = 0;
   const lines = chosen.map(it => {
-    let eanOut = it.ean; // Gebinde default
-    if(mode === "pack"){
+    let eanOut = it.ean; // Packungs-EAN default
+    if(mode !== "pack"){
       if(it.pack_ean){
         eanOut = it.pack_ean;
       }else{
-        missingPack += 1;
-        eanOut = it.ean; // Fallback
+        missingGebinde += 1;
+        eanOut = it.ean; // Fallback auf Packungs-EAN
       }
     }
     return `${it.name},${eanOut}`;
   });
 
-  if(mode === "pack" && missingPack > 0){
-    const ok = confirm(`${missingPack} Produkt(e) haben keine Packungs‑EAN in der Liste.\nDiese werden mit der Gebinde‑EAN exportiert.\n\nFortfahren?`);
+  if(mode !== "pack" && missingGebinde > 0){
+    const ok = confirm(`${missingGebinde} Produkt(e) haben keine Gebinde‑EAN in der Liste.
+Diese werden mit der Packungs‑EAN exportiert.
+
+Fortfahren?`);
     if(!ok) return;
   }
 
