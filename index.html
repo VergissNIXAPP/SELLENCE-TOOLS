@@ -126,16 +126,16 @@
           <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
         </a>
 
-        <a class="tile" data-tool="mto" href="./mto/index.html" aria-label="MTO Rechner öffnen">
+        <a class="tile" data-tool="oosscanner" href="./oos/index.html" aria-label="OOS Scanner öffnen">
           <div class="reorderCtrls" aria-hidden="true">
             <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
             <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
           </div>
-          <div class="thumb thumb--mto"><img src="./assets/mto.png" alt="MTO Rechner Icon"></div>
+          <div class="thumb thumb--mto"><img src="./oos/icon-512.png" alt="OOS Scanner Icon"></div>
           <div class="meta">
-            <div class="kicker kicker--mto">MTO</div>
-            <p class="name">MTO Rechner</p>
-            <p class="desc">Schnell berechnen und dokumentieren – übersichtlich, reduziert und direkt startklar.</p>
+            <div class="kicker kicker--mto">OOS</div>
+            <p class="name">OOS Scanner</p>
+            <p class="desc">Out-of-Stock Produkte schnell scannen, prüfen und direkt übersichtlich erfassen.</p>
           </div>
           <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
         </a>
@@ -201,8 +201,8 @@
     function writeOrder(ids){ try{ localStorage.setItem(ORDER_KEY, JSON.stringify(ids)); }catch(e){} }
 
     function applyOrder(){
-      const pinnedLast = ["mto","picos"];
-      const baseDefault = ["touren","vwhelfer","retourenrechner"];
+      const pinnedLast = ["picos"];
+      const baseDefault = ["touren","vwhelfer","stempeluhr","oosscanner"];
       let order = readOrder();
 
       if(!Array.isArray(order) || !order.length){
