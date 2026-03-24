@@ -1,4 +1,4 @@
-const CACHE = "sellence-ean-v21";
+const CACHE = "sellence-ean-v20";
 const ASSETS = [
   "./",
   "./index.html",
