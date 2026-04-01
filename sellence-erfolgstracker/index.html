@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SELLENCE-ERFOLGSTRACKER</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">SELLENCE-TOOLS · APP NEUHEIT</p>
+        <h1>SELLENCE-ERFOLGSTRACKER</h1>
+        
+      </div>
+      <div class="hero-actions">
+        <button id="exportJsonBtn" class="btn btn-secondary">Backup exportieren</button>
+        <label class="btn btn-secondary upload-btn">
+          Backup importieren
+          <input id="importJsonInput" type="file" accept="application/json" hidden />
+        </label>
+        <button id="resetBtn" class="btn btn-danger">Alles löschen</button>
+      </div>
+    </header>
+
+    <main class="grid-layout">
+      <section class="panel form-panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Erfassung</p>
+            <h2>Besuch speichern</h2>
+          </div>
+          <div id="editBadge" class="edit-badge hidden">Bearbeitungsmodus</div>
+        </div>
+
+        <form id="visitForm" class="visit-form">
+          <div class="field-grid">
+            <label>
+              <span>Besuchsdatum</span>
+              <input type="date" id="visitDate" required />
+            </label>
+
+            <label>
+              <span>SAP Nummer</span>
+              <input type="text" id="sapNumber" placeholder="z. B. 12345678" required />
+            </label>
+
+            <label class="full-span">
+              <span>Marktname</span>
+              <input type="text" id="marketName" placeholder="z. B. EDEKA Musterstadt" required />
+            </label>
+
+            <label>
+              <span>MB CRAFTED SKU'S</span>
+              <input type="number" id="craftedSkus" min="0" step="1" value="0" required />
+            </label>
+
+            <label id="craftedBlockField" class="hidden">
+              <span>Alle SKUS in Block zusammengestellt?</span>
+              <select id="craftedBlock">
+                <option value="">Bitte wählen</option>
+                <option value="ja">Ja</option>
+                <option value="nein">Nein</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Markt mit VEEV Distribution?</span>
+              <select id="veevDisplay" required>
+                <option value="ja">Ja</option>
+                <option value="nein">Nein</option>
+              </select>
+            </label>
+
+            <label>
+              <span>VEEV Stellplätze Pods</span>
+              <input type="number" id="podSlots" min="0" step="1" value="0" />
+            </label>
+
+            <label>
+              <span>VEEV Stellplätze Geräte</span>
+              <input type="number" id="deviceSlots" min="0" step="1" value="0" />
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="saveBtn">Besuch speichern</button>
+            <button type="button" class="btn btn-secondary hidden" id="cancelEditBtn">Bearbeitung abbrechen</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel summary-panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Live-Überblick</p>
+            <h2>Statistik</h2>
+          </div>
+        </div>
+
+        <div id="kpiGrid" class="kpi-grid"></div>
+        <div id="marketInsight" class="market-insight"></div>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Verlauf</p>
+            <h2>Entwicklung & Veränderungen</h2>
+          </div>
+        </div>
+
+        <div class="chart-stack">
+          <div class="chart-card">
+            <div class="chart-title-row">
+              <h3>MB CRAFTED SKU'S pro Besuch</h3>
+              <span id="skuTrendLabel" class="trend-pill">–</span>
+            </div>
+            <canvas id="trendChart" height="190"></canvas>
+          </div>
+
+          <div class="chart-row">
+            <div class="chart-card half">
+              <div class="chart-title-row">
+                <h3>6er Block Quote</h3>
+              </div>
+              <canvas id="blockChart" height="210"></canvas>
+            </div>
+
+            <div class="chart-card half">
+              <div class="chart-title-row">
+                <h3>VEEV Stellplätze gesamt</h3>
+              </div>
+              <canvas id="veevChart" height="210"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="panel-header">
+          <div>
+            <p class="panel-kicker">Verlauf</p>
+            <h2>Gespeicherte Besuche</h2>
+          </div>
+          <div class="table-tools">
+            <input id="searchInput" type="text" placeholder="Marktname oder SAP suchen" />
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>SAP</th>
+                <th>Marktname</th>
+                <th>Veränderung</th>
+                <th>SKU'S</th>
+                <th>SKUS im Block</th>
+                <th>VEEV Distribution</th>
+                <th>Pods</th>
+                <th>Geräte</th>
+                <th>Aktion</th>
+              </tr>
+            </thead>
+            <tbody id="visitTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="emptyStateTemplate">
+    <tr>
+      <td colspan="10">
+        <div class="empty-state">Noch keine Besuche gespeichert.</div>
+      </td>
+    </tr>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -50,13 +50,14 @@
         </a>
       </div>
 
+      
       <div class="highlights" aria-label="App Highlights">
-        <a class="tile tile--highlight" data-tool="ninox-bericht" href="./sellence-ninox-bericht/index.html" aria-label="SELLENCE Ninox Bericht öffnen">
-          <div class="thumb thumb--highlight thumb--ean"><img src="./sellence-ninox-bericht/icon-192.png" alt="Ninox Bericht Icon"></div>
+        <a class="tile tile--highlight" data-tool="erfolgstracker-highlight" href="./sellence-erfolgstracker/index.html" aria-label="SELLENCE Erfolgstracker öffnen">
+          <div class="thumb thumb--highlight thumb--ean"><img src="./assets/erfolgstracker.png" alt="Erfolgstracker Icon"></div>
           <div class="meta">
             <div class="kicker kicker--highlight">APP HIGHLIGHT</div>
-            <p class="name name--highlight">NINOX Bericht</p>
-            <p class="desc">Buttons mit eigenem Text erstellen und in Sekunden ist dein NINOX Bericht kopierbereit!</p>
+            <p class="name name--highlight">ERFOLGSTRACKER</p>
+            <p class="desc">Besuche erfassen, Entwicklungen je Markt verfolgen und Erfolge direkt als Statistik sehen.</p>
           </div>
           <div class="go" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg>
@@ -75,6 +76,7 @@
           </div>
         </a>
       </div>
+
 
       <div class="sectionHead sectionHead--compact">
         <div>
@@ -140,7 +142,20 @@
           <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
         </a>
 
-        
+        <a class="tile" data-tool="ninox-bericht" href="./sellence-ninox-bericht/index.html" aria-label="NINOX Bericht öffnen">
+          <div class="reorderCtrls" aria-hidden="true">
+            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
+            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
+          </div>
+          <div class="thumb thumb--ean"><img src="./sellence-ninox-bericht/icon-192.png" alt="NINOX Bericht Icon"></div>
+          <div class="meta">
+            <div class="kicker kicker--tipps">Bericht</div>
+            <p class="name">NINOX Bericht</p>
+            <p class="desc">Buttons mit eigenem Text erstellen und in Sekunden ist dein NINOX Bericht kopierbereit!</p>
+          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
+        </a>
+
       </div>
 
       <div class="footerRow">
@@ -202,7 +217,7 @@
 
     function applyOrder(){
       const pinnedLast = ["picos"];
-      const baseDefault = ["touren","vwhelfer","stempeluhr","oosscanner"];
+      const baseDefault = ["touren","vwhelfer","stempeluhr","oosscanner","ninox-bericht"];
       let order = readOrder();
 
       if(!Array.isArray(order) || !order.length){
