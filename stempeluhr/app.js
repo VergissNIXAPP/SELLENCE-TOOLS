@@ -61,6 +61,26 @@ function getEmployeeName(){
 function setEmployeeName(name){
   localStorage.setItem(NAME_KEY, name.trim());
 }
+function removeEmployeeName(){
+  localStorage.removeItem(NAME_KEY);
+}
+function normalizeTimeInput(value){
+  return String(value || '').trim().replace('.', ':');
+}
+function parseOptionalTime(value){
+  const raw = normalizeTimeInput(value);
+  if(!raw) return null;
+  const match = raw.match(/^(\d{1,2}):(\d{2})$/);
+  if(!match) return undefined;
+  const h = Number(match[1]);
+  const m = Number(match[2]);
+  if(Number.isNaN(h) || Number.isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) return undefined;
+  return { h, m };
+}
+function buildTimestampFromParts(dateObj, parts){
+  if(!parts) return null;
+  return new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), parts.h, parts.m, 0, 0).getTime();
+}
 
 // Rules
 const BREAK_MIN = 30;         // fixed break
@@ -125,7 +145,7 @@ function render(){
 
   // name
   const currentName = getEmployeeName();
-  if($('#employeeName').value.trim() === '' && currentName) {
+  if(currentName && document.activeElement !== $('#employeeName') && $('#employeeName').value.trim() !== currentName) {
     $('#employeeName').value = currentName;
   }
 
@@ -308,6 +328,8 @@ function setStatus(text){
 }
 
 function stampIn(){
+  const currentName = ($('#employeeName').value || '').trim();
+  if(currentName) setEmployeeName(currentName);
   const data = loadData();
   const key = fmtDateKey(new Date());
   if(!data.days[key]) data.days[key] = {in:null,out:null};
@@ -323,6 +345,8 @@ function stampIn(){
 }
 
 function stampOut(){
+  const currentName = ($('#employeeName').value || '').trim();
+  if(currentName) setEmployeeName(currentName);
   const data = loadData();
   const key = fmtDateKey(new Date());
   if(!data.days[key]?.in){
@@ -355,7 +379,7 @@ function exportCSV(){
   // Header rows
   const lines = [];
   lines.push(`Mitarbeiter:;${employee}`);
-  lines.push('Datum;Arbeitsstart;Arbeitsende;Pause (min);Netto (h:mm)');
+  lines.push('Mitarbeiter;Datum;Arbeitsstart;Arbeitsende;Pause (min);Netto (h:mm)');
 
   for(const k of keys){
     const day = data.days[k];
@@ -366,7 +390,7 @@ function exportCSV(){
     const pause = (day?.in && day?.out) ? String(BREAK_MIN) : '';
     const d = parseDateKey(k);
     const dateStr = d.toLocaleDateString('de-DE');
-    lines.push(`${dateStr};${start};${end};${pause};${net}`);
+    lines.push(`${employee};${dateStr};${start};${end};${pause};${net}`);
   }
 
   const blob = new Blob([lines.join('\n')], { type:'text/csv;charset=utf-8' });
@@ -400,19 +424,28 @@ function editDay(key){
   const startDefault = day.in ? fmtTime(new Date(day.in)) : '';
   const endDefault = day.out ? fmtTime(new Date(day.out)) : '';
 
-  const start = prompt(`Startzeit (${nice})`, startDefault);
-  if(start === null) return;
-  const end = prompt(`Endzeit (${nice})`, endDefault);
-  if(end === null) return;
+  const startInput = prompt(`Startzeit (${nice})\nLeer lassen = kein Eintrag`, startDefault);
+  if(startInput === null) return;
+  const endInput = prompt(`Endzeit (${nice})\nLeer lassen = kein Eintrag`, endDefault);
+  if(endInput === null) return;
 
-  const [sh,sm] = start.split(':').map(Number);
-  const [eh,em] = end.split(':').map(Number);
-  if([sh,sm,eh,em].some(n=>Number.isNaN(n))){
-    setStatus('Ungültige Zeit');
+  const startParts = parseOptionalTime(startInput);
+  const endParts = parseOptionalTime(endInput);
+  if(startParts === undefined || endParts === undefined){
+    setStatus('Ungültige Zeit. Bitte HH:MM verwenden.');
     return;
   }
-  const inTs = new Date(d.getFullYear(), d.getMonth(), d.getDate(), sh, sm, 0, 0).getTime();
-  const outTs = new Date(d.getFullYear(), d.getMonth(), d.getDate(), eh, em, 0, 0).getTime();
+  if(!startParts && !endParts){
+    setStatus('Kein Eintrag geändert.');
+    return;
+  }
+
+  const inTs = buildTimestampFromParts(d, startParts);
+  const outTs = buildTimestampFromParts(d, endParts);
+  if(inTs && outTs && outTs < inTs){
+    setStatus('Ende liegt vor dem Start.');
+    return;
+  }
 
   data.days[key] = { in: inTs, out: outTs };
   saveData(data);
@@ -420,19 +453,73 @@ function editDay(key){
   render();
 }
 
+function addManualEntry(){
+  const data = loadData();
+  const todayKey = fmtDateKey(new Date());
+  const dateInput = prompt('Datum für manuellen Eintrag (JJJJ-MM-TT)', todayKey);
+  if(dateInput === null) return;
+  const key = String(dateInput || '').trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(key)){
+    setStatus('Ungültiges Datum. Bitte JJJJ-MM-TT verwenden.');
+    return;
+  }
+
+  const dayDate = parseDateKey(key);
+  if(Number.isNaN(dayDate.getTime())){
+    setStatus('Ungültiges Datum.');
+    return;
+  }
+
+  const existing = data.days[key] || {in:null,out:null};
+  const startDefault = existing.in ? fmtTime(new Date(existing.in)) : '';
+  const endDefault = existing.out ? fmtTime(new Date(existing.out)) : '';
+
+  const startInput = prompt(`Startzeit für ${key}\nLeer lassen = kein Eintrag`, startDefault);
+  if(startInput === null) return;
+  const endInput = prompt(`Endzeit für ${key}\nLeer lassen = kein Eintrag`, endDefault);
+  if(endInput === null) return;
+
+  const startParts = parseOptionalTime(startInput);
+  const endParts = parseOptionalTime(endInput);
+  if(startParts === undefined || endParts === undefined){
+    setStatus('Ungültige Zeit. Bitte HH:MM verwenden.');
+    return;
+  }
+  if(!startParts && !endParts){
+    setStatus('Bitte mindestens Start oder Ende eintragen.');
+    return;
+  }
+
+  const inTs = buildTimestampFromParts(dayDate, startParts);
+  const outTs = buildTimestampFromParts(dayDate, endParts);
+  if(inTs && outTs && outTs < inTs){
+    setStatus('Ende liegt vor dem Start.');
+    return;
+  }
+
+  data.days[key] = { in: inTs, out: outTs };
+  saveData(data);
+  setStatus('Manueller Eintrag gespeichert ✅');
+  render();
+}
+
 function setup(){
-  // initial name (prefill example, but keep stored value if present)
+
+  // initial name
   try{
     const stored = getEmployeeName();
     if(stored){ $('#employeeName').value = stored; }
-    else if(!$('#employeeName').value.trim()) { $('#employeeName').value = 'Andre Schorn'; }
   }catch(e){}
 
   // name field persistence
-  $('#employeeName').addEventListener('change', (e)=>{
-    const name = (e.target.value || '').trim();
+  const persistEmployeeName = ()=>{
+    const name = ($('#employeeName').value || '').trim();
     if(name) setEmployeeName(name);
-  });
+    else removeEmployeeName();
+  };
+  $('#employeeName').addEventListener('input', persistEmployeeName);
+  $('#employeeName').addEventListener('change', persistEmployeeName);
+  $('#employeeName').addEventListener('blur', persistEmployeeName);
 
   $('#inBtn').addEventListener('click', stampIn);
   $('#outBtn').addEventListener('click', stampOut);
@@ -455,6 +542,8 @@ function setup(){
     setOverview(!isOpen);
   });
   $('#exportBtn').addEventListener('click', exportCSV);
+  const addEntryBtn = $('#addEntryBtn');
+  if(addEntryBtn) addEntryBtn.addEventListener('click', addManualEntry);
 
   // range controls
   $$('input[name="range"]').forEach(r=>r.addEventListener('change', ()=>{
