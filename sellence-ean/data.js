@@ -29,113 +29,120 @@ const PRODUCT_DATA = [
   },
   {
     "name": "VEEV ONE Ice Mint",
-    "ean": "4023500747554",
-    "pack_ean": "4023500047555",
+    "ean": "4023500047555",
+    "pack_ean": "4023500747554",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Green Mint",
-    "ean": "4023500754477",
-    "pack_ean": "4023500054478",
+    "ean": "4023500054478",
+    "pack_ean": "4023500754477",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Sour Apple",
-    "ean": "4023500747509",
-    "pack_ean": "4023500047500",
+    "ean": "4023500047500",
+    "pack_ean": "4023500747509",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Cherry",
-    "ean": "4023500747493",
-    "pack_ean": "4023500047494",
+    "ean": "4023500047494",
+    "pack_ean": "4023500747493",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Mango",
-    "ean": "4023500744416",
-    "pack_ean": "4023500044417",
+    "ean": "4023500044417",
+    "pack_ean": "4023500744416",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE  Passion Fruit Kiwi Guava",
-    "ean": "4023500746656",
-    "pack_ean": "4023500046657",
+    "ean": "4023500046657",
+    "pack_ean": "4023500746656",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Classic Tobacco",
-    "ean": "4023500744386",
-    "pack_ean": "4023500044387",
+    "ean": "4023500044387",
+    "pack_ean": "4023500744386",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Blue Mint",
-    "ean": "4023500744393",
-    "pack_ean": "4023500044394",
+    "ean": "4023500044394",
+    "pack_ean": "4023500744393",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Peach",
-    "ean": "4023500744454",
-    "pack_ean": "4023500044455",
+    "ean": "4023500044455",
+    "pack_ean": "4023500744454",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Blueberry",
-    "ean": "4023500744447",
-    "pack_ean": "4023500044448",
+    "ean": "4023500044448",
+    "pack_ean": "4023500744447",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Strawberry",
-    "ean": "4023500744430",
-    "pack_ean": "4023500044431",
+    "ean": "4023500044431",
+    "pack_ean": "4023500744430",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Watermelon",
-    "ean": "4023500744409",
-    "pack_ean": "4023500044400",
+    "ean": "4023500044400",
+    "pack_ean": "4023500744409",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Blue Raspberry",
-    "ean": "4023500744478",
-    "pack_ean": "4023500044479",
+    "ean": "4023500044479",
+    "pack_ean": "4023500744478",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Grape",
-    "ean": "4023500746663",
-    "pack_ean": "4023500046664",
+    "ean": "4023500046664",
+    "pack_ean": "4023500746663",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Balanced Tobacco",
-    "ean": "4023500754903",
-    "pack_ean": "4023500054904",
+    "ean": "4023500054904",
+    "pack_ean": "4023500754903",
     "brand": "VEEV",
     "pack": ""
   },
   {
     "name": "VEEV ONE Red Berries",
-    "ean": "4023500757584",
-    "pack_ean": "4023500057585",
+    "ean": "4023500057585",
+    "pack_ean": "4023500757584",
+    "brand": "VEEV",
+    "pack": ""
+  },
+  {
+    "name": "VEEV ONE Orange",
+    "ean": "4023500049771",
+    "pack_ean": "4023500749770",
     "brand": "VEEV",
     "pack": ""
   },
@@ -162,127 +169,127 @@ const PRODUCT_DATA = [
   },
   {
     "name": "DELIA CLASSIC RED",
-    "ean": "4023500746687",
-    "pack_ean": "4023500046688",
+    "ean": "4023500046688",
+    "pack_ean": "4023500746687",
     "brand": "DELIA",
     "pack": ""
   },
   {
     "name": "DELIA CLASSIC GOLD",
-    "ean": "4023500746694",
-    "pack_ean": "4023500046695",
+    "ean": "4023500046695",
+    "pack_ean": "4023500746694",
     "brand": "DELIA",
     "pack": ""
   },
   {
     "name": "DELIA CLASSIC GREEN",
-    "ean": "4023500746700",
-    "pack_ean": "4023500046701",
+    "ean": "4023500046701",
+    "pack_ean": "4023500746700",
     "brand": "DELIA",
     "pack": ""
   },
   {
     "name": "TEREA AMBER",
-    "ean": "4023500747189",
-    "pack_ean": "4023500047180",
+    "ean": "4023500047180",
+    "pack_ean": "4023500747189",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "TEREA YELLOW GREEN",
-    "ean": "4023500747196",
-    "pack_ean": "4023500047197",
+    "ean": "4023500047197",
+    "pack_ean": "4023500747196",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "TEREA TURQUOISE",
-    "ean": "4023500747202",
-    "pack_ean": "4023500047203",
+    "ean": "4023500047203",
+    "pack_ean": "4023500747202",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "TEREA BRONZE",
-    "ean": "4023500747219",
-    "pack_ean": "4023500047210",
+    "ean": "4023500047210",
+    "pack_ean": "4023500747219",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "TEREA YELLOW",
-    "ean": "4023500747226",
-    "pack_ean": "4023500047227",
+    "ean": "4023500047227",
+    "pack_ean": "4023500747226",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "TEREA SIENNA",
-    "ean": "4023500747233",
-    "pack_ean": "4023500047234",
+    "ean": "4023500047234",
+    "pack_ean": "4023500747233",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "TEREA RUSSET",
-    "ean": "4023500747240",
-    "pack_ean": "4023500047241",
+    "ean": "4023500047241",
+    "pack_ean": "4023500747240",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "TEREA TEAK",
-    "ean": "4023500747257",
-    "pack_ean": "4023500047258",
+    "ean": "4023500047258",
+    "pack_ean": "4023500747257",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "TEREA SILVER",
-    "ean": "4023500747264",
-    "pack_ean": "4023500047265",
+    "ean": "4023500047265",
+    "pack_ean": "4023500747264",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "TEREA WARM FUSE",
-    "ean": "4023500747271",
-    "pack_ean": "4023500047272",
+    "ean": "4023500047272",
+    "pack_ean": "4023500747271",
     "brand": "TEREA",
     "pack": ""
   },
   {
     "name": "LEVIA GLACIAL",
-    "ean": "4023500756938",
-    "pack_ean": "4023500056939",
+    "ean": "4023500056939",
+    "pack_ean": "4023500756938",
     "brand": "LEVIA",
     "pack": ""
   },
   {
     "name": "LEVIA DARK BERRY",
-    "ean": "4023500756945",
-    "pack_ean": "4023500056946",
+    "ean": "4023500056946",
+    "pack_ean": "4023500756945",
     "brand": "LEVIA",
     "pack": ""
   },
   {
     "name": "LEVIA RED BERRY",
-    "ean": "4023500756952",
-    "pack_ean": "4023500056953",
+    "ean": "4023500056953",
+    "pack_ean": "4023500756952",
     "brand": "LEVIA",
     "pack": ""
   },
   {
     "name": "LEVIA EXOTIC",
-    "ean": "4023500756969",
-    "pack_ean": "4023500056960",
+    "ean": "4023500056960",
+    "pack_ean": "4023500756969",
     "brand": "LEVIA",
     "pack": ""
   },
   {
     "name": "LEVIA ALPINE",
-    "ean": "4023500756976",
-    "pack_ean": "4023500056977",
+    "ean": "4023500056977",
+    "pack_ean": "4023500756976",
     "brand": "LEVIA",
     "pack": ""
   },

@@ -46,6 +46,31 @@ const GROUP_ORDER_DEFAULT = [
 ];
 
 
+function normalizePackGebinde(it){
+  const e = String(it?.ean || "");
+  const p = String(it?.pack_ean || "");
+  const looksSwapped =
+    e.length === 13 &&
+    p.length === 13 &&
+    e.startsWith("4023500") &&
+    p.startsWith("4023500") &&
+    e[7] === "7" &&
+    p[7] === "0";
+
+  if(looksSwapped){
+    const tmp = it.ean;
+    it.ean = it.pack_ean;
+    it.pack_ean = tmp;
+  }
+
+  return it;
+}
+
+if(Array.isArray(PRODUCT_DATA)){
+  PRODUCT_DATA.forEach(normalizePackGebinde);
+}
+
+
 
 function slugifyName(name){
   return String(name || "")
