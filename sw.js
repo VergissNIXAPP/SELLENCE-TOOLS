@@ -1,4 +1,4 @@
-const CACHE = "sellence-tools-v80";
+const CACHE = "sellence-tools-v78-vr-highlight";
 const CORE = [
   "./",
   "./index.html",
@@ -10,7 +10,14 @@ const CORE = [
   "./sellence-ninox-bericht/style.css",
   "./sellence-ninox-bericht/app.js",
   "./sellence-ninox-bericht/icon-192.png",
-  "./sellence-ninox-bericht/manifest.webmanifest"
+  "./sellence-ninox-bericht/manifest.webmanifest",
+  "./sellence-vr/index.html",
+  "./sellence-vr/styles.css",
+  "./sellence-vr/app.js",
+  "./sellence-vr/manifest.webmanifest",
+  "./sellence-vr/assets/ui/icon-192.png",
+  "./sellence-vr/assets/ui/icon-512.png",
+  "./sellence-vr/assets/ui/sellence-vr-logo.svg"
 ];
 self.addEventListener("install", event => {
   event.waitUntil((async ()=>{

@@ -1,0 +1,32 @@
+<svg width="640" height="220" viewBox="0 0 640 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="20" y1="10" x2="210" y2="200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2ADADE"/>
+      <stop offset="1" stop-color="#F0BB66"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#8AF1DF"/>
+      <stop offset="1" stop-color="#36C6FF"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0.78  0 0 1 0 0.56  0 0 0 0.55 0"/>
+    </filter>
+  </defs>
+
+  <g transform="translate(8 10)">
+    <path d="M95 0L164.282 40V120L95 160L25.718 120V40L95 0Z" fill="#071018" stroke="url(#g1)" stroke-width="10"/>
+    <path d="M95 26L141.631 53V107L95 134L48.3692 107V53L95 26Z" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+    <circle cx="95" cy="80" r="44" fill="url(#g2)" opacity="0.18" filter="url(#glow)"/>
+    <path d="M74 59H120L108.5 80L120 101H74L85.5 80L74 59Z" fill="url(#g2)"/>
+    <path d="M87.5 44L102.5 44L128 80L102.5 116H87.5L113 80L87.5 44Z" fill="#071018" opacity="0.92"/>
+    <circle cx="143" cy="34" r="9" fill="#F0BB66"/>
+  </g>
+
+  <g transform="translate(210 35)">
+    <text x="0" y="60" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="54" letter-spacing="2" fill="#EEF6FF">SELLENCE</text>
+    <rect x="2" y="88" width="140" height="42" rx="21" fill="url(#g1)"/>
+    <text x="33" y="116" font-family="Inter, Arial, sans-serif" font-weight="800" font-size="24" letter-spacing="3" fill="#071018">VR</text>
+    <text x="160" y="116" font-family="Inter, Arial, sans-serif" font-weight="600" font-size="22" letter-spacing="0.8" fill="#9FB2C7">Visual Retail Planner</text>
+  </g>
+</svg>

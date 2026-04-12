@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#081018" />
+  <title>SELLENCE-VR</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" href="assets/ui/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/ui/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="appShell">
+    <header class="topbar glass">
+      <div class="brandWrap">
+        <div class="brandBadge">VR</div>
+        <div>
+          <h1>SELLENCE-VR</h1>
+          <p>Foto aufnehmen, Module platzieren, Provision live sehen</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <label class="btn btnPrimary" for="photoInput">Foto aufnehmen / laden</label>
+        <input id="photoInput" type="file" accept="image/*" capture="environment" hidden />
+
+        <button id="exportPngBtn" class="btn">PNG exportieren</button>
+        <button id="exportProjectBtn" class="btn">Projekt exportieren</button>
+        <label class="btn" for="projectInput">Projekt importieren</label>
+        <input id="projectInput" type="file" accept="application/json" hidden />
+        <button id="resetBtn" class="btn btnDanger">Neu starten</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="panel glass catalogPanel">
+        <div class="panelHeader">
+          <div>
+            <h2>Katalog</h2>
+            <p>Food Module Catalogue</p>
+          </div>
+          <div class="pill subtle">9 Module</div>
+        </div>
+
+        <div class="searchWrap">
+          <input id="catalogSearch" type="search" placeholder="Modul suchen..." />
+        </div>
+
+        <div id="catalogList" class="catalogList"></div>
+      </aside>
+
+      <section class="workspace panel glass">
+        <div class="workspaceHeader">
+          <div>
+            <h2>Marktansicht</h2>
+            <p>Module antippen, ziehen, skalieren und jetzt frei in 360° drehen</p>
+          </div>
+          <div class="workspaceActions">
+            <button id="toggleGridBtn" class="btn btnSmall">Raster</button>
+            <button id="centerSelectedBtn" class="btn btnSmall">Zentrieren</button>
+            <button id="duplicateBtn" class="btn btnSmall">Duplizieren</button>
+            <button id="deleteBtn" class="btn btnSmall btnDanger">Löschen</button>
+          </div>
+        </div>
+
+        <div class="stageWrap">
+          <div id="stageSizer" class="stageSizer">
+            <div id="stage" class="stage" aria-label="Fotoarbeitsfläche">
+              <div id="stagePlaceholder" class="stagePlaceholder">
+                <div class="placeholderOrb"></div>
+                <h3>Marktfoto laden</h3>
+                <p>Danach kannst du die Module aus dem Katalog direkt in dein Bild setzen.</p>
+              </div>
+              <img id="photoLayer" class="photoLayer hidden" alt="Marktfoto" />
+              <div id="gridLayer" class="gridLayer hidden"></div>
+              <div id="overlayLayer" class="overlayLayer"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel glass sidePanel">
+        <section class="summaryCard accentCard">
+          <div>
+            <p class="eyebrow">Händler-Provision</p>
+            <h2 id="grandTotal">0,00 €</h2>
+          </div>
+          <div id="summaryMeta" class="summaryMeta">
+            <span class="pill">0 Module</span>
+            <span class="pill">PICOS aktiv</span>
+          </div>
+        </section>
+
+        <section class="panelSection">
+          <div class="sectionTitleRow">
+            <h3>Auswahl</h3>
+            <div id="selectedTag" class="pill subtle">nichts markiert</div>
+          </div>
+          <div id="inspector" class="inspector emptyStateSmall">
+            <p>Tippe im Bild auf ein platziertes Modul, um Größe, 360°-Drehung, Transparenz und Provision anzupassen.</p>
+          </div>
+        </section>
+
+        <section class="panelSection">
+          <div class="sectionTitleRow">
+            <h3>Provision im Detail</h3>
+            <div id="lineCountTag" class="pill subtle">0 Positionen</div>
+          </div>
+          <div id="summaryLines" class="summaryLines emptyStateSmall">
+            <p>Noch keine Module platziert.</p>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

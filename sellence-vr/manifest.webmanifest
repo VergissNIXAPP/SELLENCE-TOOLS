@@ -1,0 +1,21 @@
+{
+  "name": "SELLENCE-VR",
+  "short_name": "SELLENCE-VR",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#071018",
+  "theme_color": "#081018",
+  "description": "Foto-Visualisierung für Food Module Catalogue Platzierungen mit Live-Provisionsanzeige.",
+  "icons": [
+    {
+      "src": "assets/ui/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/ui/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
