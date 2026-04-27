@@ -7,6 +7,8 @@ const searchEl = byId("search");
 const selCountEl = byId("selCount");
 const selSubEl = byId("selSub");
 const countHintEl = byId("countHint");
+const heroProductsEl = byId("heroProducts");
+const heroBrandsEl = byId("heroBrands");
 
 // Gruppen-/Marken-Rahmenfarben
 const BRAND_COLORS = {
@@ -502,6 +504,8 @@ function hideGuideModal(){
 }
 
 loadSelection();
+if(heroProductsEl) heroProductsEl.textContent = PRODUCT_DATA.length;
+if(heroBrandsEl) heroBrandsEl.textContent = getAllBrands().length;
 updateFooter();
 render();
 registerSW();

@@ -12,12 +12,16 @@
 </head>
 <body>
   <div class="bg"></div>
+  <div class="grain" aria-hidden="true"></div>
 
   <header class="top">
     <a class="backBtn" href="../index.html" aria-label="Zurück zu SELLENCE-TOOLS">
       <span aria-hidden="true">←</span> Zurück
     </a>
-<div class="brandMark" aria-hidden="true">
+    <div class="heroPanel">
+      <div class="heroGlow" aria-hidden="true"></div>
+      <div class="eyebrow">Digital Product Catalogue</div>
+      <div class="brandMark" aria-hidden="true">
       <svg class="brandBarcode" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
   <rect x="6"  width="4" height="60"/>
   <rect x="16" width="2" height="60"/>
@@ -29,15 +33,21 @@
   <rect x="89" width="2" height="60"/>
   <rect x="98" width="6" height="60"/>
 </svg>
+      </div>
+      <h1 class="title">SELLENCE‑EAN</h1>
+      <p class="subtitle">Premium EAN‑Übersicht für schnelle Markt‑Vorbereitung, saubere Auswahl und Export für <span class="pill">KataSymbol</span></p>
+      <div class="heroStats" aria-label="App Kennzahlen">
+        <div class="heroStat"><span id="heroProducts">–</span><small>Produkte</small></div>
+        <div class="heroStat"><span id="heroBrands">–</span><small>Marken</small></div>
+        <div class="heroStat"><span>CSV</span><small>Export</small></div>
+      </div>
     </div>
-    <h1 class="title">SELLENCE‑EAN</h1>
-    <p class="subtitle">Wähle Marken oder einzelne Produkte – exportiere für <span class="pill">Katasymbol</span></p>
   </header>
 
   <main class="wrap">
     <section class="controls card">
       <div class="controlsRow">
-        <input id="search" class="search" type="search" placeholder="Suchen… (z.B. TEREA, MB, Bronze, 7XL)" autocomplete="off" />
+        <div class="searchWrap"><span aria-hidden="true">⌕</span><input id="search" class="search" type="search" placeholder="Suchen… z.B. TEREA, MB, Bronze, 7XL" autocomplete="off" /></div>
         <button id="clearSel" class="btn ghost" type="button" title="Auswahl löschen">Leeren</button>
         <button id="brandOrderBtn" class="btn ghost" type="button" title="Marken-Reihenfolge einstellen">Marken</button>
         <button id="guideBtn" class="btn ghost" type="button" title="Anleitung anzeigen">Anleitung</button>
