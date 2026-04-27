@@ -34,49 +34,17 @@
         </div>
       </div>
 
-      <div class="newTop" aria-label="App Neuheit">
-        <a class="newTop__link" href="./sellence-ean/index.html" aria-label="EAN's öffnen">
-          <div class="newTop__row">
-            <div class="newTop__iconWrap"><img src="./assets/ean.png" alt="EAN's Icon"></div>
-            <div class="newTop__text">
-              <div class="newTop__badge newTop__badge--inline">APP NEUHEIT</div>
-              <div class="newTop__title">EAN's</div>
-              <div class="newTop__sub">Produkte die du drucken möchtest aussuchen, Export erstellen und in Katasymbol App importieren.</div>
-            </div>
-            <div class="newTop__go" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      
-      <div class="highlights" aria-label="App Highlights">
-        <a class="tile tile--highlight" data-tool="sellence-vr-highlight" href="./sellence-vr/index.html" aria-label="SELLENCE-VR öffnen">
-          <div class="thumb thumb--highlight thumb--ean"><img src="./sellence-vr/assets/ui/icon-192.png" alt="SELLENCE-VR Icon"></div>
+      <div class="highlights highlights--single" aria-label="App Highlight">
+        <a class="tile tile--highlight tile--heroHighlight" data-tool="ean-highlight" href="./sellence-ean/index.html" aria-label="EAN&apos;s öffnen">
+          <div class="thumb thumb--highlight thumb--ean"><img src="./assets/ean.png" alt="EAN&apos;s Icon"></div>
           <div class="meta">
             <div class="kicker kicker--highlight">APP HIGHLIGHT</div>
-            <p class="name name--highlight">Module VR</p>
-            <p class="desc">Foto im Markt aufnehmen, Module virtuell platzieren und die Händler-Provision direkt live anzeigen.</p>
+            <p class="name name--highlight">EAN&apos;s</p>
+            <p class="desc">Produkte auswählen, Export erstellen und sauber für die Katasymbol App vorbereiten.</p>
           </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
-        </a>
-
-        <a class="tile tile--highlight" data-tool="retourenrechner-highlight" href="./retouren/index.html" aria-label="Retourenrechner öffnen">
-          <div class="thumb thumb--highlight thumb--return"><img src="./assets/retoure.png" alt="Retourenrechner Icon"></div>
-          <div class="meta">
-            <div class="kicker kicker--highlight">APP HIGHLIGHT</div>
-            <p class="name name--highlight">Retourenrechner</p>
-            <p class="desc">KEIN vorsortieren bei Retouren mehr! Preis Button drücken, Kategorie drücken und weiter.</p>
-          </div>
-          <div class="go" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg>
-          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg></div>
         </a>
       </div>
-
 
       <div class="sectionHead sectionHead--compact">
         <div>
@@ -86,6 +54,20 @@
       </div>
 
       <div class="tiles" id="tiles">
+        <a class="tile" data-tool="retourenrechner" href="./retouren/index.html" aria-label="Retourenrechner öffnen">
+          <div class="reorderCtrls" aria-hidden="true">
+            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
+            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
+          </div>
+          <div class="thumb thumb--return"><img src="./assets/retoure.png" alt="Retourenrechner Icon"></div>
+          <div class="meta">
+            <div class="kicker kicker--retouren">Retoure</div>
+            <p class="name">Retourenrechner</p>
+            <p class="desc">KEIN vorsortieren bei Retouren mehr! Preis Button drücken, Kategorie drücken und weiter.</p>
+          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
+        </a>
+
         <a class="tile" data-tool="touren" href="./touren/index.html" aria-label="Tourenplaner öffnen">
           <div class="reorderCtrls" aria-hidden="true">
             <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
@@ -127,19 +109,7 @@
           <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
         </a>
 
-        <a class="tile" data-tool="ninox-bericht" href="./sellence-ninox-bericht/index.html" aria-label="NINOX Bericht öffnen">
-          <div class="reorderCtrls" aria-hidden="true">
-            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
-            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
-          </div>
-          <div class="thumb thumb--ean"><img src="./sellence-ninox-bericht/icon-192.png" alt="NINOX Bericht Icon"></div>
-          <div class="meta">
-            <div class="kicker kicker--tipps">Bericht</div>
-            <p class="name">NINOX Bericht</p>
-            <p class="desc">Buttons mit eigenem Text erstellen und in Sekunden ist dein NINOX Bericht kopierbereit!</p>
-          </div>
-          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
-        </a>
+
 
       </div>
 
@@ -202,7 +172,7 @@
 
     function applyOrder(){
       const pinnedLast = ["picos"];
-      const baseDefault = ["touren","stempeluhr","oosscanner","ninox-bericht"];
+      const baseDefault = ["retourenrechner","touren","stempeluhr","oosscanner"];
       let order = readOrder();
 
       if(!Array.isArray(order) || !order.length){

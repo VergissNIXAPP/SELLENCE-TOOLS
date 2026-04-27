@@ -445,3 +445,217 @@ input[type="password"]:focus{border-color:rgba(125,92,255,.65);box-shadow:0 0 0 
     0 0 28px rgba(83,215,255,.5),
     0 16px 40px rgba(0,0,0,.35) !important;
 }
+
+
+/* =========================================================
+   SELLENCE Premium Design Upgrade 2026
+   Clean Dashboard Look, EAN als einziges Highlight
+========================================================= */
+:root{
+  --bg:#050812;
+  --bg2:#0a1222;
+  --panel:rgba(10,18,34,.72);
+  --panel-strong:rgba(13,24,46,.92);
+  --line:rgba(255,255,255,.12);
+  --line-strong:rgba(255,255,255,.22);
+  --text:#f5f8ff;
+  --muted:#aebdd5;
+  --violet:#8b5cf6;
+  --cyan:#38d5ff;
+  --gold:#f8d27a;
+  --rose:#ff5d9e;
+  --shadow:0 34px 110px rgba(0,0,0,.52);
+  --shadow-soft:0 20px 55px rgba(0,0,0,.34);
+}
+body{
+  background:
+    radial-gradient(900px 520px at 12% 0%, rgba(139,92,246,.30), transparent 62%),
+    radial-gradient(820px 520px at 90% 8%, rgba(56,213,255,.22), transparent 60%),
+    radial-gradient(780px 520px at 50% 112%, rgba(248,210,122,.10), transparent 60%),
+    linear-gradient(145deg,#050812 0%,#0a1222 52%,#050812 100%);
+}
+body::before{
+  opacity:.34;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    radial-gradient(circle at 15% 15%, rgba(255,255,255,.42) 0 1px, transparent 2px);
+  background-size:44px 44px,44px 44px,620px 620px;
+  mask-image:linear-gradient(to bottom, rgba(0,0,0,.85), rgba(0,0,0,.18));
+}
+.container{max-width:1220px;padding:24px 16px 48px}
+.hero,.surface,.privacy,.sheet{
+  border:1px solid rgba(255,255,255,.13);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.035)),
+    linear-gradient(135deg, rgba(139,92,246,.09), rgba(56,213,255,.045));
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hero{
+  border-radius:36px;
+  padding:36px 26px 32px;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:14px;
+  border-radius:28px;
+  pointer-events:none;
+  border:1px solid rgba(255,255,255,.08);
+}
+.heroTitleMain{
+  font-size:clamp(42px,7vw,72px);
+  letter-spacing:.08em;
+  background:linear-gradient(100deg,#ffffff 0%,#d9c9ff 26%,#8b5cf6 52%,#38d5ff 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  text-shadow:0 18px 50px rgba(139,92,246,.20);
+}
+.heroTitleSub{
+  color:#f8fbff;
+  letter-spacing:.36em;
+}
+.heroText--taglineCenter{
+  color:#d7e3f7;
+  letter-spacing:.28em;
+  font-weight:600;
+}
+.surface{
+  border-radius:36px;
+  padding:22px;
+}
+.sectionHead--center h2 span{
+  font-size:clamp(22px,3vw,34px) !important;
+  font-weight:900 !important;
+  letter-spacing:-.02em;
+  background:linear-gradient(90deg,#fff,#bcd8ff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.highlights--single{
+  display:grid;
+  grid-template-columns:1fr;
+  margin-bottom:20px;
+}
+.tile--heroHighlight{
+  min-height:150px;
+  padding:26px;
+  border-radius:32px;
+  background:
+    radial-gradient(520px 220px at 20% 10%, rgba(56,213,255,.23), transparent 62%),
+    radial-gradient(460px 260px at 92% 110%, rgba(248,210,122,.18), transparent 58%),
+    linear-gradient(135deg, rgba(139,92,246,.24), rgba(17,28,50,.88) 52%, rgba(56,213,255,.14));
+  border:1px solid rgba(128,218,255,.34);
+}
+.tile--heroHighlight::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent);
+  transform:translateX(-120%);
+  transition:transform .55s ease;
+}
+.tile--heroHighlight:hover::after{transform:translateX(120%)}
+.tile--heroHighlight .thumb{
+  width:92px;
+  height:92px;
+  border-radius:28px;
+  border:1px solid rgba(56,213,255,.7) !important;
+  box-shadow:0 0 28px rgba(56,213,255,.34), 0 18px 44px rgba(0,0,0,.32) !important;
+}
+.tile--heroHighlight .name{
+  font-size:clamp(28px,4vw,42px);
+  letter-spacing:-.03em;
+}
+.tile--heroHighlight .desc{font-size:15px;color:#c6d6ee}
+.tile,.newTop__link{
+  border-radius:28px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.028)),
+    radial-gradient(260px 160px at 20% 0%, rgba(255,255,255,.06), transparent 70%);
+  border:1px solid rgba(255,255,255,.12);
+}
+.tiles{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+.tile{
+  min-height:126px;
+  padding:20px;
+}
+.tile:hover{
+  transform:translateY(-4px) scale(1.005);
+  border-color:rgba(255,255,255,.24);
+  box-shadow:0 28px 72px rgba(0,0,0,.42);
+}
+.thumb{
+  width:80px;
+  height:80px;
+  border-radius:25px;
+  background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.06));
+}
+.go,.newTop__go{
+  background:rgba(255,255,255,.075);
+  border:1px solid rgba(255,255,255,.14);
+  transition:transform .18s ease, background .18s ease;
+}
+.tile:hover .go,.newTop__link:hover .newTop__go{
+  transform:translateX(3px);
+  background:rgba(255,255,255,.14);
+}
+.kicker{
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.kicker--highlight{
+  background:linear-gradient(135deg,#38d5ff,#8b5cf6) !important;
+  border-color:rgba(128,218,255,.62) !important;
+  box-shadow:0 0 18px rgba(56,213,255,.34) !important;
+}
+.tile--heroHighlight .kicker--highlight::before{
+  content:"";
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background:#fff;
+  box-shadow:0 0 12px #fff;
+}
+.kicker--retouren{
+  background:linear-gradient(135deg,#ffb347,#ff6a5f) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,179,71,.65) !important;
+  box-shadow:0 0 12px rgba(255,129,78,.35) !important;
+}
+.tile[data-tool="retourenrechner"] .thumb{
+  border:1px solid rgba(255,179,71,.72) !important;
+  box-shadow:0 0 18px rgba(255,129,78,.32), 0 14px 34px rgba(0,0,0,.24) !important;
+}
+.sectionKicker--apps{
+  color:#edf5ff;
+  background:linear-gradient(135deg, rgba(56,213,255,.14), rgba(139,92,246,.13));
+  border:1px solid rgba(255,255,255,.13);
+}
+.footerRow{padding-top:22px}
+.linkBtn{
+  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 12px 30px rgba(0,0,0,.24);
+}
+.privacy{
+  border-radius:28px;
+}
+@media (max-width:860px){
+  .highlights--single,.tiles{grid-template-columns:1fr}
+  .tile--heroHighlight{min-height:auto}
+}
+@media (max-width:620px){
+  .container{padding:14px 10px 34px}
+  .surface{padding:16px}
+  .tile,.tile--heroHighlight{padding:16px}
+  .tile--heroHighlight .thumb,.thumb{width:68px;height:68px;border-radius:21px}
+  .tile--heroHighlight .name{font-size:26px}
+}
