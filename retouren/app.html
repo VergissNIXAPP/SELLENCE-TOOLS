@@ -378,7 +378,16 @@
     display:inline-flex;align-items:center;justify-content:center
   }
   .qtyValue{
-    min-width:102px;text-align:center;font-size:34px;font-family:Montserrat,ui-sans-serif,system-ui;font-weight:900
+    min-width:118px;height:56px;text-align:center;font-size:30px;font-family:Montserrat,ui-sans-serif,system-ui;font-weight:900;
+    color:var(--text);border:1px solid rgba(255,255,255,.14);border-radius:18px;
+    background:rgba(3,7,18,.55);outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+    -moz-appearance:textfield;
+  }
+  .qtyValue::-webkit-outer-spin-button,.qtyValue::-webkit-inner-spin-button{
+    -webkit-appearance:none;margin:0;
+  }
+  .qtyValue:focus{
+    border-color:rgba(34,211,238,.58);box-shadow:0 0 0 4px rgba(34,211,238,.12), inset 0 1px 0 rgba(255,255,255,.05);
   }
   .categoryButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .catBtn{
@@ -590,9 +599,9 @@
         <div>
           <div class="hint" style="text-align:center;margin-bottom:8px">Stückzahl</div>
           <div class="qtyWrap">
-            <button id="qtyMinus" class="qtyBtn" type="button">−</button>
-            <div id="selectedQty" class="qtyValue">1</div>
-            <button id="qtyPlus" class="qtyBtn" type="button">+</button>
+            <button id="qtyMinus" class="qtyBtn" type="button" aria-label="Menge verringern">−</button>
+            <input id="selectedQty" class="qtyValue" type="number" inputmode="numeric" pattern="[0-9]*" min="1" step="1" value="1" aria-label="Stückzahl direkt eingeben" />
+            <button id="qtyPlus" class="qtyBtn" type="button" aria-label="Menge erhöhen">+</button>
           </div>
         </div>
         <div class="categoryButtons">
@@ -942,13 +951,35 @@
     selection.price = Number(price);
     selection.qty = 1;
     $("selectedPriceLabel").textContent = fmt(selection.price);
-    $("selectedQty").textContent = String(selection.qty);
+    syncQtyInput();
     openModal("categoryModal");
+    setTimeout(() => {
+      const qtyInput = $("selectedQty");
+      qtyInput.focus();
+      qtyInput.select();
+    }, 80);
   }
 
   function closeCategoryModal(){
     closeModal("categoryModal");
     selection = { price: null, qty: 1 };
+    syncQtyInput();
+  }
+
+  function normalizeQty(value){
+    const cleaned = String(value ?? "").replace(/[^0-9]/g, "");
+    const qty = Math.floor(Number(cleaned) || 1);
+    return Math.max(1, qty);
+  }
+
+  function syncQtyInput(){
+    const input = $("selectedQty");
+    if(input) input.value = String(Math.max(1, Math.floor(Number(selection.qty) || 1)));
+  }
+
+  function setQty(value){
+    selection.qty = normalizeQty(value);
+    syncQtyInput();
   }
 
   function ensureNextPackageIfNeeded(){
@@ -1216,8 +1247,17 @@
   $("btnPacks").addEventListener("click", () => openModal("packsModal"));
   $("closePacksModal").addEventListener("click", () => closeModal("packsModal"));
   $("closeCategoryModal").addEventListener("click", closeCategoryModal);
-  $("qtyMinus").addEventListener("click", () => { selection.qty = Math.max(1, selection.qty - 1); $("selectedQty").textContent = String(selection.qty); });
-  $("qtyPlus").addEventListener("click", () => { selection.qty += 1; $("selectedQty").textContent = String(selection.qty); });
+  $("qtyMinus").addEventListener("click", () => setQty((Number(selection.qty) || 1) - 1));
+  $("qtyPlus").addEventListener("click", () => setQty((Number(selection.qty) || 1) + 1));
+  $("selectedQty").addEventListener("input", e => { selection.qty = normalizeQty(e.target.value); });
+  $("selectedQty").addEventListener("blur", e => setQty(e.target.value));
+  $("selectedQty").addEventListener("keydown", e => {
+    if(e.key === "Enter"){
+      e.preventDefault();
+      setQty(e.target.value);
+      e.target.blur();
+    }
+  });
   document.querySelectorAll(".catBtn").forEach(btn => btn.addEventListener("click", () => addQuickItem(btn.dataset.category)));
   $("packsModal").addEventListener("click", e => { if(e.target?.dataset?.close === "1") closeModal("packsModal"); });
   $("categoryModal").addEventListener("click", e => { if(e.target?.dataset?.closeCategory === "1") closeCategoryModal(); });
