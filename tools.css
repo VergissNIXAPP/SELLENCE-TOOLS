@@ -659,3 +659,67 @@ body::before{
   .tile--heroHighlight .thumb,.thumb{width:68px;height:68px;border-radius:21px}
   .tile--heroHighlight .name{font-size:26px}
 }
+
+/* =========================================================
+   SELLENCE Farb-Feinschliff: eindeutige App-Farben
+   Retoure und OOS bewusst getrennt
+========================================================= */
+:root{
+  --sellence-retoure:#ff4f8b;
+  --sellence-retoure-2:#b832ff;
+  --sellence-oos:#20e3b2;
+  --sellence-oos-2:#14b8ff;
+  --sellence-tour:#ff3d6e;
+  --sellence-time:#35d07f;
+}
+
+.kicker--retouren{
+  background:linear-gradient(135deg,var(--sellence-retoure),var(--sellence-retoure-2)) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,79,139,.72) !important;
+  box-shadow:0 0 14px rgba(255,79,139,.34) !important;
+}
+.tile[data-tool="retourenrechner"]{border-color:rgba(255,79,139,.22) !important;}
+.tile[data-tool="retourenrechner"] .thumb{
+  border:1px solid rgba(255,79,139,.82) !important;
+  box-shadow:0 0 20px rgba(255,79,139,.38), 0 14px 34px rgba(0,0,0,.24) !important;
+}
+.tile[data-tool="retourenrechner"]:hover{
+  border-color:rgba(255,79,139,.44) !important;
+  box-shadow:0 28px 72px rgba(255,79,139,.10), 0 28px 72px rgba(0,0,0,.42) !important;
+}
+
+.kicker--oos{
+  background:linear-gradient(135deg,var(--sellence-oos),var(--sellence-oos-2)) !important;
+  color:#03121d !important;
+  border:1px solid rgba(32,227,178,.72) !important;
+  box-shadow:0 0 14px rgba(32,227,178,.34) !important;
+}
+.tile[data-tool="oosscanner"]{border-color:rgba(32,227,178,.22) !important;}
+.tile[data-tool="oosscanner"] .thumb{
+  border:1px solid rgba(32,227,178,.82) !important;
+  box-shadow:0 0 20px rgba(32,227,178,.38), 0 14px 34px rgba(0,0,0,.24) !important;
+}
+.tile[data-tool="oosscanner"]:hover{
+  border-color:rgba(32,227,178,.44) !important;
+  box-shadow:0 28px 72px rgba(32,227,178,.10), 0 28px 72px rgba(0,0,0,.42) !important;
+}
+
+.tile[data-tool="touren"] .thumb{
+  border:1px solid rgba(255,61,110,.76) !important;
+  box-shadow:0 0 18px rgba(255,61,110,.30), 0 14px 34px rgba(0,0,0,.24) !important;
+}
+.tile[data-tool="stempeluhr"] .thumb{
+  border:1px solid rgba(53,208,127,.76) !important;
+  box-shadow:0 0 18px rgba(53,208,127,.30), 0 14px 34px rgba(0,0,0,.24) !important;
+}
+.kicker--planung{
+  background:linear-gradient(135deg,#ff3d6e,#ff7a3d) !important;
+  border:1px solid rgba(255,61,110,.7) !important;
+  box-shadow:0 0 12px rgba(255,61,110,.32) !important;
+}
+.kicker--zeit{
+  background:linear-gradient(135deg,#35d07f,#11c5a6) !important;
+  border:1px solid rgba(53,208,127,.7) !important;
+  box-shadow:0 0 12px rgba(53,208,127,.32) !important;
+}
