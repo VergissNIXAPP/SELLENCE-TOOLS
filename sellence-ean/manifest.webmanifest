@@ -1,10 +1,10 @@
 {
-  "name": "SELLENCE‑EAN",
-  "short_name": "SELLENCE‑EAN",
-  "start_url": "./",
+  "name": "SELLENCE-EAN",
+  "short_name": "SELLENCE",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0a0a0d",
-  "theme_color": "#0a0a0d",
+  "background_color": "#07080d",
+  "theme_color": "#07080d",
   "icons": [
     {
       "src": "assets/icon-192.png",
@@ -15,12 +15,6 @@
       "src": "assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
-    },
-    {
-      "src": "assets/icon-180.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
     }
   ]
 }

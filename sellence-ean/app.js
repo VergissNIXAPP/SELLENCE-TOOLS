@@ -1,4 +1,4 @@
-const LS_KEY = "sellence_ean_selected_v2";
+const LS_KEY = "sellence_ean_selected_v3";
 const BRAND_ORDER_KEY = "sellence_ean_group_order_v2";
 
 const byId = (id) => document.getElementById(id);
@@ -329,7 +329,7 @@ function render(){
       const imageSlug = slugifyName(it.name);
       const thumbImg = document.createElement("img");
       thumbImg.className = "thumbImg";
-      thumbImg.src = `assets/thumbs/${imageSlug}.png`;
+      thumbImg.src = it.image || `assets/thumbs/${imageSlug}.png`;
       thumbImg.alt = "";
       thumbImg.loading = "lazy";
       thumbImg.addEventListener("error", ()=>{ thumbImg.remove(); }, { once:true });
@@ -351,8 +351,10 @@ function render(){
         packEan.className = "subean";
         packEan.textContent = `Gebinde: ${it.pack_ean}`;
         meta.append(name, ean, packEan);
+        if(it.pack || it.gebinde){ const detail=document.createElement("div"); detail.className="prodDetail"; detail.textContent=[it.pack?`Packung: ${it.pack}`:"", it.gebinde?`Gebinde: ${it.gebinde}`:""].filter(Boolean).join(" · "); meta.append(detail); }
       }else{
         meta.append(name, ean);
+        if(it.pack || it.gebinde){ const detail=document.createElement("div"); detail.className="prodDetail"; detail.textContent=[it.pack?`Packung: ${it.pack}`:"", it.gebinde?`Gebinde: ${it.gebinde}`:""].filter(Boolean).join(" · "); meta.append(detail); }
       }
 
       const check = document.createElement("div");
