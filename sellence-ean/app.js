@@ -109,10 +109,10 @@ function classifyGroup(it){
   if(brand === "TEREA") return "TEREA";
   if(brand === "DELIA") return "DELIA";
   if(brand === "LEVIA") return "LEVIA";
-  if(brand === "VEEV") return "VEEV";
+  if(brand === "VEEV" || brand === "VEEV ONE" || brand === "VEEV NOW ULTRA") return "VEEV";
   if(brand === "IQOS") return "IQOS";
 
-  if(name.startsWith("MB CRAFTED") || brand === "MB CRAFTED") return "MB CRAFTED";
+  if(name.startsWith("MB CRAFTED") || brand === "MB CRAFTED" || (brand === "MARLBORO" && name.startsWith("CRAFTED"))) return "MB CRAFTED";
   if(name.startsWith("MB RED")) return "MB RED";
   if(name.startsWith("MB GOLD")) return "MB GOLD";
   if(name.startsWith("MB MIX")) return "MB MIX";

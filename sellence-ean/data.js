@@ -1000,6 +1000,46 @@ window.PRODUCT_DATA = [
     "image": "assets/thumbs/veev-one-red-berries.png"
   },
   {
+    "brand": "VEEV ONE",
+    "name": "Blueberry X",
+    "ean": "4023500057738",
+    "pack_ean": "4023500757737",
+    "pack": "2 Pods | 10,90 €",
+    "gebinde": "5 Pack. / 10 Pods | 49,00 €",
+    "category": "VEEV Pods",
+    "image": "assets/thumbs/veev-one-blueberry-x.png"
+  },
+  {
+    "brand": "VEEV ONE",
+    "name": "Mango X",
+    "ean": "4023500057721",
+    "pack_ean": "4023500757720",
+    "pack": "2 Pods | 10,90 €",
+    "gebinde": "5 Pack. / 10 Pods | 49,00 €",
+    "category": "VEEV Pods",
+    "image": "assets/thumbs/veev-one-mango-x.png"
+  },
+  {
+    "brand": "VEEV ONE",
+    "name": "Watermelon X",
+    "ean": "4023500057745",
+    "pack_ean": "4023500757744",
+    "pack": "2 Pods | 10,90 €",
+    "gebinde": "5 Pack. / 10 Pods | 49,00 €",
+    "category": "VEEV Pods",
+    "image": "assets/thumbs/veev-one-watermelon-x.png"
+  },
+  {
+    "brand": "VEEV ONE",
+    "name": "Strawberry X",
+    "ean": "4023500057752",
+    "pack_ean": "4023500757751",
+    "pack": "2 Pods | 10,90 €",
+    "gebinde": "5 Pack. / 10 Pods | 49,00 €",
+    "category": "VEEV Pods",
+    "image": "assets/thumbs/veev-one-strawberry-x.png"
+  },
+  {
     "brand": "VEEV NOW ULTRA",
     "name": "Sour Apple",
     "ean": "4023500046794",
