@@ -418,6 +418,38 @@ function hideExportModal(){
   modal.setAttribute("aria-hidden","true");
 }
 
+
+function exportBrandNameForCSV(it){
+  const brand = String(it?.brand || "").trim();
+  const upper = brand.toUpperCase();
+
+  if(upper === "MARLBORO") return "MB";
+  if(upper === "VEEV ONE") return "VEEV One";
+  if(upper === "VEEV NOW ULTRA") return "VEEV Now Ultra";
+  if(upper === "TEREA") return "TEREA";
+  if(upper === "DELIA") return "DELIA";
+  if(upper === "LEVIA") return "LEVIA";
+  if(upper === "F6") return "F6";
+  if(upper === "EVE 120") return "EVE 120";
+  if(upper === "PARLIAMENT NIGHT") return "Parliament Night";
+  return brand;
+}
+
+function exportProductNameForCSV(it){
+  const brand = exportBrandNameForCSV(it);
+  const name = String(it?.name || "").trim();
+  if(!brand) return name;
+  if(!name) return brand;
+
+  const normalizedName = name.toUpperCase();
+  const normalizedBrand = brand.toUpperCase();
+  if(normalizedName === normalizedBrand || normalizedName.startsWith(normalizedBrand + " ") || normalizedName.startsWith(normalizedBrand + "-")){
+    return name;
+  }
+
+  return `${brand} ${name}`.trim();
+}
+
 function doExportCSV(mode){
   const chosen = PRODUCT_DATA.filter(it => selected.has(itemKey(it)));
 
@@ -433,7 +465,7 @@ function doExportCSV(mode){
         eanOut = it.ean; // Fallback auf Packungs-EAN
       }
     }
-    return `${it.name},${eanOut}`;
+    return `${exportProductNameForCSV(it)},${eanOut}`;
   });
 
   if(mode !== "pack" && missingGebinde > 0){
