@@ -1,29 +1,4 @@
-
-/* SELLENCE Kategorie Badges */
-.kicker--zeit{
-  background: linear-gradient(135deg,#2ecc71,#1abc9c) !important;
-  color:#fff !important;
-  border:1px solid rgba(46,204,113,.7) !important;
-  box-shadow:0 0 10px rgba(46,204,113,.35);
-}
-
-.kicker--planung{
-  background: linear-gradient(135deg,#1e8bff,#5b2eff) !important;
-  color:#fff !important;
-  border:1px solid rgba(30,139,255,.7) !important;
-  box-shadow:0 0 10px rgba(30,139,255,.35);
-}
-
-.kicker--tipps{
-  background: linear-gradient(135deg,#8e44ad,#5b2eff) !important;
-  color:#fff !important;
-  border:1px solid rgba(142,68,173,.7) !important;
-  box-shadow:0 0 10px rgba(142,68,173,.35);
-}
-
-.kicker--mto{
-  background: linear-gradient(135deg,#ff9f1a,#ff6a00) !important;
-  color:#fff !important;
-  border:1px solid rgba(255,159,26,.7) !important;
-  box-shadow:0 0 10px rgba(255,159,26,.35);
-}
+/* SELLENCE TOOLS — Ultra Premium Color Layer */
+:root{--sellence-time:#3df09f;--sellence-plan:#ff426f;--sellence-oos:#20e3b2;--sellence-retoure:#ff4f9a;--sellence-highlight:#2fe4ff}
+/* Diese Datei bleibt als Zusatzlayer erhalten, damit bestehende Installationen mit styles.css weiter funktionieren. */
+.kicker--zeit{background:linear-gradient(135deg,#3df09f,#12c7ad)!important;color:#03130d!important}.kicker--planung{background:linear-gradient(135deg,#ff426f,#ff8a3d)!important;color:#fff!important}.kicker--retouren{background:linear-gradient(135deg,#ff4f9a,#b832ff)!important;color:#fff!important}.kicker--oos{background:linear-gradient(135deg,#20e3b2,#14b8ff)!important;color:#03121d!important}.kicker--highlight,.newTop__badge{background:linear-gradient(135deg,#2fe4ff,#9b5cff)!important;color:#04101f!important}
