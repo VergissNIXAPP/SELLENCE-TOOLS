@@ -1,1 +1,23 @@
-[]
+[
+    {
+        "name":  "Sortimentsübersicht VEEV.pdf",
+        "path":  "Sortimentsübersicht VEEV.pdf",
+        "extension":  "pdf",
+        "size":  2588610,
+        "modified":  "2026-07-10T20:58:06+02:00"
+    },
+    {
+        "name":  "Sortimentsübersicht_CIG _06.2026.pdf",
+        "path":  "Sortimentsübersicht_CIG _06.2026.pdf",
+        "extension":  "pdf",
+        "size":  5351687,
+        "modified":  "2026-07-10T20:57:55+02:00"
+    },
+    {
+        "name":  "Sortimentsübersicht_HTU_06.2026.pdf",
+        "path":  "Sortimentsübersicht_HTU_06.2026.pdf",
+        "extension":  "pdf",
+        "size":  1872034,
+        "modified":  "2026-07-10T20:58:14+02:00"
+    }
+]
