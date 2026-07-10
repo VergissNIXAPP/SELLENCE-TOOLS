@@ -1,4 +1,4 @@
-const CACHE_NAME = "sellence-tools-kilometer-tp-v550";
+const CACHE_NAME = "sellence-tools-kilometer-tp-v750";
 const CORE_FILES = [
   "./",
   "./index.html",
