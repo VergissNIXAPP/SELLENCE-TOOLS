@@ -3,8 +3,8 @@
   "short_name": "Retouren",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0B1020",
-  "theme_color": "#0B1020",
+  "background_color": "#070a10",
+  "theme_color": "#070a10",
   "icons": [
     {
       "src": "icon-192.png",

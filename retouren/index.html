@@ -1,111 +1,1156 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#0A1022" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Retourenrechner" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/>
+<meta content="#070a10" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Retourenrechner" name="apple-mobile-web-app-title"/>
+<link href="icon-192.png" rel="apple-touch-icon"/>
+<title>SELLENCE Retourenrechner</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
 
-  <title>Login • SELLENCE Retourenrechner</title>
+<style>
+:root{
+  --bg:#070a10;
+  --bg-soft:#0b1019;
+  --surface:#101722;
+  --surface-2:#141d2a;
+  --surface-3:#192434;
+  --line:#263449;
+  --line-soft:rgba(143,169,207,.14);
+  --text:#f7f9fc;
+  --muted:#98a7bc;
+  --muted-2:#6f8099;
+  --primary:#5b8cff;
+  --primary-2:#7b61ff;
+  --cyan:#32d6d0;
+  --green:#35d07f;
+  --orange:#ffb454;
+  --red:#ff6f83;
+  --shadow-lg:0 30px 80px rgba(0,0,0,.46);
+  --shadow-md:0 18px 42px rgba(0,0,0,.30);
+  --shadow-sm:0 10px 24px rgba(0,0,0,.22);
+  --radius-xl:26px;
+  --radius-lg:20px;
+  --radius-md:16px;
+}
 
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="stylesheet" href="../tools.css" />
-  <style>
-    :root{
-      --bg1:#040814;--bg2:#0a1022;--stroke:rgba(255,255,255,.10);--text:rgba(248,250,255,.96);--muted:rgba(216,225,255,.72);
-      --shadow:0 24px 80px rgba(0,0,0,.42);
-    }
-    html,body{min-height:100%}
-    body{
-      margin:0;display:flex;align-items:center;justify-content:center;
-      color:var(--text);
-      background:
-        radial-gradient(1000px 700px at 10% -10%, rgba(124,58,237,.30), transparent 60%),
-        radial-gradient(800px 600px at 100% 0%, rgba(34,211,238,.22), transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
-      padding:max(env(safe-area-inset-top),14px) 14px max(env(safe-area-inset-bottom),18px);
-      font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    }
-    .sheet{
-      max-width:560px;width:min(560px,100%);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)), linear-gradient(180deg, rgba(10,16,33,.72), rgba(10,16,33,.55));
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:28px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(16px);
-      overflow:hidden;
-    }
-  </style>
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg);scroll-behavior:smooth}
+body{
+  min-height:100%;margin:0;color:var(--text);
+  font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(900px 620px at 4% -10%,rgba(91,140,255,.20),transparent 65%),
+    radial-gradient(760px 620px at 100% 2%,rgba(50,214,208,.12),transparent 62%),
+    radial-gradient(880px 660px at 55% 112%,rgba(123,97,255,.11),transparent 64%),
+    linear-gradient(145deg,#05070c 0%,#09101a 48%,#0a1220 100%);
+  padding:max(env(safe-area-inset-top),14px) 14px max(env(safe-area-inset-bottom),20px);
+  overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.40;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:linear-gradient(to bottom,black,transparent 82%);
+}
+body::after{
+  content:"";position:fixed;left:50%;top:-210px;width:760px;height:420px;transform:translateX(-50%);
+  pointer-events:none;z-index:0;filter:blur(35px);opacity:.22;
+  background:radial-gradient(ellipse,rgba(91,140,255,.72),transparent 68%);
+}
+button,input{font:inherit}
+button{outline:none}
+main,.topbar,.toast{position:relative;z-index:1}
+
+.topbar{
+  max-width:1380px;margin:0 auto 16px;min-height:66px;padding:10px 12px;
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;
+  border:1px solid rgba(145,172,214,.15);border-radius:20px;
+  background:linear-gradient(180deg,rgba(17,25,38,.94),rgba(11,17,27,.92));
+  box-shadow:0 16px 44px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.045);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+}
+.leftActions,.rightActions{display:flex;align-items:center;gap:10px}
+.rightActions{justify-self:end}
+.backLink{display:inline-flex;align-items:center;justify-content:center;min-width:46px;padding:8px;border-radius:13px;text-decoration:none}
+.backIcon{
+  width:32px;height:32px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;
+  color:#dbe6f7;font-size:18px;font-weight:900;
+  border:1px solid rgba(145,172,214,.14);background:rgba(255,255,255,.035);
+}
+.brand{text-align:center;user-select:none;justify-self:center}
+.brandMark{
+  font-family:Montserrat,ui-sans-serif,system-ui;font-size:20px;line-height:1;font-weight:900;letter-spacing:.26em;
+  background:linear-gradient(110deg,#fff 3%,#c9d7ff 52%,#8df2ec 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.brandSub{margin-top:6px;color:#72839c;font-size:9px;font-weight:800;letter-spacing:.23em}
+
+.wrap{max-width:1380px;margin:0 auto;display:grid;gap:16px}
+.summaryCard,.keyboardCard,.packsCard,.tableCard,.modalSheet{
+  position:relative;overflow:hidden;
+  border:1px solid rgba(145,172,214,.14);border-radius:var(--radius-xl);
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.038),transparent 42%),
+    linear-gradient(180deg,rgba(17,25,38,.97),rgba(11,17,27,.97));
+  box-shadow:var(--shadow-lg),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.summaryCard::before,.keyboardCard::before,.packsCard::before,.tableCard::before,.modalSheet::before{
+  content:"";position:absolute;left:0;top:0;right:0;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,transparent 4%,rgba(168,194,235,.42) 42%,rgba(93,223,217,.25) 68%,transparent 96%);
+}
+.summaryCard,.keyboardCard,.packsCard,.tableCard{padding:18px}
+
+.dt{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+  color:#8fa0b8;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  border:1px solid rgba(145,172,214,.12);background:#0b111b;
+}
+.dt::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px rgba(50,214,208,.08)}
+.summaryGrid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(320px,.72fr);gap:16px;margin-top:14px}
+.summaryBoxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sumBox{
+  position:relative;min-height:132px;padding:18px 17px;border-radius:20px;overflow:hidden;
+  border:1px solid rgba(145,172,214,.13);
+  background:linear-gradient(155deg,#172132 0%,#101722 100%);
+  box-shadow:var(--shadow-sm),inset 0 1px 0 rgba(255,255,255,.035);
+}
+.sumBox::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:0 4px 4px 0;background:var(--primary)}
+.sumBox::after{content:"";position:absolute;right:-38px;top:-46px;width:138px;height:138px;border-radius:50%;background:radial-gradient(circle,rgba(91,140,255,.15),transparent 67%)}
+.sumBox:nth-child(2)::before{background:var(--cyan)}
+.sumBox:nth-child(2)::after{background:radial-gradient(circle,rgba(50,214,208,.13),transparent 67%)}
+.sumBox:nth-child(3)::before{background:var(--primary-2)}
+.sumBox:nth-child(3)::after{background:radial-gradient(circle,rgba(123,97,255,.16),transparent 67%)}
+.label{position:relative;z-index:1;color:#91a0b5;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.value{position:relative;z-index:1;margin-top:12px;font-family:Montserrat,ui-sans-serif,system-ui;font-size:30px;line-height:1.08;font-weight:900;letter-spacing:-.035em}
+.subValue{position:relative;z-index:1;margin-top:9px;color:#7789a3;font-size:11px;font-weight:700}
+.subline{margin-top:12px;display:flex;gap:9px;flex-wrap:wrap;color:#71829a;font-size:11px;font-weight:700}
+
+.modePanel{
+  padding:17px;border-radius:21px;border:1px solid rgba(145,172,214,.13);
+  background:
+    radial-gradient(260px 170px at 110% -15%,rgba(91,140,255,.13),transparent 60%),
+    linear-gradient(155deg,#141e2c,#0e1520);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+}
+.modeTitle,.kbdTitle,.packsTitle,.tableTitle,.modalTitle{
+  display:flex;align-items:center;gap:9px;color:#e8eef8;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;
+}
+.modeTitle::before,.kbdTitle::before,.packsTitle::before,.tableTitle::before,.modalTitle::before{
+  content:"";width:7px;height:7px;border-radius:2px;background:linear-gradient(135deg,var(--primary),var(--cyan));box-shadow:0 0 14px rgba(91,140,255,.45)
+}
+.hint,.tableHint{margin-top:7px;color:#8393aa;font-size:12px;font-weight:650;line-height:1.55}
+.modeRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+.modeBtn{
+  position:relative;overflow:hidden;min-height:88px;padding:15px;text-align:left;cursor:pointer;color:var(--text);
+  border:1px solid rgba(145,172,214,.13);border-radius:17px;
+  background:linear-gradient(160deg,rgba(255,255,255,.052),rgba(255,255,255,.014));
+  box-shadow:0 10px 24px rgba(0,0,0,.18);
+  transition:.18s ease;
+}
+.modeBtn::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(91,140,255,.16),rgba(50,214,208,.06));opacity:0;transition:opacity .18s ease}
+.modeBtn strong,.modeBtn span{position:relative;z-index:1;display:block}
+.modeBtn strong{font-family:Montserrat,ui-sans-serif,system-ui;font-size:21px;font-weight:900}
+.modeBtn span{margin-top:6px;color:#8190a7;font-size:11px;font-weight:700;line-height:1.4}
+.modeBtn.active{border-color:rgba(87,201,216,.48);background:linear-gradient(150deg,rgba(91,140,255,.18),rgba(50,214,208,.09));box-shadow:0 0 0 3px rgba(50,214,208,.075),0 13px 28px rgba(0,0,0,.24)}
+.modeBtn.active::after,.modeBtn:hover::after{opacity:1}
+
+.ghost,.smallBtn,.manageBtn,.segBtn,.pillBtn,.xBtn,.iconBtn,.qtyBtn,.primary,.priceKey,.modeBtn,.catBtn,.packTile{
+  -webkit-tap-highlight-color:transparent;transition:transform .16s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+.ghost,.smallBtn,.manageBtn,.segBtn,.pillBtn,.xBtn,.iconBtn,.qtyBtn{
+  padding:10px 13px;cursor:pointer;color:#edf3fb;font-weight:800;
+  border:1px solid rgba(145,172,214,.14);border-radius:13px;
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.018));
+  box-shadow:0 7px 18px rgba(0,0,0,.14);
+}
+.primary{
+  padding:12px 15px;cursor:pointer;color:white;font-weight:900;border:1px solid rgba(255,255,255,.13);border-radius:14px;
+  background:linear-gradient(135deg,#5b8cff,#566eff 48%,#28c8c5);
+  box-shadow:0 14px 28px rgba(65,112,232,.22),inset 0 1px 0 rgba(255,255,255,.20);
+}
+.ghost:hover,.smallBtn:hover,.manageBtn:hover,.segBtn:hover,.pillBtn:hover,.xBtn:hover,.iconBtn:hover,.qtyBtn:hover,.primary:hover,.priceKey:hover,.modeBtn:hover,.catBtn:hover,.packTile:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.ghost:active,.smallBtn:active,.manageBtn:active,.segBtn:active,.pillBtn:active,.xBtn:active,.iconBtn:active,.qtyBtn:active,.primary:active,.priceKey:active,.modeBtn:active,.catBtn:active,.packTile:active{transform:translateY(1px) scale(.993)}
+.ghost.danger,.smallBtn.danger,.iconBtn.danger,.xBtn.danger{border-color:rgba(255,111,131,.26);background:linear-gradient(180deg,rgba(255,111,131,.13),rgba(255,111,131,.035));color:#ffdbe1}
+
+.keyboardCard{display:grid;gap:14px}
+.kbdTop,.packsHeader,.tableHeader{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.kbdActions,.quickRight{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.lastEntry{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 16px;border-radius:18px;
+  border:1px solid rgba(145,172,214,.13);
+  background:
+    radial-gradient(280px 130px at 100% 0%,rgba(50,214,208,.075),transparent 62%),
+    linear-gradient(150deg,#151f2d,#0e151f);
+}
+.lastEntry strong{display:block;font-size:15px;font-weight:850}
+.lastEntry span{display:block;margin-top:5px;color:#8090a7;font-size:11px;font-weight:650}
+
+.priceGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px}
+.priceKey{
+  position:relative;isolation:isolate;overflow:hidden;min-height:94px;padding:18px 10px;cursor:pointer;text-align:center;color:var(--text);
+  border:1px solid rgba(145,172,214,.14);border-radius:18px;
+  background:linear-gradient(155deg,#182335 0%,#111925 58%,#0d141e 100%);
+  box-shadow:0 13px 28px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.priceKey::before{content:"";position:absolute;z-index:-1;left:16px;right:16px;top:0;height:2px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,transparent,var(--primary),var(--cyan),transparent);opacity:.80}
+.priceKey::after{content:"";position:absolute;z-index:-1;right:-40px;bottom:-54px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(91,140,255,.17),transparent 66%);transition:transform .22s ease}
+.priceKey:nth-child(4n+2)::after{background:radial-gradient(circle,rgba(50,214,208,.13),transparent 66%)}
+.priceKey:nth-child(4n+3)::after{background:radial-gradient(circle,rgba(123,97,255,.16),transparent 66%)}
+.priceKey:nth-child(4n+4)::after{background:radial-gradient(circle,rgba(66,163,255,.14),transparent 66%)}
+.priceKey:hover{border-color:rgba(91,140,255,.38);box-shadow:0 17px 34px rgba(0,0,0,.27),0 0 0 3px rgba(91,140,255,.055),inset 0 1px 0 rgba(255,255,255,.055)}
+.priceKey:hover::after{transform:scale(1.15)}
+.priceKey strong{display:block;font-family:Montserrat,ui-sans-serif,system-ui;font-size:24px;line-height:1.05;font-weight:900;letter-spacing:-.035em}
+.priceKey small{display:block;margin-top:8px;color:#7889a2;font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+
+.packagesGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:11px;margin-top:14px}
+.packTile{
+  position:relative;padding:16px;cursor:pointer;text-align:left;color:var(--text);
+  border:1px solid rgba(145,172,214,.13);border-radius:19px;
+  background:linear-gradient(150deg,#172130,#0e151f);
+  box-shadow:0 12px 28px rgba(0,0,0,.19),inset 0 1px 0 rgba(255,255,255,.032);
+}
+.packTile::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:0 4px 4px 0;background:#53647b}
+.packTile.active{border-color:rgba(50,214,208,.42);background:linear-gradient(150deg,#182636,#101a24);box-shadow:0 0 0 3px rgba(50,214,208,.065),0 17px 36px rgba(0,0,0,.25)}
+.packTile.active::before{background:linear-gradient(var(--primary),var(--cyan));box-shadow:0 0 14px rgba(50,214,208,.35)}
+.tileTop,.tileNums,.tileSplit{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.tileTop{margin-bottom:13px}
+.tileTitle{font-family:Montserrat,ui-sans-serif,system-ui;font-size:18px;font-weight:900}
+.pill{padding:6px 9px;border-radius:999px;border:1px solid rgba(145,172,214,.14);background:rgba(255,255,255,.035);font-size:9px;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+.pill.ok{color:#c9ffe2;border-color:rgba(53,208,127,.25);background:rgba(53,208,127,.095)}
+.pill.warn{color:#ffe5bf;border-color:rgba(255,180,84,.25);background:rgba(255,180,84,.09)}
+.tileNums{align-items:flex-end}
+.mini{color:#70829a;font-size:9px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+.big{margin-top:5px;font-family:Montserrat,ui-sans-serif,system-ui;font-size:18px;font-weight:900}
+.tileSplit{margin-top:12px;padding-top:10px;border-top:1px solid rgba(145,172,214,.08);color:#7e8ea5;font-size:11px;font-weight:700;flex-wrap:wrap}
+.tileCats{display:grid;gap:7px;margin-top:11px}
+.catLine,.moreLine{display:flex;justify-content:space-between;gap:10px;color:#7889a1;font-size:11px}
+.catLine span:last-child,.moreLine{color:#e2e9f3;font-weight:800}
+
+.tableWrap{margin-top:14px;overflow:auto;border:1px solid rgba(145,172,214,.11);border-radius:18px;background:#0a1018}
+table{width:100%;min-width:640px;border-collapse:collapse}
+th,td{padding:13px 14px;border-bottom:1px solid rgba(145,172,214,.075)}
+th{text-align:left;color:#71829b;background:#0d141e;font-size:9px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+td{color:#dfe6f1;font-size:12px;font-weight:700}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .16s ease}
+tbody tr:nth-child(even){background:rgba(121,153,201,.018)}
+tbody tr:hover{background:rgba(91,140,255,.045)}
+td.num,th.num{text-align:right}
+
+.modal{position:fixed;inset:0;display:none;z-index:30}
+.modal[aria-hidden="false"]{display:block}
+.modalBackdrop{position:absolute;inset:0;background:rgba(2,5,10,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.modalSheet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(780px,calc(100% - 24px));max-height:min(88vh,1000px);overflow:auto;padding:18px}
+.modalTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.packsList,.manageList{display:grid;gap:9px;margin-top:14px}
+.packRow,.manageRow{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;
+  border:1px solid rgba(145,172,214,.12);border-radius:16px;background:linear-gradient(150deg,#151f2d,#0e151f);
+}
+.packRow:hover,.manageRow:hover{border-color:rgba(91,140,255,.30);background:linear-gradient(150deg,#182437,#101925)}
+.rowTitle{font-weight:900}.rowMeta{margin-top:4px;color:#7e8ea5;font-size:11px;font-weight:700}.rowRight{text-align:right}.rowNum{font-weight:900}.rowNum.sub{margin-top:3px;color:#7c8ca4;font-size:11px;font-weight:800}
+.categorySheet .modalSheet{width:min(700px,calc(100% - 24px))}
+.categoryBlock{display:grid;gap:15px;margin-top:16px}
+.priceDisplay{
+  padding:20px;text-align:center;border:1px solid rgba(145,172,214,.13);border-radius:20px;
+  background:radial-gradient(240px 140px at 100% 0%,rgba(91,140,255,.14),transparent 60%),linear-gradient(150deg,#172232,#101722)
+}
+.priceDisplay strong{display:block;font-family:Montserrat,ui-sans-serif,system-ui;font-size:40px;font-weight:900;letter-spacing:-.04em}
+.priceDisplay span{display:inline-flex;margin-top:8px;color:#8090a8;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.qtyWrap{display:flex;align-items:center;justify-content:center;gap:11px}
+.qtyBtn{width:54px;height:54px;padding:0;border-radius:15px;display:inline-flex;align-items:center;justify-content:center;font-size:25px}
+.qtyValue{width:120px;height:54px;padding:0;text-align:center;color:var(--text);font-family:Montserrat,ui-sans-serif,system-ui;font-size:28px;font-weight:900;border:1px solid rgba(145,172,214,.16);border-radius:15px;background:#080e16;outline:none;-moz-appearance:textfield}
+.qtyValue::-webkit-outer-spin-button,.qtyValue::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.qtyValue:focus{border-color:rgba(50,214,208,.52);box-shadow:0 0 0 4px rgba(50,214,208,.08)}
+.categoryButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.catBtn{
+  position:relative;overflow:hidden;min-height:112px;padding:18px 15px;cursor:pointer;text-align:left;color:var(--text);
+  border:1px solid rgba(145,172,214,.13);border-radius:18px;background:linear-gradient(150deg,#172232,#101722);box-shadow:var(--shadow-sm)
+}
+.catBtn::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;background:var(--primary)}
+.catBtn:nth-child(2)::before{background:var(--cyan)}.catBtn:nth-child(3)::before{background:var(--primary-2)}
+.catBtn strong{display:block;font-size:18px;font-weight:900}.catBtn span{display:block;margin-top:7px;color:#7d8da4;font-size:11px;font-weight:700}
+.manageActions{display:flex;gap:8px;flex-wrap:wrap}
+.manageRow strong{font-family:Montserrat,ui-sans-serif,system-ui;font-size:17px}
+.manageAdd{display:grid;grid-template-columns:1fr auto auto;gap:9px;margin-top:14px}
+.manageAdd input{width:100%;padding:12px 13px;color:var(--text);border:1px solid rgba(145,172,214,.15);border-radius:14px;background:#080e16;outline:none}
+.manageAdd input:focus{border-color:rgba(91,140,255,.52);box-shadow:0 0 0 4px rgba(91,140,255,.08)}
+
+.toast{position:fixed;left:12px;right:12px;bottom:max(env(safe-area-inset-bottom),12px);display:none;z-index:40}
+.toast[aria-hidden="false"]{display:block}
+.toastInner{max-width:720px;margin:0 auto;padding:14px;border:1px solid rgba(145,172,214,.15);border-radius:17px;background:rgba(12,19,29,.97);box-shadow:var(--shadow-lg);backdrop-filter:blur(20px)}
+.toastTitle{font-weight:900}.toastText{margin-top:4px;color:#8797ae;font-size:12px;font-weight:650}.toastBtnWrap{margin-top:10px}.toastBtn{width:100%;padding:11px 12px;cursor:pointer;color:#fff;font-weight:900;border:1px solid rgba(255,255,255,.11);border-radius:13px;background:linear-gradient(135deg,#5b8cff,#2ccbc7)}
+
+@media (max-width:1050px){
+  .summaryGrid{grid-template-columns:1fr}
+}
+@media (max-width:820px){
+  body{padding-left:10px;padding-right:10px}
+  .summaryBoxes{grid-template-columns:1fr 1fr}
+  .summaryBoxes .sumBox:last-child{grid-column:1/-1}
+  .priceGrid{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:620px){
+  .topbar{grid-template-columns:auto 1fr auto;min-height:60px;border-radius:17px;padding:8px}
+  .brandMark{font-size:17px;letter-spacing:.19em}.brandSub{font-size:8px;letter-spacing:.18em}
+  .summaryCard,.keyboardCard,.packsCard,.tableCard{padding:14px;border-radius:21px}
+  .summaryBoxes,.modeRow,.categoryButtons,.manageAdd{grid-template-columns:1fr}
+  .summaryBoxes .sumBox:last-child{grid-column:auto}
+  .sumBox{min-height:116px;padding:16px}.value{font-size:27px}
+  .lastEntry{align-items:flex-start;flex-direction:column}.quickRight{width:100%}.quickRight .pillBtn{flex:1}
+  .priceGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.priceKey{min-height:88px}.priceKey strong{font-size:22px}
+  .packagesGrid{grid-template-columns:1fr}
+  .kbdActions{width:100%}.kbdActions button{flex:1}
+  table{min-width:570px}
+  .priceDisplay strong{font-size:34px}
+  .modalSheet{padding:15px;border-radius:21px}
+}
+@media (max-width:390px){
+  .brandMark{font-size:15px}.rightActions .ghost{padding:9px 10px;font-size:12px}.backLink{min-width:40px}
+  .priceKey strong{font-size:20px}.priceKey small{letter-spacing:.08em}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+</style>
+
 </head>
 <body>
-  <div class="sheet" role="main" aria-label="Login">
-    <div class="sheetHead">
-      <div class="brandLine">SELLENCE</div>
-      <div class="appLine">RETOURENRECHNER</div>
-      <div class="sub">Passcode nur beim ersten Mal. Danach bleibt das Gerät angemeldet.</div>
+  <div class="topbar">
+    <div class="leftActions">
+      <a class="ghost backLink" href="../index.html" title="Zurück zur SELLENCE Tools Seite"><span class="backIcon">←</span></a>
     </div>
-    <div class="sheetBody">
-      <label class="label" for="pw">Passcode</label>
-      <div class="inputRow">
-        <input id="pw" type="password" inputmode="text" autocomplete="off" placeholder="Passcode eingeben" />
-        <button class="primaryBtn" id="btnLogin" type="button">Anmelden</button>
-      </div>
-      <div class="err" id="err">Falscher Passcode.</div>
-      <button class="ghostBtn" id="backHome" type="button">Zurück zu SELLENCE Tools</button>
-      <div class="small">Login wird im Browser (localStorage) gespeichert.</div>
+    <div class="brand">
+      <div class="brandMark">SELLENCE</div>
+      <div class="brandSub">RETOURENRECHNER</div>
+    </div>
+    <div class="rightActions">
+      <button id="btnReset" class="ghost danger">Reset</button>
     </div>
   </div>
 
-  <script>
-    const AUTH_KEY = "sellence_auth";
-    const PASSCODE = "sellence";
+  <main class="wrap">
+    <section class="summaryCard">
+      <div class="dt" id="dt"></div>
+      <div class="summaryGrid">
+        <div>
+          <div class="summaryBoxes">
+            <div class="sumBox">
+              <div class="label">Summe Gesamt (Retoure)</div>
+              <div class="value" id="totalKvp">0,00 €</div>
+              <div class="subValue"><span id="countItems">0</span> Positionen</div>
+            </div>
+            <div class="sumBox">
+              <div class="label">Summe Rückerstattung</div>
+              <div class="value" id="totalRefund">0,00 €</div>
+              <div class="subValue">Modus: <span id="refundModeLabel">90%</span></div>
+            </div>
+            <div class="sumBox">
+              <div class="label">Aktives Paket</div>
+              <div class="value" id="activePackValue">Paket 1</div>
+              <div class="subValue" id="progressText">Bis Paket voll: –</div>
+            </div>
+          </div>
+          <div class="subline">
+            <span id="packCounter">Paket 1</span>
+            <span>•</span>
+            <span id="modeExplain">90% Gutschrift aktiv</span>
+          </div>
+        </div>
+        <div class="modePanel">
+          <div class="modeTitle">Gutschrift-Modus</div>
+          <div class="hint">Ein Durchlauf ist immer entweder 55% oder 90% – nie kombiniert.</div>
+          <div class="modeRow">
+            <button class="modeBtn" id="mode55" type="button">
+              <strong>55%</strong>
+              <span>Für komplette 55%-Retoure</span>
+            </button>
+            <button class="modeBtn" id="mode90" type="button">
+              <strong>90%</strong>
+              <span>Für komplette 90%-Retoure</span>
+            </button>
+          </div>
+          <div class="hint" style="margin-top:10px">Nach dem Preis öffnet sich direkt die Kategorie-Auswahl. Gleiche Preise/Kategorien werden automatisch zusammengefasst.</div>
+        </div>
+      </div>
+    </section>
 
-    function isAuthed(){
-      try{ return localStorage.getItem(AUTH_KEY) === "1"; }catch(e){ return false; }
-    }
-    function setAuthed(){
-      try{ localStorage.setItem(AUTH_KEY, "1"); return true; }catch(e){ return false; }
-    }
-    function goApp(){ location.assign("./app.html"); }
+    <section class="keyboardCard">
+      <div class="kbdTop">
+        <div>
+          <div class="kbdTitle">Schnell-Eingabe</div>
+          <div class="hint">Preis antippen → Kategorie wählen → fertig. Optional kannst du im Popup auch direkt mehrere Stück eingeben.</div>
+        </div>
+        <div class="kbdActions">
+          <button id="btnManualPrice" class="manageBtn" type="button">Freier Preis</button>
+          <button id="btnManagePrices" class="manageBtn" type="button">Preis-Tasten bearbeiten</button>
+        </div>
+      </div>
 
-    if(isAuthed()){
-      setTimeout(goApp, 40);
-    }
+      <div class="lastEntry">
+        <div>
+          <strong id="lastEntryTitle">Noch kein letzter Eintrag</strong>
+          <span id="lastEntryText">Tippe einfach auf einen Preis-Button.</span>
+        </div>
+        <div class="quickRight">
+          <button id="btnUndoLast" class="pillBtn" type="button">Letzten Eintrag löschen</button>
+          <button id="btnNewPack" class="pillBtn" type="button">Neues Paket</button>
+        </div>
+      </div>
 
-    const pw = document.getElementById("pw");
-    const err = document.getElementById("err");
-    const btn = document.getElementById("btnLogin");
-    const backHome = document.getElementById("backHome");
+      <div id="priceGrid" class="priceGrid"></div>
+    </section>
 
-    function showErr(msg){
-      err.textContent = msg;
-      err.style.display = "block";
-      navigator.vibrate?.(30);
-      setTimeout(()=> err.style.display = "none", 1600);
-    }
+    <section class="packsCard">
+      <div class="packsHeader">
+        <div>
+          <div class="packsTitle">Pakete</div>
+          <div class="hint">Die 500€-Logik bleibt erhalten. Sobald ein Paket voll ist, wird automatisch das nächste geöffnet.</div>
+        </div>
+        <button id="btnPacks" class="ghost" type="button">Übersicht</button>
+      </div>
+      <div id="packagesGrid" class="packagesGrid"></div>
+    </section>
 
-    btn.addEventListener("click", (e)=>{
-      e.preventDefault();
-      const v = (pw.value || "").trim().toLowerCase();
-      if(v === PASSCODE){
-        setAuthed();
-        setTimeout(goApp, 60);
-      }else{
-        showErr("Falscher Passcode.");
-        pw.focus();
-        pw.select();
+    <section class="tableCard">
+      <div class="tableHeader">
+        <div>
+          <div class="tableTitle">Positionen – <span id="activePackTitle">Paket 1</span></div>
+          <div class="tableHint">Gleiche Kategorie + gleicher Preis werden automatisch zusammengeführt.</div>
+        </div>
+        <div class="quickRight">
+          <button id="btnPackStatus" class="pillBtn" type="button">OFFEN</button>
+          <button id="btnDeletePack" class="iconBtn danger" type="button" aria-label="Paket löschen">🗑</button>
+        </div>
+      </div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Kategorie</th>
+              <th class="num">Packs</th>
+              <th class="num">Preis</th>
+              <th class="num">KVP</th>
+              <th class="num">Erstattung</th>
+              <th class="num">✕</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="packsModal" aria-hidden="true">
+    <div class="modalBackdrop" data-close="1"></div>
+    <div class="modalSheet" role="dialog" aria-modal="true">
+      <div class="modalTop">
+        <div class="modalTitle">Paket-Übersicht</div>
+        <button class="ghost" id="closePacksModal" type="button">Schließen</button>
+      </div>
+      <div id="packsList" class="packsList"></div>
+    </div>
+  </div>
+
+  <div class="modal categorySheet" id="categoryModal" aria-hidden="true">
+    <div class="modalBackdrop" data-close-category="1"></div>
+    <div class="modalSheet" role="dialog" aria-modal="true">
+      <div class="modalTop">
+        <div class="modalTitle">Kategorie wählen</div>
+        <button class="ghost" id="closeCategoryModal" type="button">Abbrechen</button>
+      </div>
+      <div class="categoryBlock">
+        <div class="priceDisplay">
+          <strong id="selectedPriceLabel">0,00 €</strong>
+          <span>Gewählter Preis</span>
+        </div>
+        <div>
+          <div class="hint" style="text-align:center;margin-bottom:8px">Stückzahl</div>
+          <div class="qtyWrap">
+            <button id="qtyMinus" class="qtyBtn" type="button" aria-label="Menge verringern">−</button>
+            <input id="selectedQty" class="qtyValue" type="number" inputmode="numeric" pattern="[0-9]*" min="1" step="1" value="1" aria-label="Stückzahl direkt eingeben" />
+            <button id="qtyPlus" class="qtyBtn" type="button" aria-label="Menge erhöhen">+</button>
+          </div>
+        </div>
+        <div class="categoryButtons">
+          <button class="catBtn" data-category="ZIGARETTEN" type="button"><strong>Zigaretten</strong><span>Preis übernehmen</span></button>
+          <button class="catBtn" data-category="UTP" type="button"><strong>UTP</strong><span>Preis übernehmen</span></button>
+          <button class="catBtn" data-category="HEETS_TEREA" type="button"><strong>HEETS/TEREA</strong><span>Preis übernehmen</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="managePricesModal" aria-hidden="true">
+    <div class="modalBackdrop" data-close-manage="1"></div>
+    <div class="modalSheet" role="dialog" aria-modal="true">
+      <div class="modalTop">
+        <div class="modalTitle">Preis-Tasten bearbeiten</div>
+        <button class="ghost" id="closeManageModal" type="button">Schließen</button>
+      </div>
+      <div class="hint" style="margin-top:10px">Hier kannst du Preise ändern, löschen oder neue Buttons anlegen. Änderungen werden gespeichert.</div>
+      <div id="manageList" class="manageList"></div>
+      <div class="manageAdd">
+        <input id="newPriceInput" inputmode="decimal" placeholder="z.B. 8,40" />
+        <button id="btnAddPrice" class="primary" type="button">Neu anlegen</button>
+        <button id="btnResetPrices" class="ghost" type="button">Standard</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" aria-hidden="true">
+    <div class="toastInner">
+      <div class="toastTitle" id="toastTitle">Info</div>
+      <div class="toastText" id="toastText"></div>
+      <div class="toastBtnWrap" id="toastBtnWrap">
+        <button class="toastBtn" id="toastBtn" type="button">Rückgängig</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const fmt = n => (Number(n) || 0).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+  const parseNum = value => {
+    const cleaned = String(value ?? "").trim().replace(/€/g, "").replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : NaN;
+  };
+  const generateId = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  const MAX_PACKAGE_VALUE = 500;
+  const MAX_PACKAGES = 10;
+  const STORAGE_KEY = "sellence_retouren_state_v5";
+  const LEGACY_STORAGE_KEY = "sellence_retouren_state_v4";
+  const DEFAULT_PRICE_BUTTONS = [6.00, 6.50, 6.80, 7.00, 7.50, 7.80, 8.00, 8.10, 8.20, 8.30, 8.40, 8.50, 8.60, 8.70, 8.80, 8.90, 9.00, 9.10, 9.20, 9.30, 9.40, 9.50, 9.60, 9.70, 9.80, 9.90, 10.00, 12.00, 15.00, 19.00, 19.90, 20.00];
+  const CATEGORY = {
+    ZIGARETTEN: { label: "Zigaretten" },
+    UTP: { label: "UTP" },
+    HEETS_TEREA: { label: "HEETS/TEREA" }
+  };
+
+  let state = {
+    refundMode: 0.90,
+    priceButtons: [...DEFAULT_PRICE_BUTTONS],
+    packages: [{ id: 1, createdAt: Date.now(), packed: false, items: [] }],
+    activeId: 1,
+    lastEntry: null
+  };
+  let undo = null;
+  let selection = { price: null, qty: 1 };
+
+  function persist(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){}
+  }
+
+  function normalizeState(obj){
+    if(!obj || !Array.isArray(obj.packages) || !obj.packages.length) return null;
+    obj.refundMode = (obj.refundMode === 0.55 || obj.refundMode === 0.9 || obj.refundMode === 0.90) ? Number(obj.refundMode) : 0.90;
+    obj.priceButtons = Array.isArray(obj.priceButtons) && obj.priceButtons.length
+      ? obj.priceButtons.map(Number).filter(n => Number.isFinite(n) && n > 0)
+      : [...DEFAULT_PRICE_BUTTONS];
+    obj.priceButtons = Array.from(new Set(obj.priceButtons.map(v => Number(v.toFixed(2))))).sort((a,b) => a-b);
+    obj.activeId = obj.packages.some(p => p.id === obj.activeId) ? obj.activeId : obj.packages[0].id;
+    obj.lastEntry = obj.lastEntry || null;
+    for(const pack of obj.packages){
+      pack.items = Array.isArray(pack.items) ? pack.items : [];
+      pack.packed = Boolean(pack.packed);
+      for(const item of pack.items){
+        item.id = item.id || generateId();
+        item.catKey = ["ZIGARETTEN","UTP","HEETS_TEREA"].includes(item.catKey) ? item.catKey : (item.catKey === "PEGS_UTP" || item.catKey === "KVP_UTP" ? "UTP" : item.catKey === "HEETS_TEREA" ? "HEETS_TEREA" : "ZIGARETTEN");
+        item.catLabel = CATEGORY[item.catKey]?.label || item.catLabel || "Zigaretten";
+        item.rate = Number(item.rate);
+        if(!(item.rate === 0.55 || item.rate === 0.90)) item.rate = obj.refundMode;
+        item.program = item.rate === 0.55 ? "55%" : "90%";
+        item.packs = Math.max(1, Number(item.packs) || 1);
+        item.price = Number(item.price) || 0;
+        item.kvp = Number(item.kvp) || (item.packs * item.price);
+        item.refund = Number(item.refund) || (item.kvp * item.rate);
+        item.at = Number(item.at) || Date.now();
       }
-    });
-
-    pw.addEventListener("keydown", (e)=>{ if(e.key === "Enter") btn.click(); });
-    backHome.addEventListener("click", ()=> location.assign("../index.html"));
-
-    if("serviceWorker" in navigator){
-      window.addEventListener("load", ()=> navigator.serviceWorker.register("./sw.js").catch(()=>{}));
     }
-  </script>
+    return obj;
+  }
+
+  function restore(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        const normalized = normalizeState(JSON.parse(raw));
+        if(normalized){ state = normalized; return; }
+      }
+    }catch(e){}
+    try{
+      const raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if(raw){
+        const obj = JSON.parse(raw);
+        if(obj && Array.isArray(obj.packages) && obj.packages.length){
+          state = normalizeState({
+            refundMode: 0.90,
+            priceButtons: [...DEFAULT_PRICE_BUTTONS],
+            packages: obj.packages,
+            activeId: obj.activeId,
+            lastEntry: null
+          }) || state;
+        }
+      }
+    }catch(e){}
+  }
+
+  function currentPack(){
+    return state.packages.find(p => p.id === state.activeId) || state.packages[0];
+  }
+
+  function packTotals(pack){
+    const totals = { kvp: 0, refund: 0, byRate: { "55%": 0, "90%": 0 }, byCat: {} };
+    for(const it of pack.items){
+      totals.kvp += it.kvp;
+      totals.refund += it.refund;
+      const rateKey = it.rate === 0.55 ? "55%" : "90%";
+      totals.byRate[rateKey] = (totals.byRate[rateKey] || 0) + it.kvp;
+      totals.byCat[it.catLabel] = (totals.byCat[it.catLabel] || 0) + it.kvp;
+    }
+    return totals;
+  }
+
+  function allTotals(){
+    const totals = { kvp: 0, refund: 0, items: 0 };
+    for(const pack of state.packages){
+      const pt = packTotals(pack);
+      totals.kvp += pt.kvp;
+      totals.refund += pt.refund;
+      totals.items += pack.items.length;
+    }
+    return totals;
+  }
+
+  function showToast(title, text, withUndo=false){
+    $("toastTitle").textContent = title || "Info";
+    $("toastText").textContent = text || "";
+    $("toastBtnWrap").style.display = withUndo ? "block" : "none";
+    $("toast").setAttribute("aria-hidden", "false");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => $("toast").setAttribute("aria-hidden", "true"), 2400);
+  }
+
+  function renderModeButtons(){
+    $("mode55").classList.toggle("active", state.refundMode === 0.55);
+    $("mode90").classList.toggle("active", state.refundMode === 0.90);
+    $("refundModeLabel").textContent = state.refundMode === 0.55 ? "55%" : "90%";
+    $("modeExplain").textContent = `${state.refundMode === 0.55 ? "55%" : "90%"} Gutschrift aktiv`;
+  }
+
+  function renderSummary(){
+    const totals = allTotals();
+    const active = currentPack();
+    const pt = packTotals(active);
+    $("totalKvp").textContent = fmt(totals.kvp);
+    $("totalRefund").textContent = fmt(totals.refund);
+    $("countItems").textContent = String(totals.items);
+    $("packCounter").textContent = `Paket ${active.id} von ${state.packages.length}`;
+    $("activePackTitle").textContent = `Paket ${active.id}`;
+    $("activePackValue").textContent = `Paket ${active.id}`;
+    const left = Math.max(0, MAX_PACKAGE_VALUE - pt.kvp);
+    $("progressText").textContent = active.packed ? "Paket ist gepackt ✓" : `Bis Paket voll: ${fmt(left)}`;
+    const stBtn = $("btnPackStatus");
+    stBtn.textContent = active.packed ? "GEPACKT" : "OFFEN";
+    stBtn.style.borderColor = active.packed ? "rgba(34,197,94,.35)" : "rgba(91,43,209,.35)";
+    stBtn.style.background = active.packed ? "rgba(34,197,94,.10)" : "rgba(91,43,209,.10)";
+  }
+
+  function renderLastEntry(){
+    const last = state.lastEntry;
+    if(!last){
+      $("lastEntryTitle").textContent = "Noch kein letzter Eintrag";
+      $("lastEntryText").textContent = "Tippe einfach auf einen Preis-Button.";
+      return;
+    }
+    $("lastEntryTitle").textContent = `${last.qty}× ${fmt(last.price)} · ${CATEGORY[last.catKey]?.label || last.catKey}`;
+    $("lastEntryText").textContent = `Paket ${last.packId} · ${last.modeLabel} · KVP ${fmt(last.kvp)} · Erstattung ${fmt(last.refund)}`;
+  }
+
+  function renderPriceGrid(){
+    const grid = $("priceGrid");
+    grid.innerHTML = "";
+    for(const price of state.priceButtons){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "priceKey";
+      btn.innerHTML = `<div><strong>${fmt(price)}</strong><small>Kategorie wählen</small></div>`;
+      btn.addEventListener("click", () => openCategoryModal(price));
+      grid.appendChild(btn);
+    }
+  }
+
+  function renderPackagesGrid(){
+    const grid = $("packagesGrid");
+    grid.innerHTML = "";
+    for(const p of state.packages){
+      const pt = packTotals(p);
+      const isActive = p.id === state.activeId;
+      const status = p.packed ? "GEPACKT" : (pt.kvp >= MAX_PACKAGE_VALUE ? "VOLL" : "OFFEN");
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = `packTile${isActive ? " active" : ""}`;
+      el.innerHTML = `
+        <div class="tileTop">
+          <div class="tileTitle">Paket ${p.id}</div>
+          <div class="pill ${p.packed ? "ok" : "warn"}">${status}</div>
+        </div>
+        <div class="tileNums">
+          <div><div class="mini">KVP</div><div class="big">${fmt(pt.kvp)}</div></div>
+          <div><div class="mini">Erstattung</div><div class="big">${fmt(pt.refund)}</div></div>
+        </div>
+        <div class="tileSplit">
+          <span>90%: <b>${fmt(pt.byRate["90%"] || 0)}</b></span>
+          <span>•</span>
+          <span>55%: <b>${fmt(pt.byRate["55%"] || 0)}</b></span>
+        </div>
+        <div class="tileCats">
+          ${Object.entries(pt.byCat).slice(0,3).map(([k,v]) => `<div class="catLine"><span>${k}</span><span>${fmt(v)}</span></div>`).join("")}
+          ${Object.keys(pt.byCat).length > 3 ? `<div class="moreLine">+ ${Object.keys(pt.byCat).length - 3} weitere</div>` : ""}
+        </div>
+      `;
+      el.addEventListener("click", () => { state.activeId = p.id; persist(); render(); });
+      grid.appendChild(el);
+    }
+  }
+
+  function renderItemsTable(){
+    const pack = currentPack();
+    const tb = $("itemsTbody");
+    tb.innerHTML = "";
+    for(const it of pack.items){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${it.catLabel}</td>
+        <td class="num">${it.packs}</td>
+        <td class="num">${fmt(it.price)}</td>
+        <td class="num"><b>${fmt(it.kvp)}</b></td>
+        <td class="num">${fmt(it.refund)}</td>
+        <td class="num"><button class="xBtn" type="button">✕</button></td>
+      `;
+      tr.querySelector("button").addEventListener("click", () => removeItem(it.id));
+      tb.appendChild(tr);
+    }
+  }
+
+  function renderPacksList(){
+    const list = $("packsList");
+    list.innerHTML = "";
+    for(const p of state.packages){
+      const pt = packTotals(p);
+      const row = document.createElement("div");
+      row.className = "packRow";
+      row.innerHTML = `
+        <div>
+          <div class="rowTitle">Paket ${p.id}</div>
+          <div class="rowMeta">${p.packed ? "Gepackt ✓" : "Offen"} • ${p.items.length} Einträge</div>
+        </div>
+        <div class="rowRight">
+          <div class="rowNum">${fmt(pt.kvp)}</div>
+          <div class="rowNum sub">${fmt(pt.refund)}</div>
+        </div>
+      `;
+      row.addEventListener("click", () => { state.activeId = p.id; persist(); closeModal("packsModal"); render(); });
+      list.appendChild(row);
+    }
+  }
+
+  function renderManageList(){
+    const list = $("manageList");
+    list.innerHTML = "";
+    state.priceButtons.forEach((price, index) => {
+      const row = document.createElement("div");
+      row.className = "manageRow";
+      row.innerHTML = `
+        <div><strong>${fmt(price)}</strong><div class="rowMeta">Preis-Button ${index + 1}</div></div>
+        <div class="manageActions">
+          <button class="smallBtn" type="button" data-edit="${index}">Ändern</button>
+          <button class="smallBtn danger" type="button" data-delete="${index}">Löschen</button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+    list.querySelectorAll("[data-edit]").forEach(btn => btn.addEventListener("click", () => editPriceButton(Number(btn.dataset.edit))));
+    list.querySelectorAll("[data-delete]").forEach(btn => btn.addEventListener("click", () => deletePriceButton(Number(btn.dataset.delete))));
+  }
+
+  function render(){
+    renderModeButtons();
+    renderSummary();
+    renderLastEntry();
+    renderPriceGrid();
+    renderPackagesGrid();
+    renderItemsTable();
+    renderPacksList();
+    renderManageList();
+  }
+
+  function openModal(id){ $(id).setAttribute("aria-hidden", "false"); }
+  function closeModal(id){ $(id).setAttribute("aria-hidden", "true"); }
+
+  function setRefundMode(rate){
+    if(!(rate === 0.55 || rate === 0.90)) return;
+    const hasAnyItems = state.packages.some(p => p.items.length);
+    if(hasAnyItems){
+      const ok = confirm(`Aktuell sind schon Einträge vorhanden. Wirklich auf ${rate === 0.55 ? "55%" : "90%"} umschalten? Bereits erfasste Einträge bleiben unverändert.`);
+      if(!ok) return;
+    }
+    state.refundMode = rate;
+    persist();
+    renderModeButtons();
+    renderSummary();
+    showToast("Modus gewechselt", `${rate === 0.55 ? "55%" : "90%"} Gutschrift ist jetzt aktiv.`);
+  }
+
+  function openCategoryModal(price){
+    const pack = currentPack();
+    if(pack.packed){
+      showToast("Paket ist gepackt", "Bitte ein offenes Paket wählen oder ein neues Paket starten.");
+      return;
+    }
+    selection.price = Number(price);
+    selection.qty = 1;
+    $("selectedPriceLabel").textContent = fmt(selection.price);
+    syncQtyInput();
+    openModal("categoryModal");
+    setTimeout(() => {
+      const qtyInput = $("selectedQty");
+      qtyInput.focus();
+      qtyInput.select();
+    }, 80);
+  }
+
+  function closeCategoryModal(){
+    closeModal("categoryModal");
+    selection = { price: null, qty: 1 };
+    syncQtyInput();
+  }
+
+  function normalizeQty(value){
+    const cleaned = String(value ?? "").replace(/[^0-9]/g, "");
+    const qty = Math.floor(Number(cleaned) || 1);
+    return Math.max(1, qty);
+  }
+
+  function syncQtyInput(){
+    const input = $("selectedQty");
+    if(input) input.value = String(Math.max(1, Math.floor(Number(selection.qty) || 1)));
+  }
+
+  function setQty(value){
+    selection.qty = normalizeQty(value);
+    syncQtyInput();
+  }
+
+  function ensureNextPackageIfNeeded(){
+    const pack = currentPack();
+    if(!pack || pack.packed) return;
+    const pt = packTotals(pack);
+    if(pt.kvp >= MAX_PACKAGE_VALUE){
+      pack.packed = true;
+      if(state.packages.length < MAX_PACKAGES){
+        const nextId = state.packages[state.packages.length - 1].id + 1;
+        state.packages.push({ id: nextId, createdAt: Date.now(), packed: false, items: [] });
+        state.activeId = nextId;
+        showToast("Paket gepackt", `Paket ${pack.id} ist voll. Paket ${nextId} wurde automatisch gestartet.`);
+      } else {
+        showToast("Paket voll", `Paket ${pack.id} hat ${fmt(pt.kvp)} erreicht. Maximale Paketanzahl erreicht.`);
+      }
+    }
+  }
+
+  function addQuickItem(catKey){
+    const cat = CATEGORY[catKey];
+    if(!cat || !Number.isFinite(selection.price)) return;
+    const pack = currentPack();
+    if(pack.packed){
+      showToast("Paket ist gepackt", "Bitte ein offenes Paket wählen oder ein neues Paket starten.");
+      return;
+    }
+    const qty = Math.max(1, Math.floor(Number(selection.qty) || 1));
+    const price = Number(selection.price);
+    const kvp = qty * price;
+    const refund = kvp * state.refundMode;
+    const pt = packTotals(pack);
+    if(pt.kvp + kvp > MAX_PACKAGE_VALUE){
+      const left = Math.max(0, MAX_PACKAGE_VALUE - pt.kvp);
+      showToast("Zu viel fürs Paket", `Es passen nur noch ${fmt(left)} in dieses Paket.`);
+      return;
+    }
+    const existing = pack.items.find(it => it.catKey === catKey && Number(it.price) === price && Number(it.rate) === state.refundMode);
+    if(existing){
+      existing.packs += qty;
+      existing.kvp += kvp;
+      existing.refund += refund;
+      existing.at = Date.now();
+    } else {
+      pack.items.push({
+        id: generateId(),
+        catKey,
+        catLabel: cat.label,
+        program: state.refundMode === 0.55 ? "55%" : "90%",
+        rate: state.refundMode,
+        packs: qty,
+        price,
+        kvp,
+        refund,
+        at: Date.now()
+      });
+    }
+    state.lastEntry = {
+      itemId: existing ? existing.id : pack.items[pack.items.length - 1].id,
+      packId: pack.id,
+      catKey,
+      qty,
+      price,
+      kvp,
+      refund,
+      modeLabel: state.refundMode === 0.55 ? "55%" : "90%"
+    };
+    persist();
+    closeCategoryModal();
+    render();
+    ensureNextPackageIfNeeded();
+    persist();
+    render();
+  }
+
+  function removeItem(itemId){
+    const pack = currentPack();
+    const idx = pack.items.findIndex(it => it.id === itemId);
+    if(idx < 0) return;
+    const removed = pack.items.splice(idx, 1)[0];
+    undo = () => pack.items.splice(idx, 0, removed);
+    if(state.lastEntry?.itemId === removed.id) state.lastEntry = null;
+    persist();
+    render();
+    showToast("Entfernt", "Eintrag gelöscht.", true);
+  }
+
+  function undoLastEntry(){
+    const last = state.lastEntry;
+    if(!last){
+      showToast("Nichts zu löschen", "Es gibt keinen letzten Eintrag.");
+      return;
+    }
+    const pack = state.packages.find(p => p.id === last.packId);
+    if(!pack){
+      state.lastEntry = null;
+      persist();
+      render();
+      return;
+    }
+    const item = pack.items.find(it => it.id === last.itemId);
+    if(!item){
+      state.lastEntry = null;
+      persist();
+      render();
+      return;
+    }
+    const snapshot = { ...item };
+    if(item.packs <= last.qty){
+      const idx = pack.items.findIndex(it => it.id === item.id);
+      if(idx >= 0){
+        pack.items.splice(idx, 1);
+        undo = () => pack.items.splice(idx, 0, snapshot);
+      }
+    } else {
+      item.packs -= last.qty;
+      item.kvp -= last.kvp;
+      item.refund -= last.refund;
+      undo = () => Object.assign(item, snapshot);
+    }
+    state.lastEntry = null;
+    persist();
+    render();
+    showToast("Letzter Eintrag gelöscht", "Der letzte Schnell-Eintrag wurde entfernt.", true);
+  }
+
+  function startNewPackage(manual=false){
+    const cur = currentPack();
+    if(!cur) return;
+    if(!cur.packed) cur.packed = true;
+    if(state.packages.length >= MAX_PACKAGES){
+      showToast("Limit erreicht", `Maximal ${MAX_PACKAGES} Pakete möglich.`);
+      persist();
+      render();
+      return;
+    }
+    const nextId = state.packages[state.packages.length - 1].id + 1;
+    state.packages.push({ id: nextId, createdAt: Date.now(), packed: false, items: [] });
+    state.activeId = nextId;
+    persist();
+    render();
+    if(manual) showToast("Neues Paket", `Paket ${nextId} gestartet.`);
+  }
+
+  function togglePackedActive(){
+    const pack = currentPack();
+    if(!pack) return;
+    pack.packed = !pack.packed;
+    persist();
+    render();
+    showToast(pack.packed ? "Gepackt" : "Wieder offen", `Paket ${pack.id} ist jetzt ${pack.packed ? "gepackt" : "offen"}.`);
+  }
+
+  function deleteActivePackage(){
+    const pack = currentPack();
+    if(!pack) return;
+    const msg = pack.items.length ? `Paket ${pack.id} wirklich löschen? (${pack.items.length} Einträge gehen verloren)` : `Paket ${pack.id} wirklich löschen?`;
+    if(!confirm(msg)) return;
+    const idx = state.packages.findIndex(p => p.id === pack.id);
+    if(idx < 0) return;
+    state.packages.splice(idx, 1);
+    if(!state.packages.length){
+      state.packages = [{ id: 1, createdAt: Date.now(), packed: false, items: [] }];
+      state.activeId = 1;
+    } else {
+      state.activeId = state.packages[Math.min(idx, state.packages.length - 1)].id;
+    }
+    persist();
+    render();
+    showToast("Gelöscht", `Paket ${pack.id} wurde gelöscht.`);
+  }
+
+  function sortPriceButtons(){
+    state.priceButtons = Array.from(new Set(state.priceButtons.map(v => Number(Number(v).toFixed(2))))).filter(v => Number.isFinite(v) && v > 0).sort((a,b) => a-b);
+  }
+
+  function addPriceButtonFromInput(){
+    const value = parseNum($("newPriceInput").value);
+    if(!Number.isFinite(value) || value <= 0){
+      showToast("Preis prüfen", "Bitte einen gültigen Preis eingeben.");
+      return;
+    }
+    state.priceButtons.push(Number(value.toFixed(2)));
+    sortPriceButtons();
+    $("newPriceInput").value = "";
+    persist();
+    render();
+    showToast("Preis angelegt", `${fmt(value)} wurde als Button hinzugefügt.`);
+  }
+
+  function editPriceButton(index){
+    const oldValue = state.priceButtons[index];
+    const next = prompt("Neuen Preis eingeben", oldValue.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    if(next == null) return;
+    const value = parseNum(next);
+    if(!Number.isFinite(value) || value <= 0){
+      showToast("Preis prüfen", "Bitte einen gültigen Preis eingeben.");
+      return;
+    }
+    state.priceButtons[index] = Number(value.toFixed(2));
+    sortPriceButtons();
+    persist();
+    render();
+    showToast("Preis geändert", `${fmt(oldValue)} wurde auf ${fmt(value)} geändert.`);
+  }
+
+  function deletePriceButton(index){
+    if(state.priceButtons.length <= 1){
+      showToast("Nicht möglich", "Mindestens ein Preis-Button muss bestehen bleiben.");
+      return;
+    }
+    const value = state.priceButtons[index];
+    state.priceButtons.splice(index, 1);
+    persist();
+    render();
+    showToast("Preis gelöscht", `${fmt(value)} wurde entfernt.`);
+  }
+
+  function resetPriceButtons(){
+    if(!confirm("Preis-Tasten auf Standard zurücksetzen?")) return;
+    state.priceButtons = [...DEFAULT_PRICE_BUTTONS];
+    persist();
+    render();
+    showToast("Zurückgesetzt", "Standard-Preis-Tasten wurden wiederhergestellt.");
+  }
+
+  function addManualPrice(){
+    const raw = prompt("Preis eingeben", "8,40");
+    if(raw == null) return;
+    const value = parseNum(raw);
+    if(!Number.isFinite(value) || value <= 0){
+      showToast("Preis prüfen", "Bitte einen gültigen Preis eingeben.");
+      return;
+    }
+    openCategoryModal(Number(value.toFixed(2)));
+  }
+
+  function setDT(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2, "0");
+    $("dt").textContent = `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} • ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  $("toastBtn").addEventListener("click", () => {
+    if(!undo) return;
+    undo();
+    undo = null;
+    persist();
+    render();
+    $("toast").setAttribute("aria-hidden", "true");
+  });
+
+  $("mode55").addEventListener("click", () => setRefundMode(0.55));
+  $("mode90").addEventListener("click", () => setRefundMode(0.90));
+  $("btnManualPrice").addEventListener("click", addManualPrice);
+  $("btnManagePrices").addEventListener("click", () => openModal("managePricesModal"));
+  $("closeManageModal").addEventListener("click", () => closeModal("managePricesModal"));
+  $("btnAddPrice").addEventListener("click", addPriceButtonFromInput);
+  $("newPriceInput").addEventListener("keydown", e => { if(e.key === "Enter") addPriceButtonFromInput(); });
+  $("btnResetPrices").addEventListener("click", resetPriceButtons);
+  $("btnUndoLast").addEventListener("click", undoLastEntry);
+  $("btnNewPack").addEventListener("click", () => startNewPackage(true));
+  $("btnPackStatus").addEventListener("click", togglePackedActive);
+  $("btnDeletePack").addEventListener("click", deleteActivePackage);
+  $("btnPacks").addEventListener("click", () => openModal("packsModal"));
+  $("closePacksModal").addEventListener("click", () => closeModal("packsModal"));
+  $("closeCategoryModal").addEventListener("click", closeCategoryModal);
+  $("qtyMinus").addEventListener("click", () => setQty((Number(selection.qty) || 1) - 1));
+  $("qtyPlus").addEventListener("click", () => setQty((Number(selection.qty) || 1) + 1));
+  $("selectedQty").addEventListener("input", e => { selection.qty = normalizeQty(e.target.value); });
+  $("selectedQty").addEventListener("blur", e => setQty(e.target.value));
+  $("selectedQty").addEventListener("keydown", e => {
+    if(e.key === "Enter"){
+      e.preventDefault();
+      setQty(e.target.value);
+      e.target.blur();
+    }
+  });
+  document.querySelectorAll(".catBtn").forEach(btn => btn.addEventListener("click", () => addQuickItem(btn.dataset.category)));
+  $("packsModal").addEventListener("click", e => { if(e.target?.dataset?.close === "1") closeModal("packsModal"); });
+  $("categoryModal").addEventListener("click", e => { if(e.target?.dataset?.closeCategory === "1") closeCategoryModal(); });
+  $("managePricesModal").addEventListener("click", e => { if(e.target?.dataset?.closeManage === "1") closeModal("managePricesModal"); });
+  $("btnReset").addEventListener("click", () => {
+    if(!confirm("Alles löschen?")) return;
+    state = {
+      refundMode: state.refundMode,
+      priceButtons: [...state.priceButtons],
+      packages: [{ id: 1, createdAt: Date.now(), packed: false, items: [] }],
+      activeId: 1,
+      lastEntry: null
+    };
+    undo = null;
+    persist();
+    render();
+    showToast("Reset", "Alle Pakete und Einträge wurden gelöscht.");
+  });
+
+  restore();
+  setDT();
+  setInterval(setDT, 15000);
+  render();
+})();
+</script>
 </body>
 </html>
