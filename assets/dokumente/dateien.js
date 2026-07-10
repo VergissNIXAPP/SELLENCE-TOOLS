@@ -1,1 +1,37 @@
-window.SELLENCE_DOCUMENTS = [];
+window.SELLENCE_DOCUMENTS = [
+    {
+        "name":  "Food Module Catalogue 2026.pdf",
+        "path":  "Food Module Catalogue 2026.pdf",
+        "extension":  "pdf",
+        "size":  3950413,
+        "modified":  "2026-07-10T22:51:05+02:00"
+    },
+    {
+        "name":  "Retoureprotokoll Januar 2026.pdf",
+        "path":  "Retoureprotokoll Januar 2026.pdf",
+        "extension":  "pdf",
+        "size":  170046,
+        "modified":  "2026-07-10T22:51:14+02:00"
+    },
+    {
+        "name":  "Sortimentsübersicht VEEV.pdf",
+        "path":  "Sortimentsübersicht VEEV.pdf",
+        "extension":  "pdf",
+        "size":  2588610,
+        "modified":  "2026-07-10T22:52:22+02:00"
+    },
+    {
+        "name":  "Sortimentsübersicht_CIG _06.2026.pdf",
+        "path":  "Sortimentsübersicht_CIG _06.2026.pdf",
+        "extension":  "pdf",
+        "size":  5351687,
+        "modified":  "2026-07-10T22:52:29+02:00"
+    },
+    {
+        "name":  "Sortimentsübersicht_HTU_06.2026.pdf",
+        "path":  "Sortimentsübersicht_HTU_06.2026.pdf",
+        "extension":  "pdf",
+        "size":  1872034,
+        "modified":  "2026-07-10T22:52:36+02:00"
+    }
+];
