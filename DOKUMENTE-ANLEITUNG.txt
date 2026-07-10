@@ -1,0 +1,29 @@
+SELLENCE DOKUMENTEN-CENTER
+==========================
+
+Neue Dokumente hinzufügen:
+
+1. Lege deine Dateien in diesen Ordner:
+   assets\dokumente
+
+   Unterordner sind erlaubt, zum Beispiel:
+   assets\dokumente\Formulare
+   assets\dokumente\Preislisten
+
+2. Starte danach per Doppelklick:
+   DOKUMENTE-AKTUALISIEREN.bat
+
+3. Lade die Toolseite neu bzw. lade die aktualisierten Dateien auf deinen Webspace.
+
+Die Dokumentenseite zeigt anschließend automatisch alle erkannten Dateien an.
+Unterstützt werden grundsätzlich alle Dateiformate. PDF-, Office-, Bild-,
+Text- und Archivdateien erhalten passende Farben und Dateityp-Symbole.
+
+Alternative für macOS/Linux:
+   python3 scripts/dokumente-index.py
+
+WICHTIG:
+Ein normaler statischer Webserver darf Browsern aus Sicherheitsgründen keine
+Ordnerinhalte automatisch verraten. Deshalb erstellt der Aktualisierungs-Klick
+die Dateien dateien.json und dateien.js. Die Hauptseite selbst muss bei neuen
+Dokumenten nicht bearbeitet werden.

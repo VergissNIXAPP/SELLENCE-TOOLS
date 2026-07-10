@@ -1,0 +1,15 @@
+SELLENCE TOOLS – DOKUMENTEN-CENTER
+==================================
+
+1. Entpacke die ZIP-Datei.
+2. Kopiere den gesamten Inhalt in den Hauptordner deiner bestehenden SELLENCE-Tools.
+3. Vorhandene index.html, tools.css, styles.css, manifest.webmanifest und sw.js ersetzen.
+4. Bestehende App-Ordner wie sellence-ean, retouren, touren, stempeluhr und oos NICHT löschen.
+
+Dokumente hinzufügen:
+- Dateien nach assets\dokumente kopieren.
+- DOKUMENTE-AKTUALISIEREN.bat doppelklicken.
+- Anschließend die geänderten Dateien auf den Webspace laden bzw. die Seite neu öffnen.
+
+Die Hauptseite oder der Dokumentenbereich müssen beim Hinzufügen neuer Dateien
+nicht manuell bearbeitet werden.

@@ -56,6 +56,29 @@
         </a>
       </div>
 
+      <a class="documentHub" href="./dokumente/index.html" aria-label="Dokumente öffnen">
+        <div class="documentHub__icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" role="img">
+            <path class="documentHub__folderBack" d="M7 18.5A6.5 6.5 0 0 1 13.5 12H27l6 7h17.5A6.5 6.5 0 0 1 57 25.5V47a7 7 0 0 1-7 7H14a7 7 0 0 1-7-7V18.5Z"/>
+            <path class="documentHub__folderFront" d="M8 27h48l-4.8 22.2A6 6 0 0 1 45.3 54H14.7a6 6 0 0 1-5.9-4.8L5.1 32.8A4.8 4.8 0 0 1 9.8 27Z"/>
+            <path class="documentHub__paper" d="M24 23.5h15.5l6.5 6.6V46a3 3 0 0 1-3 3H24a3 3 0 0 1-3-3V26.5a3 3 0 0 1 3-3Z"/>
+            <path class="documentHub__fold" d="M39.5 23.5v6.6H46"/>
+            <path class="documentHub__line" d="M27 36h13M27 41h10"/>
+          </svg>
+        </div>
+        <div class="documentHub__content">
+          <div class="documentHub__topline">
+            <span class="documentHub__badge">DOKUMENTEN-CENTER</span>
+            <span class="documentHub__count" id="documentCount">Dokumente laden …</span>
+          </div>
+          <h3>Dokumente</h3>
+          <p>PDFs, Formulare, Tabellen, Bilder und weitere Dateien zentral öffnen oder herunterladen.</p>
+        </div>
+        <div class="documentHub__arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4Z"/></svg>
+        </div>
+      </a>
+
       <div class="sectionHead sectionHead--compact">
         <div>
           <div class="sectionKicker sectionKicker--apps">WEITERE APPS</div>
@@ -265,6 +288,26 @@
     if("serviceWorker" in navigator){
       window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
     }
+  </script>
+  <script src="./assets/dokumente/dateien.js"></script>
+  <script>
+    (() => {
+      const countEl = document.getElementById("documentCount");
+      if(!countEl) return;
+
+      const setCount = (items) => {
+        const count = Array.isArray(items) ? items.length : 0;
+        countEl.textContent = count === 0 ? "Noch keine Dateien" : `${count} ${count === 1 ? "Datei" : "Dateien"}`;
+      };
+
+      setCount(window.SELLENCE_DOCUMENTS);
+      if(location.protocol !== "file:"){
+        fetch(`./assets/dokumente/dateien.json?v=${Date.now()}`, { cache: "no-store" })
+          .then(response => response.ok ? response.json() : Promise.reject())
+          .then(setCount)
+          .catch(() => {});
+      }
+    })();
   </script>
 
   <footer class="app-footer"><span>© Andre Schorn · SELLENCE Premium Tool Suite</span></footer>
