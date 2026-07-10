@@ -87,6 +87,36 @@
       </div>
 
       <div class="tiles" id="tiles">
+        <a class="tile tile--kilometer" data-tool="kilometertracker" href="./kilometer-tracker/index.html" aria-label="Kilometer-Tracker öffnen">
+          <div class="reorderCtrls" aria-hidden="true">
+            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
+            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
+          </div>
+          <div class="thumb thumb--kilometer"><img src="./assets/kilometer-tracker.png" alt="Kilometer-Tracker Icon"></div>
+          <div class="meta">
+            <div class="kicker kicker--kilometer">GPS · Kilometer</div>
+            <p class="name">Kilometer-Tracker</p>
+            <p class="desc">Arbeitstag starten, Fahrstrecke live erfassen, Marktstopps erkennen und Zeiträume als PDF oder CSV exportieren.</p>
+          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
+        </a>
+
+        
+
+        <a class="tile tile--tp" data-tool="picos" href="./tp-provisionsrechner/index.html" aria-label="TP Provisionsrechner öffnen">
+          <div class="reorderCtrls" aria-hidden="true">
+            <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
+            <button class="reBtn" type="button" data-move="down" title="Nach unten">▼</button>
+          </div>
+          <div class="thumb thumb--tp"><img src="./assets/tp-provisionsrechner.png" alt="TP Provisionsrechner Icon"></div>
+          <div class="meta">
+            <div class="kicker kicker--tp">PICOS · Provision</div>
+            <p class="name">TP Provisionsrechner</p>
+            <p class="desc">PICOS- und POS-Provisionen auswählen, Mengen erfassen und die Gesamtsumme sofort berechnen.</p>
+          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.1 6.1a1 1 0 0 1 0 1.4l-6.1 6.1a1 1 0 1 1-1.4-1.4l4.4-4.4H4a1 1 0 1 1 0-2h13.6l-4.4-4.4a1 1 0 0 1 0-1.4z"/></svg></div>
+        </a>
+
         <a class="tile" data-tool="retourenrechner" href="./retouren/index.html" aria-label="Retourenrechner öffnen">
           <div class="reorderCtrls" aria-hidden="true">
             <button class="reBtn" type="button" data-move="up" title="Nach oben">▲</button>
@@ -156,9 +186,9 @@
 
     <section class="privacy">
       <h3>Datenschutz</h3>
-      <p>Die SELLENCE-TOOLS WebApp funktioniert lokal auf deinem Gerät. Eingaben bleiben auf dem Gerät und werden nicht an externe Server übertragen.</p>
+      <p>Die SELLENCE-TOOLS WebApp speichert Eingaben grundsätzlich lokal auf deinem Gerät. Einzelne Funktionen wie Karten-, Routen- oder automatische Marktsuchen können dafür notwendige Standort- oder Suchdaten an die jeweils verwendeten Kartendienste übertragen.</p>
       <ul>
-        <li>Keine Übertragung personenbezogener Daten.</li>
+        <li>Namen, Fahrten und Auswertungen werden lokal im Browser gespeichert.</li>
         <li>Offline-Nutzung weiterhin möglich.</li>
         <li>Gespeicherte Inhalte können jederzeit per Reset oder durch Entfernen der App gelöscht werden.</li>
       </ul>
@@ -205,7 +235,7 @@
 
     function applyOrder(){
       const pinnedLast = ["picos"];
-      const baseDefault = ["retourenrechner","touren","stempeluhr","oosscanner"];
+      const baseDefault = ["kilometertracker","retourenrechner","touren","stempeluhr","oosscanner"];
       let order = readOrder();
 
       if(!Array.isArray(order) || !order.length){
@@ -220,6 +250,10 @@
           if(![...baseDefault, ...pinnedLast].includes(id)) continue;
           cleaned.push(id);
           seen.add(id);
+        }
+        if(!seen.has("kilometertracker")){
+          cleaned.unshift("kilometertracker");
+          seen.add("kilometertracker");
         }
         for(const id of baseDefault){
           if(seen.has(id)) continue;

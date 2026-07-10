@@ -1,0 +1,32 @@
+SELLENCE TOOLS – KILOMETER-TRACKER 07/2026
+==========================================
+
+NEU IN DER TOOLSEITE
+- Neue Premium-Kachel "Kilometer-Tracker"
+- Neues Icon und Integration in die anpassbare App-Reihenfolge
+- Neue App im Ordner kilometer-tracker
+- Service-Worker-Version der Hauptseite aktualisiert
+- Datenschutzhinweis an Standort- und Kartendienste angepasst
+
+FUNKTIONEN
+- Start / Feierabend mit persistenter Tages-Session
+- Live-GPS-Kilometer über Geolocation watchPosition
+- Filter gegen GPS-Zittern, schlechte Genauigkeit und unrealistische Sprünge
+- Screen Wake Lock, sofern vom Gerät unterstützt
+- Warnung bei Hintergrundbetrieb
+- Automatische Stopperkennung nach 10 Minuten
+- Automatische Marktsuche für REWE, EDEKA, famila, Markant, Globus,
+  Nah & Frisch und CITTI über OpenStreetMap Overpass
+- Manuelle Stopps
+- Bearbeiten von Nutzername, Datum, Start, Ende, Korrektur,
+  manuellem Gesamtwert, Notiz und allen Stopps
+- Zeitraumfilter, Monat und Gesamtzeitraum
+- PDF-Export ohne externe PDF-Bibliothek
+- CSV-Export
+- JSON-Backup und Import
+- PWA-Manifest und eigener Service Worker
+
+HINWEIS
+Live-GPS in einer Web-App ist technisch vom mobilen Betriebssystem und Browser
+abhängig. Für die zuverlässigste Erfassung die installierte PWA geöffnet lassen,
+Standortzugriff dauerhaft erlauben und Energiesparen deaktivieren.

@@ -1,7 +1,7 @@
 {
   "name": "SELLENCE Tools",
   "short_name": "SELLENCE",
-  "description": "SELLENCE Premium Tool Suite mit zentralem Dokumenten-Center",
+  "description": "SELLENCE Premium Tool Suite mit Dokumenten-Center und Kilometer-Tracker",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

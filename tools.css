@@ -64,3 +64,14 @@ a{text-decoration:none;color:inherit}.ambient{position:fixed;border-radius:999px
 .documentHub__arrow svg{width:21px;height:21px;fill:#fff}.documentHub:hover .documentHub__arrow{transform:translateX(5px);background:linear-gradient(135deg,rgba(255,214,107,.32),rgba(47,228,255,.18))}
 @media(max-width:620px){.documentHub{padding:18px;gap:14px;border-radius:27px;min-height:132px}.documentHub__icon{width:70px;height:70px;border-radius:22px}.documentHub__icon svg{width:51px;height:51px}.documentHub__arrow{width:44px;height:44px;border-radius:15px}.documentHub h3{font-size:25px}.documentHub p{font-size:12.5px;margin-top:7px}.documentHub__topline{gap:7px}.documentHub__badge,.documentHub__count{font-size:9px;padding:6px 9px}}
 @media(max-width:430px){.documentHub__arrow{display:none}.documentHub{align-items:flex-start}.documentHub__icon{width:62px;height:62px}.documentHub__icon svg{width:46px;height:46px}}
+
+/* SELLENCE Kilometer-Tracker */
+.kicker--kilometer{background:linear-gradient(135deg,#3df09f,#2fe4ff)!important;color:#03151a!important;border:1px solid rgba(61,240,159,.76)!important;box-shadow:0 0 18px rgba(47,228,255,.28)!important}
+.tile[data-tool="kilometertracker"]{background:radial-gradient(360px 190px at 10% 0%,rgba(61,240,159,.14),transparent 68%),radial-gradient(280px 190px at 100% 100%,rgba(47,228,255,.12),transparent 68%),linear-gradient(180deg,rgba(255,255,255,.082),rgba(255,255,255,.028))}
+.tile[data-tool="kilometertracker"] .thumb{border-color:rgba(61,240,159,.82)!important;box-shadow:0 0 26px rgba(47,228,255,.30),0 18px 44px rgba(0,0,0,.31)!important}
+
+
+/* TP Provisionsrechner */
+.kicker--tp{background:linear-gradient(135deg,#8dfb55,#2fe4ff)!important;color:#031713!important;border:1px solid rgba(141,251,85,.80)!important;box-shadow:0 0 19px rgba(47,228,255,.30)!important}
+.tile[data-tool="picos"]{background:radial-gradient(380px 210px at 10% 0%,rgba(54,225,255,.15),transparent 68%),radial-gradient(300px 210px at 100% 100%,rgba(114,255,64,.13),transparent 68%),linear-gradient(180deg,rgba(255,255,255,.084),rgba(255,255,255,.028))}
+.tile[data-tool="picos"] .thumb{border-color:rgba(85,237,255,.84)!important;box-shadow:0 0 27px rgba(47,228,255,.32),0 18px 44px rgba(0,0,0,.31)!important}

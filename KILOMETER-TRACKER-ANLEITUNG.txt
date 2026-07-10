@@ -1,0 +1,36 @@
+SELLENCE KILOMETER-TRACKER – INSTALLATION & NUTZUNG
+====================================================
+
+INSTALLATION AUF GITHUB
+1. Den kompletten Inhalt dieser ZIP in dein bestehendes GitHub-Repository kopieren.
+2. Vorhandene Dateien bei Nachfrage ersetzen.
+3. Darauf achten, dass der neue Ordner "kilometer-tracker" und die Datei
+   "assets/kilometer-tracker.png" mit hochgeladen werden.
+4. Committen und auf GitHub pushen.
+5. GitHub Pages abwarten und die Toolseite mit Strg + F5 neu laden.
+
+WICHTIG FÜR GPS
+- Die App muss über HTTPS laufen. GitHub Pages erfüllt diese Voraussetzung.
+- Beim ersten Start muss der Standortzugriff erlaubt werden.
+- Mobile Browser können GPS pausieren, wenn die App im Hintergrund liegt oder
+  das Smartphone den Bildschirm sperrt. Für die beste Erfassung die App geöffnet
+  lassen, Energiesparen deaktivieren und die PWA zum Startbildschirm hinzufügen.
+- Die App filtert ungenaue Punkte und starke GPS-Sprünge. Trotzdem können GPS-Werte
+  technisch von Tachometer oder Navigation abweichen. Dafür gibt es die Korrektur
+  und den optionalen manuellen Gesamtwert.
+
+AUTOMATISCHE STOPPS
+- Nach 10 Minuten innerhalb eines kleinen Standortbereichs wird ein Stopp angelegt.
+- Die App fragt OpenStreetMap/Overpass nach REWE, EDEKA, famila, Markant, Globus,
+  Nah & Frisch oder CITTI im Umkreis ab.
+- Der erkannte Markt sowie Ankunft und Abfahrt können jederzeit bearbeitet werden.
+- Fehlt der Markt in OpenStreetMap oder ist keine Verbindung vorhanden, wird ein
+  allgemeiner automatischer Stopp angelegt.
+
+DATEN & EXPORT
+- Alle Fahrten werden im localStorage des verwendeten Browsers gespeichert.
+- PDF und CSV berücksichtigen den ausgewählten Zeitraum.
+- Der Nutzername erscheint im PDF und in jeder Tageszeile.
+- Regelmäßig über "Backup" eine JSON-Sicherung herunterladen.
+- Browserdaten löschen oder ein anderes Gerät verwenden bedeutet ohne Backup:
+  gespeicherte Fahrten sind nicht mehr verfügbar.

@@ -1,0 +1,8 @@
+SELLENCE TOOLS – TP PROVISIONSRECHNER UPDATE 07-2026
+
+- PICOS-Rechner als neue App auf der Tool-Hauptseite ergänzt.
+- Anzeige-Name in „TP Provisionsrechner“ geändert.
+- Das vom Nutzer bereitgestellte Icon wird unverändert als Kachelbild verwendet.
+- Passende 192x192- und 512x512-PWA-Icons aus diesem Icon erzeugt.
+- Rechenlogik und bestehender localStorage-Schlüssel bleiben unverändert.
+- Haupt-Service-Worker um die neue App und ihre Dateien ergänzt.

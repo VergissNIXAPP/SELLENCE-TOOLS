@@ -1,4 +1,4 @@
-const CACHE_NAME = "sellence-tools-documents-v1";
+const CACHE_NAME = "sellence-tools-kilometer-tp-v500";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -7,6 +7,18 @@ const CORE_FILES = [
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",
+  "./assets/kilometer-tracker.png",
+  "./assets/tp-provisionsrechner.png",
+  "./tp-provisionsrechner/index.html",
+  "./tp-provisionsrechner/styles.css",
+  "./tp-provisionsrechner/app.js",
+  "./tp-provisionsrechner/manifest.webmanifest",
+  "./tp-provisionsrechner/sw.js",
+  "./tp-provisionsrechner/assets/icon-192.png",
+  "./tp-provisionsrechner/assets/icon-512.png",
+  "./kilometer-tracker/index.html",
+  "./kilometer-tracker/tracker.css",
+  "./kilometer-tracker/tracker.js",
   "./dokumente/index.html",
   "./dokumente/dokumente.css",
   "./dokumente/dokumente.js",

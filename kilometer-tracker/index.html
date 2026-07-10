@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071022">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KM Tracker">
+  <title>SELLENCE Kilometer-Tracker</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="tracker.css">
+</head>
+<body>
+  <div class="ambient ambient--a" aria-hidden="true"></div>
+  <div class="ambient ambient--b" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="backBtn" href="../index.html" aria-label="Zurück zu SELLENCE Tools">←</a>
+    <div class="brand">
+      <div class="brandIcon" aria-hidden="true">
+        <svg viewBox="0 0 64 64"><path d="M10 46c7-18 12-25 22-25 8 0 10 6 17 6 3 0 5-1 7-3"/><path d="M15 49h34"/><circle cx="21" cy="48" r="5"/><circle cx="45" cy="48" r="5"/><path d="M32 8c-7 0-12 5-12 12 0 10 12 21 12 21s12-11 12-21c0-7-5-12-12-12Z"/><circle cx="32" cy="20" r="4"/></svg>
+      </div>
+      <div>
+        <div class="brandMain">SELLENCE</div>
+        <div class="brandSub">KILOMETER-TRACKER</div>
+      </div>
+    </div>
+    <button class="iconBtn" id="installBtn" type="button" hidden>App installieren</button>
+  </header>
+
+  <main class="shell">
+    <section class="heroCard">
+      <div class="heroCopy">
+        <span class="eyebrow">LIVE · GPS · AUSSENDIENST</span>
+        <h1>Arbeitstag starten.<br><span>Kilometer automatisch erfassen.</span></h1>
+        <p>Start drücken, fahren und am Feierabend stoppen. Aufenthalte ab 10 Minuten werden automatisch als Stop erkannt und nach passenden Märkten geprüft.</p>
+      </div>
+      <div class="heroStatus" id="heroStatus">
+        <div class="pulseDot" id="pulseDot"></div>
+        <div>
+          <strong id="trackingState">Bereit</strong>
+          <span id="trackingSub">Noch kein aktiver Arbeitstag</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="notice" id="secureNotice" hidden>
+      <strong>HTTPS erforderlich</strong>
+      <span>Live-Standort funktioniert auf GitHub Pages über HTTPS, aber nicht zuverlässig aus einer lokal geöffneten HTML-Datei.</span>
+    </section>
+    <section class="notice notice--warn" id="backgroundNotice" hidden>
+      <strong>Tracking im Hintergrund eingeschränkt</strong>
+      <span>Die App wurde in den Hintergrund gelegt. Mobile Browser können GPS dann pausieren. Für die zuverlässigste Erfassung App geöffnet lassen und Energiesparen deaktivieren.</span>
+    </section>
+
+    <section class="dashboardGrid">
+      <article class="card controlCard">
+        <div class="cardHead">
+          <div>
+            <span class="sectionTag">HEUTIGER TAG</span>
+            <h2>Tracking</h2>
+          </div>
+          <span class="statusPill" id="gpsPill">GPS aus</span>
+        </div>
+
+        <label class="fieldLabel" for="userName">Name des Nutzers</label>
+        <div class="nameRow">
+          <input class="field" id="userName" type="text" autocomplete="name" placeholder="Vor- und Nachname">
+          <button class="softBtn" id="saveNameBtn" type="button">Speichern</button>
+        </div>
+
+        <div class="liveMetric">
+          <span>Aktuelle Strecke</span>
+          <strong id="liveKm">0,00 km</strong>
+          <small id="liveDuration">00:00:00</small>
+        </div>
+
+        <div class="miniStats">
+          <div><span>GPS-Strecke</span><strong id="gpsKm">0,00 km</strong></div>
+          <div><span>Korrektur</span><strong id="adjustmentKm">0,00 km</strong></div>
+          <div><span>Stopps</span><strong id="liveStops">0</strong></div>
+          <div><span>Genauigkeit</span><strong id="accuracyText">–</strong></div>
+        </div>
+
+        <div class="actionRow">
+          <button class="primaryBtn start" id="startBtn" type="button"><span>▶</span> Arbeitstag starten</button>
+          <button class="primaryBtn stop" id="stopBtn" type="button" disabled><span>■</span> Feierabend / Stop</button>
+        </div>
+        <div class="secondaryActions">
+          <button class="softBtn" id="editActiveBtn" type="button" disabled>Aktuellen Tag bearbeiten</button>
+          <button class="softBtn" id="addStopBtn" type="button" disabled>Stopp manuell hinzufügen</button>
+        </div>
+
+        <div class="gpsInfo" id="gpsInfo">
+          <div class="gpsInfoIcon">⌖</div>
+          <div><strong>Standortfreigabe</strong><span>Beim Start fragt dein Gerät nach dem Zugriff auf den Live-Standort.</span></div>
+        </div>
+      </article>
+
+      <article class="card timelineCard">
+        <div class="cardHead">
+          <div>
+            <span class="sectionTag">LIVE-ERKENNUNG</span>
+            <h2>Stopps & Märkte</h2>
+          </div>
+          <span class="statusPill statusPill--cyan" id="stationaryPill">In Bewegung</span>
+        </div>
+        <div class="stationaryProgress">
+          <div class="stationaryTop"><span id="stationaryText">Noch kein Standort-Stopp erkannt</span><strong id="stationaryTime">00:00</strong></div>
+          <div class="progressTrack"><div id="stationaryBar"></div></div>
+          <small>Nach 10 Minuten am gleichen Standort sucht die App in OpenStreetMap nach REWE, EDEKA, famila, Markant, Globus, Nah &amp; Frisch oder CITTI.</small>
+        </div>
+        <div class="timeline" id="liveTimeline">
+          <div class="emptyState"><span>◎</span><strong>Noch keine Stopps</strong><p>Automatisch erkannte und manuell eingetragene Stopps erscheinen hier.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="card overviewCard">
+      <div class="cardHead overviewHead">
+        <div>
+          <span class="sectionTag">AUSWERTUNG & EXPORT</span>
+          <h2>Fahrtenübersicht</h2>
+        </div>
+        <div class="rangeActions">
+          <button class="softBtn" id="pdfBtn" type="button">PDF Export</button>
+          <button class="softBtn" id="csvBtn" type="button">CSV Export</button>
+          <button class="softBtn" id="backupBtn" type="button">Backup</button>
+          <label class="softBtn fileBtn">Import<input id="importInput" type="file" accept="application/json,.json"></label>
+        </div>
+      </div>
+
+      <div class="filterBar">
+        <label>Von<input class="field" id="fromDate" type="date"></label>
+        <label>Bis<input class="field" id="toDate" type="date"></label>
+        <button class="softBtn" id="currentMonthBtn" type="button">Dieser Monat</button>
+        <button class="softBtn" id="allTimeBtn" type="button">Gesamter Zeitraum</button>
+      </div>
+
+      <div class="summaryCards">
+        <div><span>Gesamtkilometer</span><strong id="periodKm">0,00 km</strong></div>
+        <div><span>Arbeitstage</span><strong id="periodDays">0</strong></div>
+        <div><span>Stopps</span><strong id="periodStops">0</strong></div>
+        <div><span>Ø pro Tag</span><strong id="periodAverage">0,00 km</strong></div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead><tr><th>Datum</th><th>Nutzer</th><th>Zeitraum</th><th class="num">Stopps</th><th class="num">GPS</th><th class="num">Korrektur</th><th class="num">Gesamt</th><th></th></tr></thead>
+          <tbody id="daysBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="privacyCard">
+      <div>🔒</div>
+      <div><strong>Datenschutz</strong><p>Fahrten, Kilometer und Namen werden lokal in diesem Browser gespeichert. Nur für die automatische Markterkennung werden die Koordinaten eines erkannten Stopps an eine öffentliche OpenStreetMap-Overpass-Schnittstelle gesendet.</p></div>
+    </section>
+  </main>
+
+  <div class="modal" id="editModal" aria-hidden="true">
+    <div class="modalBackdrop" data-close-modal="1"></div>
+    <div class="modalPanel" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <div class="modalHead"><div><span class="sectionTag">BEARBEITEN</span><h2 id="editTitle">Arbeitstag</h2></div><button class="closeBtn" id="closeEditBtn" type="button">✕</button></div>
+      <div class="formGrid">
+        <label>Name<input class="field" id="editName" type="text"></label>
+        <label>Datum<input class="field" id="editDate" type="date"></label>
+        <label>Start<input class="field" id="editStart" type="datetime-local"></label>
+        <label>Ende<input class="field" id="editEnd" type="datetime-local"></label>
+        <label>GPS-Kilometer<input class="field" id="editGpsKm" type="text" readonly></label>
+        <label>Korrektur (+/− km)<input class="field" id="editAdjustment" type="number" step="0.01"></label>
+        <label class="full">Manueller Gesamtwert (optional)<input class="field" id="editManualTotal" type="number" min="0" step="0.01" placeholder="Leer = GPS + Korrektur"></label>
+        <label class="full">Notiz<textarea class="field" id="editNotes" rows="3" placeholder="Optionale Notiz"></textarea></label>
+      </div>
+      <div class="modalSectionHead"><h3>Stopps</h3><button class="softBtn" id="modalAddStopBtn" type="button">+ Stopp</button></div>
+      <div id="editStops" class="editStops"></div>
+      <div class="modalActions"><button class="dangerBtn" id="deleteDayBtn" type="button">Tag löschen</button><div><button class="softBtn" id="cancelEditBtn" type="button">Abbrechen</button><button class="primarySmall" id="saveEditBtn" type="button">Änderungen speichern</button></div></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" aria-hidden="true"><strong id="toastTitle">Info</strong><span id="toastText"></span></div>
+
+  <script src="tracker.js"></script>
+</body>
+</html>
