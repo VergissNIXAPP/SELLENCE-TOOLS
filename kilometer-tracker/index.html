@@ -52,6 +52,11 @@
       <span>Die App wurde in den Hintergrund gelegt. Mobile Browser können GPS dann pausieren. Für die zuverlässigste Erfassung App geöffnet lassen und Energiesparen deaktivieren.</span>
     </section>
 
+    <section class="notice notice--warn" id="secureNotice" hidden>
+      <strong>HTTPS erforderlich</strong>
+      <span>GPS, Kartenkacheln und Videoexport funktionieren zuverlässig nur über HTTPS oder auf localhost.</span>
+    </section>
+
     <section class="dashboardGrid">
       <article class="card controlCard">
         <div class="cardHead">
@@ -115,6 +120,91 @@
       </article>
     </section>
 
+    <section class="card routeStudioCard" id="routeStudio">
+      <div class="cardHead routeStudioHead">
+        <div>
+          <span class="sectionTag">NEU · STRECKENSTUDIO</span>
+          <h2>Exakte Route &amp; Fahrvideo</h2>
+          <p class="sectionIntro">Zeige deine gespeicherten GPS-Punkte auf der Karte und lasse ein ausgewähltes Auto die komplette Strecke abfahren.</p>
+        </div>
+        <span class="statusPill statusPill--green" id="routePointPill">Noch keine Route</span>
+      </div>
+
+      <div class="routeToolbar">
+        <label>Fahrt auswählen
+          <select class="field" id="routeDaySelect"></select>
+        </label>
+        <button class="softBtn" id="showActiveRouteBtn" type="button">Aktive Fahrt</button>
+        <button class="softBtn" id="centerRouteBtn" type="button">Route zentrieren</button>
+      </div>
+
+      <div class="routeStudioGrid">
+        <div class="mapPanel">
+          <div class="routeMapWrap" id="routeMapWrap">
+            <canvas id="routeMapCanvas" aria-label="Karte mit aufgezeichneter GPS-Strecke"></canvas>
+            <div class="mapEmpty" id="mapEmpty">
+              <span>⌖</span>
+              <strong>Noch keine GPS-Strecke gewählt</strong>
+              <p>Starte einen Arbeitstag oder wähle eine abgeschlossene Fahrt aus.</p>
+            </div>
+            <div class="mapControls" aria-label="Kartenzoom">
+              <button id="mapZoomIn" type="button" aria-label="Hineinzoomen">+</button>
+              <button id="mapZoomOut" type="button" aria-label="Herauszoomen">−</button>
+            </div>
+            <div class="mapAttribution">© OpenStreetMap-Mitwirkende</div>
+          </div>
+          <div class="routeFacts">
+            <div><span>Strecke</span><strong id="routeKmText">0,00 km</strong></div>
+            <div><span>GPS-Punkte</span><strong id="routePointsText">0</strong></div>
+            <div><span>Fahrtdauer</span><strong id="routeDurationText">00:00:00</strong></div>
+            <div><span>Stopps</span><strong id="routeStopsText">0</strong></div>
+          </div>
+        </div>
+
+        <aside class="videoBuilder">
+          <div class="videoBuilderTitle">
+            <span class="sectionTag">FAHRVIDEO ERSTELLEN</span>
+            <h3>Wähle dein Auto</h3>
+          </div>
+          <div class="carChooser" id="carChooser" role="radiogroup" aria-label="Fahrzeug auswählen"></div>
+
+          <div class="videoOptions">
+            <label>Videolänge
+              <select class="field" id="videoDurationSelect">
+                <option value="10">10 Sekunden</option>
+                <option value="15" selected>15 Sekunden</option>
+                <option value="20">20 Sekunden</option>
+                <option value="30">30 Sekunden</option>
+              </select>
+            </label>
+            <label>Format
+              <select class="field" id="videoFormatSelect">
+                <option value="landscape" selected>Querformat 16:9</option>
+                <option value="portrait">Hochformat 9:16</option>
+                <option value="square">Quadrat 1:1</option>
+              </select>
+            </label>
+          </div>
+
+          <button class="primaryBtn videoBtn" id="createRouteVideoBtn" type="button">
+            <span>▶</span> Fahrvideo erstellen
+          </button>
+          <button class="softBtn cancelVideoBtn" id="cancelRouteVideoBtn" type="button" hidden>Videoerstellung abbrechen</button>
+
+          <div class="videoProgress" id="videoProgress" hidden>
+            <div class="videoProgressTop"><span id="videoProgressText">Karte wird vorbereitet …</span><strong id="videoProgressPercent">0%</strong></div>
+            <div class="progressTrack"><div id="videoProgressBar"></div></div>
+          </div>
+
+          <div class="videoResult" id="videoResult" hidden>
+            <video id="routeVideoPreview" controls playsinline></video>
+            <a class="primarySmall downloadVideoBtn" id="routeVideoDownload" download>Video herunterladen</a>
+          </div>
+          <p class="videoHint">Das Video wird direkt auf deinem Gerät erstellt. GPS-Daten werden dafür nicht an einen Video-Dienst hochgeladen.</p>
+        </aside>
+      </div>
+    </section>
+
     <section class="card overviewCard">
       <div class="cardHead overviewHead">
         <div>
@@ -153,7 +243,7 @@
 
     <section class="privacyCard">
       <div>🔒</div>
-      <div><strong>Datenschutz</strong><p>Fahrten, Kilometer und Namen werden lokal in diesem Browser gespeichert. Nur für die automatische Markterkennung werden die Koordinaten eines erkannten Stopps an eine öffentliche OpenStreetMap-Overpass-Schnittstelle gesendet.</p></div>
+      <div><strong>Datenschutz</strong><p>Fahrten, Kilometer und Namen werden lokal in diesem Browser gespeichert. Für Karte und automatische Markterkennung werden Kartenkacheln beziehungsweise die Koordinaten eines erkannten Stopps an öffentliche OpenStreetMap-Dienste gesendet. Das Fahrvideo wird lokal im Browser erzeugt.</p></div>
     </section>
   </main>
 

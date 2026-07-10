@@ -14,10 +14,26 @@
   const MIN_DISTANCE_M = 8;
   const MAX_ACCURACY_M = 120;
   const MAX_SPEED_KMH = 190;
-  const MAX_POINTS_PER_DAY = 3500;
+  const MAX_POINTS_PER_DAY = 4500;
   const OVERPASS_ENDPOINTS = [
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter"
+  ];
+
+  const ROUTE_ACTIVE_ID = "__active__";
+  const TILE_SIZE = 256;
+  const TILE_ENDPOINT = "https://tile.openstreetmap.org";
+  const CAR_TYPES = [
+    { id: "compact", name: "City Compact", subtitle: "klein & wendig", emoji: "🚗", color: "#39ddff", accent: "#d9fbff", variant: "compact" },
+    { id: "sedan", name: "Business Limousine", subtitle: "klassisch & elegant", emoji: "🚘", color: "#3b82f6", accent: "#d7e9ff", variant: "sedan" },
+    { id: "sport", name: "Sportwagen", subtitle: "flach & dynamisch", emoji: "🏎️", color: "#ff4d6d", accent: "#ffe0e6", variant: "sport" },
+    { id: "suv", name: "Premium SUV", subtitle: "hoch & kraftvoll", emoji: "🚙", color: "#57f287", accent: "#e4ffe9", variant: "suv" },
+    { id: "van", name: "Außendienst Van", subtitle: "viel Platz", emoji: "🚐", color: "#8b5cf6", accent: "#efe7ff", variant: "van" },
+    { id: "pickup", name: "Pickup", subtitle: "robust & markant", emoji: "🛻", color: "#ffae42", accent: "#fff0d2", variant: "pickup" },
+    { id: "electric", name: "E-Performance", subtitle: "elektrisch", emoji: "⚡", color: "#a6ff3f", accent: "#f1ffd9", variant: "electric" },
+    { id: "taxi", name: "City Taxi", subtitle: "auffällig gelb", emoji: "🚕", color: "#ffd83d", accent: "#fff6bd", variant: "taxi" },
+    { id: "wagon", name: "Kombi", subtitle: "Business Touring", emoji: "🚗", color: "#00c2a8", accent: "#d6fff9", variant: "wagon" },
+    { id: "luxury", name: "Luxury Black", subtitle: "edel & dunkel", emoji: "◆", color: "#202938", accent: "#f4f7fb", variant: "luxury" }
   ];
 
   let profile = load(STORAGE.profile, { name: "" });
@@ -33,6 +49,14 @@
   let editingRef = null;
   let lookupBusy = false;
   let toastTimer = null;
+  let routeSelection = active ? ROUTE_ACTIVE_ID : "";
+  let selectedCarId = String(profile?.carId || "sedan");
+  let routeMapState = { zoom: null, centerX: null, centerY: null, autoFit: true, dragging: false, pointerId: null, lastX: 0, lastY: 0 };
+  let routeRenderFrame = null;
+  let routeResizeObserver = null;
+  let videoJob = null;
+  let lastVideoUrl = null;
+  const tileCache = new Map();
 
   function load(key, fallback) {
     try {
@@ -149,6 +173,8 @@
     if (active) active = normalizeDay(active, true);
     if (!profile || typeof profile !== "object") profile = { name: "" };
     profile.name = String(profile.name || "");
+    profile.carId = CAR_TYPES.some(car => car.id === profile.carId) ? profile.carId : "sedan";
+    selectedCarId = profile.carId;
   }
 
   function normalizeDay(day, isActive = false) {
@@ -160,7 +186,14 @@
     d.gpsKm = Number(d.gpsKm) || 0;
     d.adjustmentKm = Number(d.adjustmentKm) || 0;
     d.manualTotalKm = d.manualTotalKm === null || d.manualTotalKm === "" || d.manualTotalKm === undefined ? null : Number(d.manualTotalKm);
-    d.points = Array.isArray(d.points) ? d.points : [];
+    d.points = Array.isArray(d.points) ? d.points.map(point => ({
+      lat: Number(point.lat),
+      lon: Number(point.lon),
+      accuracy: Number(point.accuracy) || 0,
+      speed: Number.isFinite(Number(point.speed)) ? Number(point.speed) : null,
+      heading: Number.isFinite(Number(point.heading)) ? Number(point.heading) : null,
+      at: Number(point.at) || d.startedAt
+    })).filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lon)) : [];
     d.stops = Array.isArray(d.stops) ? d.stops.map(stop => ({
       id: stop.id || uid(),
       name: String(stop.name || "Unbekannter Standort"),
@@ -321,7 +354,7 @@
         active.rejectedPoints = (active.rejectedPoints || 0) + 1;
       }
 
-      const shouldStore = distanceM >= 15 || (p.at - previous.at) >= 30000 || active.points.length < 2;
+      const shouldStore = distanceM >= 8 || (p.at - previous.at) >= 15000 || active.points.length < 2;
       if (shouldStore) active.points.push(p);
     } else {
       active.rejectedPoints = (active.rejectedPoints || 0) + 1;
@@ -335,6 +368,18 @@
     persistAll();
     renderLiveMetrics();
     renderStatus();
+    if (routeSelection === ROUTE_ACTIVE_ID) {
+      const routePoints = validRoutePoints(active);
+      $("routeKmText").textContent = fmtKm(totalKm(active));
+      $("routePointsText").textContent = routePoints.length.toLocaleString("de-DE");
+      $("routeDurationText").textContent = durationText(Date.now() - active.startedAt);
+      $("routeStopsText").textContent = String(active.stops?.length || 0);
+      $("routePointPill").textContent = routePoints.length ? `${routePoints.length.toLocaleString("de-DE")} GPS-Punkte` : "Noch keine Route";
+      $("mapEmpty").hidden = routePoints.length > 0;
+      $("createRouteVideoBtn").disabled = routePoints.length < 2 || !!videoJob;
+      if (routeMapState.autoFit || routePoints.length < 3) routeMapState.autoFit = true;
+      scheduleRouteMapRender();
+    }
   }
 
   function onPositionError(error) {
@@ -554,6 +599,675 @@
     openEdit(active.id, true);
   }
 
+
+  function validRoutePoints(day) {
+    return (day?.points || []).filter(point => Number.isFinite(Number(point.lat)) && Number.isFinite(Number(point.lon))).map(point => ({ ...point, lat: Number(point.lat), lon: Number(point.lon) }));
+  }
+
+  function currentRouteDay() {
+    if (routeSelection === ROUTE_ACTIVE_ID) return active;
+    return days.find(day => day.id === routeSelection) || null;
+  }
+
+  function ensureRouteSelection() {
+    const available = [];
+    if (active) available.push({ id: ROUTE_ACTIVE_ID, day: active, label: `LIVE · ${fmtDate(active.startedAt)} · ${active.name || "Aktive Fahrt"}` });
+    days.forEach(day => available.push({ id: day.id, day, label: `${fmtDate(day.startedAt)} · ${day.name || "Ohne Name"} · ${fmtKm(totalKm(day))}` }));
+    if (!available.some(item => item.id === routeSelection)) routeSelection = available[0]?.id || "";
+    return available;
+  }
+
+  function renderRouteStudio(forceFit = false) {
+    const options = ensureRouteSelection();
+    const select = $("routeDaySelect");
+    const previous = select.value;
+    select.innerHTML = options.length
+      ? options.map(item => `<option value="${escapeAttr(item.id)}">${escapeHtml(item.label)}</option>`).join("")
+      : `<option value="">Noch keine Fahrt vorhanden</option>`;
+    select.value = routeSelection || previous || "";
+    $("showActiveRouteBtn").disabled = !active;
+
+    const day = currentRouteDay();
+    const points = validRoutePoints(day);
+    $("routeKmText").textContent = day ? fmtKm(totalKm(day)) : "0,00 km";
+    $("routePointsText").textContent = points.length.toLocaleString("de-DE");
+    $("routeDurationText").textContent = day ? durationText((day.endedAt || Date.now()) - day.startedAt) : "00:00:00";
+    $("routeStopsText").textContent = String(day?.stops?.length || 0);
+    $("routePointPill").textContent = points.length ? `${points.length.toLocaleString("de-DE")} GPS-Punkte` : "Noch keine Route";
+    $("mapEmpty").hidden = points.length > 0;
+    $("createRouteVideoBtn").disabled = points.length < 2 || !!videoJob;
+    if (forceFit) routeMapState.autoFit = true;
+    scheduleRouteMapRender();
+  }
+
+  function selectRouteDay(id, scrollIntoView = false) {
+    routeSelection = id;
+    routeMapState.autoFit = true;
+    renderRouteStudio(true);
+    if (scrollIntoView) $("routeStudio").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function renderCarChooser() {
+    if (!CAR_TYPES.some(car => car.id === selectedCarId)) selectedCarId = "sedan";
+    $("carChooser").innerHTML = CAR_TYPES.map(car => `<button class="carOption${car.id === selectedCarId ? " selected" : ""}" type="button" role="radio" aria-checked="${car.id === selectedCarId}" data-car-id="${car.id}">
+      <span class="carThumb" style="color:${car.color}">${car.emoji}</span>
+      <span class="carMeta"><strong>${escapeHtml(car.name)}</strong><span>${escapeHtml(car.subtitle)}</span></span>
+    </button>`).join("");
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function lonToWorldX(lon, zoom) {
+    return ((Number(lon) + 180) / 360) * TILE_SIZE * (2 ** zoom);
+  }
+
+  function latToWorldY(lat, zoom) {
+    const limited = clamp(Number(lat), -85.05112878, 85.05112878);
+    const rad = limited * Math.PI / 180;
+    return (1 - Math.log(Math.tan(rad) + (1 / Math.cos(rad))) / Math.PI) / 2 * TILE_SIZE * (2 ** zoom);
+  }
+
+  function routeViewFor(points, width, height, padding = 70) {
+    if (!points.length) return { zoom: 5, centerX: lonToWorldX(10.4, 5), centerY: latToWorldY(51.1, 5) };
+    if (points.length === 1) return { zoom: 16, centerX: lonToWorldX(points[0].lon, 16), centerY: latToWorldY(points[0].lat, 16) };
+    const usableWidth = Math.max(120, width - padding * 2);
+    const usableHeight = Math.max(120, height - padding * 2);
+    let selected = null;
+    for (let zoom = 18; zoom >= 3; zoom -= 1) {
+      const xs = points.map(point => lonToWorldX(point.lon, zoom));
+      const ys = points.map(point => latToWorldY(point.lat, zoom));
+      const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+      if ((maxX - minX) <= usableWidth && (maxY - minY) <= usableHeight) {
+        selected = { zoom, centerX: (minX + maxX) / 2, centerY: (minY + maxY) / 2 };
+        break;
+      }
+    }
+    return selected || { zoom: 3, centerX: lonToWorldX(points[0].lon, 3), centerY: latToWorldY(points[0].lat, 3) };
+  }
+
+  function resizeRouteCanvas() {
+    const canvas = $("routeMapCanvas");
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const width = Math.round(rect.width * dpr);
+    const height = Math.round(rect.height * dpr);
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+      scheduleRouteMapRender();
+    }
+  }
+
+  function scheduleRouteMapRender() {
+    if (routeRenderFrame) return;
+    routeRenderFrame = requestAnimationFrame(() => {
+      routeRenderFrame = null;
+      renderRouteMap();
+    });
+  }
+
+  function normalizedTileX(x, zoom) {
+    const count = 2 ** zoom;
+    return ((x % count) + count) % count;
+  }
+
+  function tileEntry(zoom, rawX, y) {
+    const x = normalizedTileX(rawX, zoom);
+    const max = 2 ** zoom;
+    if (y < 0 || y >= max) return null;
+    const key = `${zoom}/${x}/${y}`;
+    if (tileCache.has(key)) return tileCache.get(key);
+    const entry = { key, status: "loading", image: null, promise: null };
+    entry.promise = (async () => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 6000);
+      try {
+        const response = await fetch(`${TILE_ENDPOINT}/${zoom}/${x}/${y}.png`, { mode: "cors", cache: "force-cache", signal: controller.signal });
+        if (!response.ok) throw new Error(`Kartenkachel ${response.status}`);
+        const blob = await response.blob();
+        if ("createImageBitmap" in window) {
+          entry.image = await createImageBitmap(blob);
+        } else {
+          entry.image = await new Promise((resolve, reject) => {
+            const url = URL.createObjectURL(blob);
+            const image = new Image();
+            image.onload = () => { URL.revokeObjectURL(url); resolve(image); };
+            image.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Bild konnte nicht geladen werden")); };
+            image.src = url;
+          });
+        }
+        entry.status = "ready";
+      } catch (error) {
+        entry.status = "error";
+        entry.error = error;
+      } finally {
+        clearTimeout(timer);
+        scheduleRouteMapRender();
+      }
+      return entry;
+    })();
+    tileCache.set(key, entry);
+    if (tileCache.size > 240) {
+      const removable = [...tileCache.keys()].slice(0, tileCache.size - 200);
+      removable.forEach(oldKey => tileCache.delete(oldKey));
+    }
+    return entry;
+  }
+
+  function visibleTiles(view, width, height, margin = 1) {
+    const left = view.centerX - width / 2;
+    const top = view.centerY - height / 2;
+    const minX = Math.floor(left / TILE_SIZE) - margin;
+    const maxX = Math.floor((left + width) / TILE_SIZE) + margin;
+    const minY = Math.floor(top / TILE_SIZE) - margin;
+    const maxY = Math.floor((top + height) / TILE_SIZE) + margin;
+    const result = [];
+    for (let y = minY; y <= maxY; y += 1) {
+      for (let x = minX; x <= maxX; x += 1) result.push({ x, y, dx: x * TILE_SIZE - left, dy: y * TILE_SIZE - top });
+    }
+    return result;
+  }
+
+  function drawFallbackMap(ctx, width, height) {
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#07182a");
+    gradient.addColorStop(1, "#020914");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+    ctx.save();
+    ctx.strokeStyle = "rgba(82,180,242,.10)";
+    ctx.lineWidth = 1;
+    for (let x = -height; x < width + height; x += 68) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + height, height); ctx.stroke();
+    }
+    ctx.strokeStyle = "rgba(87,242,135,.07)";
+    for (let y = 25; y < height; y += 85) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.bezierCurveTo(width * .28, y - 35, width * .72, y + 38, width, y - 5); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawMapLayer(ctx, view, width, height, loadMissing = true) {
+    drawFallbackMap(ctx, width, height);
+    const tiles = visibleTiles(view, width, height, 1);
+    let drawn = 0;
+    for (const tile of tiles) {
+      const entry = loadMissing ? tileEntry(view.zoom, tile.x, tile.y) : tileCache.get(`${view.zoom}/${normalizedTileX(tile.x, view.zoom)}/${tile.y}`);
+      if (entry?.status === "ready" && entry.image) {
+        ctx.drawImage(entry.image, Math.round(tile.dx), Math.round(tile.dy), TILE_SIZE + 1, TILE_SIZE + 1);
+        drawn += 1;
+      } else {
+        ctx.fillStyle = "rgba(15,35,55,.28)";
+        ctx.fillRect(tile.dx, tile.dy, TILE_SIZE, TILE_SIZE);
+      }
+    }
+    ctx.fillStyle = drawn ? "rgba(2,10,20,.32)" : "rgba(2,10,20,.08)";
+    ctx.fillRect(0, 0, width, height);
+    return tiles;
+  }
+
+  function projectRoute(points, view, width, height) {
+    return points.map(point => ({
+      x: lonToWorldX(point.lon, view.zoom) - view.centerX + width / 2,
+      y: latToWorldY(point.lat, view.zoom) - view.centerY + height / 2,
+      source: point
+    }));
+  }
+
+  function strokeRoute(ctx, coords, progress = 1, lineWidth = 5) {
+    if (coords.length < 2) return;
+    ctx.save();
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(coords[0].x, coords[0].y);
+    for (let i = 1; i < coords.length; i += 1) ctx.lineTo(coords[i].x, coords[i].y);
+    ctx.strokeStyle = "rgba(0,5,12,.80)";
+    ctx.lineWidth = lineWidth + 8;
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(210,230,246,.34)";
+    ctx.lineWidth = lineWidth + 2;
+    ctx.stroke();
+    ctx.restore();
+
+    const geometry = routeGeometry(coords);
+    const target = geometry.total * clamp(progress, 0, 1);
+    const gradient = ctx.createLinearGradient(0, 0, ctx.canvas.width || 1000, ctx.canvas.height || 600);
+    gradient.addColorStop(0, "#2f83ff");
+    gradient.addColorStop(.55, "#39ddff");
+    gradient.addColorStop(1, "#75f66a");
+    ctx.save();
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(coords[0].x, coords[0].y);
+    let travelled = 0;
+    for (let i = 1; i < coords.length; i += 1) {
+      const previous = coords[i - 1];
+      const current = coords[i];
+      const segment = Math.hypot(current.x - previous.x, current.y - previous.y);
+      if (travelled + segment <= target) {
+        ctx.lineTo(current.x, current.y);
+        travelled += segment;
+      } else {
+        const remaining = Math.max(0, target - travelled);
+        const part = segment ? remaining / segment : 0;
+        ctx.lineTo(previous.x + (current.x - previous.x) * part, previous.y + (current.y - previous.y) * part);
+        break;
+      }
+    }
+    ctx.shadowColor = "rgba(57,221,255,.75)";
+    ctx.shadowBlur = lineWidth * 2.4;
+    ctx.strokeStyle = gradient;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function routeGeometry(coords) {
+    const cumulative = [0];
+    let total = 0;
+    for (let i = 1; i < coords.length; i += 1) {
+      total += Math.hypot(coords[i].x - coords[i - 1].x, coords[i].y - coords[i - 1].y);
+      cumulative.push(total);
+    }
+    return { coords, cumulative, total };
+  }
+
+  function geometryPointAt(geometry, progress) {
+    if (!geometry.coords.length) return null;
+    if (geometry.coords.length === 1 || geometry.total <= 0) return { ...geometry.coords[0], angle: 0 };
+    const distance = clamp(progress, 0, 1) * geometry.total;
+    let index = 1;
+    while (index < geometry.cumulative.length && geometry.cumulative[index] < distance) index += 1;
+    index = Math.min(index, geometry.coords.length - 1);
+    const previous = geometry.coords[index - 1];
+    const current = geometry.coords[index];
+    const startDistance = geometry.cumulative[index - 1];
+    const segment = Math.max(.001, geometry.cumulative[index] - startDistance);
+    const ratio = clamp((distance - startDistance) / segment, 0, 1);
+    return {
+      x: previous.x + (current.x - previous.x) * ratio,
+      y: previous.y + (current.y - previous.y) * ratio,
+      angle: Math.atan2(current.y - previous.y, current.x - previous.x) + Math.PI / 2
+    };
+  }
+
+  function drawRouteMarker(ctx, x, y, color, label, scale = 1) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 15 * scale;
+    ctx.fillStyle = "rgba(2,9,18,.92)";
+    ctx.beginPath();ctx.arc(0, 0, 10 * scale, 0, Math.PI * 2);ctx.fill();
+    ctx.fillStyle = color;
+    ctx.beginPath();ctx.arc(0, 0, 6 * scale, 0, Math.PI * 2);ctx.fill();
+    if (label) {
+      ctx.shadowBlur = 0;
+      ctx.font = `800 ${9 * scale}px system-ui`;
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#fff";
+      ctx.fillText(label, 0, -15 * scale);
+    }
+    ctx.restore();
+  }
+
+  function drawStopMarkers(ctx, day, view, width, height, scale = 1) {
+    for (const stop of day?.stops || []) {
+      if (!Number.isFinite(stop.lat) || !Number.isFinite(stop.lon)) continue;
+      const x = lonToWorldX(stop.lon, view.zoom) - view.centerX + width / 2;
+      const y = latToWorldY(stop.lat, view.zoom) - view.centerY + height / 2;
+      if (x < -20 || y < -20 || x > width + 20 || y > height + 20) continue;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = "rgba(7,18,31,.94)";
+      ctx.strokeStyle = "#ffcf55";
+      ctx.lineWidth = 2 * scale;
+      ctx.beginPath();ctx.arc(0, 0, 7 * scale, 0, Math.PI * 2);ctx.fill();ctx.stroke();
+      ctx.fillStyle = "#ffcf55";
+      ctx.beginPath();ctx.arc(0, 0, 2.2 * scale, 0, Math.PI * 2);ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawCarShape(ctx, x, y, angle, car, scale = 1) {
+    const variant = car?.variant || "sedan";
+    const dimensions = {
+      compact: [31, 58], sedan: [34, 70], sport: [33, 75], suv: [39, 72], van: [41, 83], pickup: [40, 80], electric: [35, 72], taxi: [35, 70], wagon: [36, 77], luxury: [37, 75]
+    }[variant] || [34, 70];
+    const w = dimensions[0] * scale;
+    const h = dimensions[1] * scale;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle || 0);
+    ctx.shadowColor = "rgba(0,0,0,.65)";
+    ctx.shadowBlur = 14 * scale;
+    ctx.shadowOffsetY = 8 * scale;
+    ctx.fillStyle = "rgba(0,0,0,.5)";
+    ctx.beginPath();ctx.ellipse(0, 5 * scale, w * .58, h * .48, 0, 0, Math.PI * 2);ctx.fill();
+    ctx.shadowColor = car.color;
+    ctx.shadowBlur = 12 * scale;
+    ctx.shadowOffsetY = 0;
+
+    ctx.fillStyle = car.color;
+    ctx.strokeStyle = "rgba(255,255,255,.72)";
+    ctx.lineWidth = Math.max(1, 1.2 * scale);
+    ctx.beginPath();
+    if (variant === "sport") {
+      ctx.moveTo(0, -h / 2);ctx.lineTo(w * .42, -h * .29);ctx.lineTo(w / 2, h * .28);ctx.lineTo(w * .33, h / 2);ctx.lineTo(-w * .33, h / 2);ctx.lineTo(-w / 2, h * .28);ctx.lineTo(-w * .42, -h * .29);ctx.closePath();
+    } else if (variant === "pickup") {
+      ctx.roundRect(-w / 2, -h / 2, w, h, 8 * scale);
+    } else {
+      ctx.roundRect(-w / 2, -h / 2, w, h, (variant === "van" ? 7 : 12) * scale);
+    }
+    ctx.fill();ctx.stroke();
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = variant === "luxury" ? "#6f829a" : "#153b5a";
+    if (variant === "pickup") {
+      ctx.fillRect(-w * .38, h * .08, w * .76, h * .32);
+      ctx.strokeStyle = "rgba(255,255,255,.35)";ctx.strokeRect(-w * .38, h * .08, w * .76, h * .32);
+      ctx.roundRect(-w * .35, -h * .34, w * .7, h * .27, 5 * scale);ctx.fill();
+    } else if (variant === "van") {
+      ctx.roundRect(-w * .34, -h * .35, w * .68, h * .3, 4 * scale);ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.22)";ctx.fillRect(-w * .38, h * .05, w * .76, 2 * scale);
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(-w * .32, -h * .26);ctx.lineTo(w * .32, -h * .26);ctx.lineTo(w * .39, h * .05);ctx.lineTo(-w * .39, h * .05);ctx.closePath();ctx.fill();
+      ctx.fillStyle = "rgba(7,23,38,.88)";ctx.roundRect(-w * .31, h * .12, w * .62, h * .19, 4 * scale);ctx.fill();
+    }
+    ctx.fillStyle = car.accent;
+    ctx.globalAlpha = .9;
+    ctx.fillRect(-w * .31, -h * .47, w * .18, 3 * scale);ctx.fillRect(w * .13, -h * .47, w * .18, 3 * scale);
+    ctx.fillStyle = "#ff526f";ctx.fillRect(-w * .31, h * .42, w * .18, 3 * scale);ctx.fillRect(w * .13, h * .42, w * .18, 3 * scale);
+    if (variant === "taxi") {
+      ctx.globalAlpha = 1;ctx.fillStyle = "#111";ctx.fillRect(-w * .34, -2 * scale, w * .68, 4 * scale);
+      ctx.fillStyle = "#fff";ctx.font = `900 ${7 * scale}px system-ui`;ctx.textAlign = "center";ctx.fillText("TAXI", 0, 2 * scale);
+    }
+    if (variant === "electric") {
+      ctx.globalAlpha = 1;ctx.fillStyle = "#122517";ctx.font = `900 ${15 * scale}px system-ui`;ctx.textAlign = "center";ctx.fillText("⚡", 0, 5 * scale);
+    }
+    ctx.restore();
+  }
+
+  function renderRouteMap() {
+    const canvas = $("routeMapCanvas");
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    resizeRouteCanvas();
+    const dpr = canvas.width / rect.width;
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, rect.width, rect.height);
+    const day = currentRouteDay();
+    const points = validRoutePoints(day);
+    if (!points.length) {
+      drawFallbackMap(ctx, rect.width, rect.height);
+      return;
+    }
+    if (routeMapState.autoFit || routeMapState.zoom === null || routeMapState.centerX === null) {
+      Object.assign(routeMapState, routeViewFor(points, rect.width, rect.height, 65), { autoFit: false });
+    }
+    const view = { zoom: routeMapState.zoom, centerX: routeMapState.centerX, centerY: routeMapState.centerY };
+    drawMapLayer(ctx, view, rect.width, rect.height, true);
+    const coords = projectRoute(points, view, rect.width, rect.height);
+    strokeRoute(ctx, coords, 1, 5);
+    drawStopMarkers(ctx, day, view, rect.width, rect.height, 1);
+    drawRouteMarker(ctx, coords[0].x, coords[0].y, "#57f287", "START");
+    drawRouteMarker(ctx, coords.at(-1).x, coords.at(-1).y, "#ff6079", "ZIEL");
+    if (routeSelection === ROUTE_ACTIVE_ID && coords.length) {
+      const car = CAR_TYPES.find(item => item.id === selectedCarId) || CAR_TYPES[1];
+      const last = coords.at(-1);
+      const prev = coords.at(-2) || last;
+      drawCarShape(ctx, last.x, last.y, Math.atan2(last.y - prev.y, last.x - prev.x) + Math.PI / 2, car, .62);
+    }
+  }
+
+  function changeMapZoom(delta) {
+    const oldZoom = routeMapState.zoom;
+    if (oldZoom === null) return;
+    const newZoom = clamp(oldZoom + delta, 3, 19);
+    if (newZoom === oldZoom) return;
+    const factor = 2 ** (newZoom - oldZoom);
+    routeMapState.centerX *= factor;
+    routeMapState.centerY *= factor;
+    routeMapState.zoom = newZoom;
+    routeMapState.autoFit = false;
+    scheduleRouteMapRender();
+  }
+
+  function setupRouteMapInteraction() {
+    const canvas = $("routeMapCanvas");
+    canvas.addEventListener("pointerdown", event => {
+      if (!validRoutePoints(currentRouteDay()).length) return;
+      routeMapState.dragging = true;
+      routeMapState.pointerId = event.pointerId;
+      routeMapState.lastX = event.clientX;
+      routeMapState.lastY = event.clientY;
+      canvas.setPointerCapture?.(event.pointerId);
+    });
+    canvas.addEventListener("pointermove", event => {
+      if (!routeMapState.dragging || event.pointerId !== routeMapState.pointerId) return;
+      const dx = event.clientX - routeMapState.lastX;
+      const dy = event.clientY - routeMapState.lastY;
+      routeMapState.lastX = event.clientX;
+      routeMapState.lastY = event.clientY;
+      routeMapState.centerX -= dx;
+      routeMapState.centerY -= dy;
+      routeMapState.autoFit = false;
+      scheduleRouteMapRender();
+    });
+    const finishDrag = event => {
+      if (event.pointerId !== routeMapState.pointerId) return;
+      routeMapState.dragging = false;
+      routeMapState.pointerId = null;
+    };
+    canvas.addEventListener("pointerup", finishDrag);
+    canvas.addEventListener("pointercancel", finishDrag);
+    canvas.addEventListener("wheel", event => {
+      event.preventDefault();
+      changeMapZoom(event.deltaY < 0 ? 1 : -1);
+    }, { passive: false });
+    $("mapZoomIn").addEventListener("click", () => changeMapZoom(1));
+    $("mapZoomOut").addEventListener("click", () => changeMapZoom(-1));
+    if ("ResizeObserver" in window) {
+      routeResizeObserver = new ResizeObserver(() => resizeRouteCanvas());
+      routeResizeObserver.observe($("routeMapWrap"));
+    } else {
+      window.addEventListener("resize", resizeRouteCanvas);
+    }
+  }
+
+  function chooseVideoMime() {
+    if (!("MediaRecorder" in window)) return null;
+    const candidates = [
+      { mime: "video/webm;codecs=vp9", ext: "webm" },
+      { mime: "video/webm;codecs=vp8", ext: "webm" },
+      { mime: "video/mp4;codecs=avc1.42E01E", ext: "mp4" },
+      { mime: "video/webm", ext: "webm" }
+    ];
+    return candidates.find(item => !MediaRecorder.isTypeSupported || MediaRecorder.isTypeSupported(item.mime)) || { mime: "", ext: "webm" };
+  }
+
+  function videoDimensions(format) {
+    if (format === "portrait") return { width: 720, height: 1280 };
+    if (format === "square") return { width: 900, height: 900 };
+    return { width: 1280, height: 720 };
+  }
+
+  function setVideoProgress(percent, text) {
+    const value = clamp(Math.round(percent), 0, 100);
+    $("videoProgress").hidden = false;
+    $("videoProgressBar").style.width = `${value}%`;
+    $("videoProgressPercent").textContent = `${value}%`;
+    if (text) $("videoProgressText").textContent = text;
+  }
+
+  async function preloadVideoTiles(view, width, height) {
+    const tiles = visibleTiles(view, width, height, 1);
+    const entries = tiles.map(tile => tileEntry(view.zoom, tile.x, tile.y)).filter(Boolean);
+    let completed = 0;
+    await Promise.all(entries.map(entry => entry.promise.finally(() => {
+      completed += 1;
+      setVideoProgress(4 + (completed / Math.max(1, entries.length)) * 12, "Kartenmaterial wird geladen …");
+    })));
+  }
+
+  function drawVideoOverlay(ctx, day, width, height, progress, elapsed, totalDuration) {
+    const pad = Math.max(24, width * .035);
+    const compact = width < height;
+    const titleSize = compact ? 27 : 31;
+    ctx.save();
+    const topGradient = ctx.createLinearGradient(0, 0, 0, compact ? 180 : 130);
+    topGradient.addColorStop(0, "rgba(2,8,18,.92)");
+    topGradient.addColorStop(1, "rgba(2,8,18,0)");
+    ctx.fillStyle = topGradient;ctx.fillRect(0, 0, width, compact ? 200 : 150);
+    const bottomGradient = ctx.createLinearGradient(0, height - 160, 0, height);
+    bottomGradient.addColorStop(0, "rgba(2,8,18,0)");bottomGradient.addColorStop(1, "rgba(2,8,18,.94)");
+    ctx.fillStyle = bottomGradient;ctx.fillRect(0, height - 175, width, 175);
+
+    ctx.fillStyle = "#fff";ctx.font = `950 ${titleSize}px system-ui`;ctx.textAlign = "left";ctx.fillText("SELLENCE", pad, pad + titleSize);
+    ctx.fillStyle = "#39ddff";ctx.font = `850 ${compact ? 14 : 15}px system-ui`;ctx.fillText("KILOMETER-TRACKER · ROUTE REPLAY", pad, pad + titleSize + 24);
+    ctx.textAlign = "right";ctx.fillStyle = "#dceafb";ctx.font = `800 ${compact ? 14 : 16}px system-ui`;ctx.fillText(fmtDate(day.startedAt), width - pad, pad + titleSize);
+    ctx.fillStyle = "#9fb3c9";ctx.font = `600 ${compact ? 11 : 13}px system-ui`;ctx.fillText(day.name || "Fahrt", width - pad, pad + titleSize + 22);
+
+    const barY = height - (compact ? 72 : 58);
+    ctx.fillStyle = "rgba(255,255,255,.16)";ctx.roundRect(pad, barY, width - pad * 2, 8, 4);ctx.fill();
+    const barGradient = ctx.createLinearGradient(pad, 0, width - pad, 0);barGradient.addColorStop(0, "#2f83ff");barGradient.addColorStop(.55, "#39ddff");barGradient.addColorStop(1, "#75f66a");
+    ctx.fillStyle = barGradient;ctx.roundRect(pad, barY, (width - pad * 2) * progress, 8, 4);ctx.fill();
+    ctx.textAlign = "left";ctx.fillStyle = "#fff";ctx.font = `900 ${compact ? 20 : 22}px system-ui`;ctx.fillText(fmtKm(totalKm(day)), pad, barY - 14);
+    ctx.textAlign = "right";ctx.fillStyle = "#b5c7da";ctx.font = `700 ${compact ? 12 : 13}px system-ui`;ctx.fillText(`${Math.max(0, Math.ceil((totalDuration - elapsed) / 1000))} s`, width - pad, barY - 15);
+    ctx.fillStyle = "rgba(2,8,18,.72)";ctx.font = `600 ${compact ? 9 : 10}px system-ui`;ctx.fillText("© OpenStreetMap-Mitwirkende", width - pad, height - 13);
+    ctx.restore();
+  }
+
+  function drawVideoFrame(ctx, baseCanvas, day, geometry, car, width, height, elapsed, totalDuration) {
+    const intro = 750;
+    const outro = 850;
+    const driveDuration = Math.max(1000, totalDuration - intro - outro);
+    const progress = clamp((elapsed - intro) / driveDuration, 0, 1);
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(baseCanvas, 0, 0);
+    strokeRoute(ctx, geometry.coords, progress, Math.max(6, width / 180));
+    const location = geometryPointAt(geometry, progress);
+    if (location) {
+      ctx.save();
+      ctx.fillStyle = "rgba(57,221,255,.12)";ctx.beginPath();ctx.arc(location.x, location.y, Math.max(36, width / 24), 0, Math.PI * 2);ctx.fill();
+      ctx.restore();
+      drawCarShape(ctx, location.x, location.y, location.angle, car, Math.max(.9, width / 1050));
+    }
+    drawVideoOverlay(ctx, day, width, height, progress, elapsed, totalDuration);
+    if (elapsed < intro) {
+      const alpha = 1 - elapsed / intro;
+      ctx.save();ctx.fillStyle = `rgba(2,8,18,${.45 * alpha})`;ctx.fillRect(0, 0, width, height);ctx.restore();
+    }
+    if (elapsed > totalDuration - outro) {
+      const alpha = clamp((elapsed - (totalDuration - outro)) / outro, 0, 1);
+      ctx.save();ctx.fillStyle = `rgba(2,8,18,${.45 * alpha})`;ctx.fillRect(0, 0, width, height);ctx.restore();
+    }
+  }
+
+  async function createRouteVideo() {
+    const day = currentRouteDay();
+    const points = validRoutePoints(day);
+    if (!day || points.length < 2) return showToast("Keine Route", "Für ein Fahrvideo werden mindestens zwei GPS-Punkte benötigt.");
+    const mime = chooseVideoMime();
+    if (!mime || !("MediaRecorder" in window) || !HTMLCanvasElement.prototype.captureStream) {
+      return showToast("Video nicht unterstützt", "Bitte nutze einen aktuellen Chrome-, Edge-, Firefox- oder Safari-Browser.");
+    }
+    if (videoJob) return;
+    const durationSeconds = clamp(parseInt($("videoDurationSelect").value, 10) || 15, 5, 60);
+    const format = $("videoFormatSelect").value;
+    const { width, height } = videoDimensions(format);
+    const car = CAR_TYPES.find(item => item.id === selectedCarId) || CAR_TYPES[1];
+    const canvas = document.createElement("canvas");
+    canvas.width = width;canvas.height = height;
+    canvas.style.cssText = "position:fixed;left:-10000px;top:0;width:1px;height:1px;pointer-events:none";
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext("2d");
+    const baseCanvas = document.createElement("canvas");baseCanvas.width = width;baseCanvas.height = height;
+    const baseCtx = baseCanvas.getContext("2d");
+    const view = routeViewFor(points, width, height, format === "portrait" ? 145 : 105);
+    videoJob = { cancelled: false, canvas, recorder: null, frame: null };
+    $("createRouteVideoBtn").disabled = true;
+    $("cancelRouteVideoBtn").hidden = false;
+    $("videoResult").hidden = true;
+    setVideoProgress(2, "Video wird vorbereitet …");
+
+    try {
+      await preloadVideoTiles(view, width, height);
+      if (videoJob.cancelled) throw new Error("cancelled");
+      drawMapLayer(baseCtx, view, width, height, false);
+      const coords = projectRoute(points, view, width, height);
+      drawStopMarkers(baseCtx, day, view, width, height, Math.max(1, width / 1100));
+      drawRouteMarker(baseCtx, coords[0].x, coords[0].y, "#57f287", "START", Math.max(1, width / 1100));
+      drawRouteMarker(baseCtx, coords.at(-1).x, coords.at(-1).y, "#ff6079", "ZIEL", Math.max(1, width / 1100));
+      const geometry = routeGeometry(coords);
+      const stream = canvas.captureStream(30);
+      const chunks = [];
+      const options = mime.mime ? { mimeType: mime.mime, videoBitsPerSecond: format === "portrait" ? 7000000 : 8500000 } : { videoBitsPerSecond: 8000000 };
+      const recorder = new MediaRecorder(stream, options);
+      videoJob.recorder = recorder;
+      recorder.addEventListener("dataavailable", event => { if (event.data?.size) chunks.push(event.data); });
+      const stopped = new Promise(resolve => recorder.addEventListener("stop", resolve, { once: true }));
+      recorder.start(250);
+      const totalDuration = durationSeconds * 1000;
+      const started = performance.now();
+      await new Promise(resolve => {
+        const frame = now => {
+          const elapsed = Math.min(totalDuration, now - started);
+          drawVideoFrame(ctx, baseCanvas, day, geometry, car, width, height, elapsed, totalDuration);
+          setVideoProgress(18 + (elapsed / totalDuration) * 80, "Auto fährt deine Route ab …");
+          if (videoJob?.cancelled || elapsed >= totalDuration) return resolve();
+          videoJob.frame = requestAnimationFrame(frame);
+        };
+        videoJob.frame = requestAnimationFrame(frame);
+      });
+      if (recorder.state !== "inactive") recorder.stop();
+      await stopped;
+      stream.getTracks().forEach(track => track.stop());
+      if (videoJob.cancelled) throw new Error("cancelled");
+      const blob = new Blob(chunks, { type: recorder.mimeType || mime.mime || "video/webm" });
+      if (!blob.size) throw new Error("Leere Videodatei");
+      if (lastVideoUrl) URL.revokeObjectURL(lastVideoUrl);
+      lastVideoUrl = URL.createObjectURL(blob);
+      const preview = $("routeVideoPreview");
+      preview.src = lastVideoUrl;
+      const download = $("routeVideoDownload");
+      download.href = lastVideoUrl;
+      download.download = `SELLENCE-Route-${dateOnly(day.startedAt)}-${sanitizeFile(day.name || "Fahrt")}.${mime.ext}`;
+      download.textContent = `Video herunterladen (${mime.ext.toUpperCase()})`;
+      $("videoResult").hidden = false;
+      setVideoProgress(100, "Fahrvideo ist fertig");
+      showToast("Fahrvideo erstellt", "Du kannst das Video jetzt ansehen und herunterladen.");
+      preview.play().catch(() => {});
+    } catch (error) {
+      if (String(error?.message) === "cancelled") showToast("Video abgebrochen", "Die Videoerstellung wurde beendet.");
+      else {
+        console.error(error);
+        showToast("Video fehlgeschlagen", "Das Fahrvideo konnte auf diesem Gerät nicht erstellt werden.");
+      }
+      $("videoProgress").hidden = true;
+    } finally {
+      if (videoJob?.frame) cancelAnimationFrame(videoJob.frame);
+      if (videoJob?.recorder?.state && videoJob.recorder.state !== "inactive") {
+        try { videoJob.recorder.stop(); } catch {}
+      }
+      canvas.remove();
+      videoJob = null;
+      $("cancelRouteVideoBtn").hidden = true;
+      renderRouteStudio();
+    }
+  }
+
+  function cancelRouteVideo() {
+    if (!videoJob) return;
+    videoJob.cancelled = true;
+  }
+
   function render() {
     $("userName").value = active?.name || profile.name || "";
     renderStatus();
@@ -561,6 +1275,7 @@
     renderStationary();
     renderLiveTimeline();
     renderOverview();
+    renderRouteStudio();
     const canTrack = !!active;
     $("startBtn").disabled = watchId !== null;
     $("startBtn").innerHTML = active && watchId === null ? "<span>▶</span> Tracking fortsetzen" : "<span>▶</span> Arbeitstag starten";
@@ -656,7 +1371,7 @@
       <td class="num">${fmtKm(day.gpsKm)}</td>
       <td class="num">${fmtSignedKm(day.adjustmentKm)}</td>
       <td class="num"><strong>${fmtKm(totalKm(day))}</strong></td>
-      <td><div class="rowActions"><button class="tableBtn" data-edit-day="${day.id}" type="button">Bearbeiten</button></div></td>
+      <td><div class="rowActions"><button class="tableBtn routeBtn" data-route-day="${day.id}" type="button">Karte</button><button class="tableBtn" data-edit-day="${day.id}" type="button">Bearbeiten</button></div></td>
     </tr>`).join("");
   }
 
@@ -1032,7 +1747,7 @@
   function backupData() {
     const payload = {
       app: "SELLENCE-KILOMETER-TRACKER",
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       profile,
       days,
@@ -1102,9 +1817,25 @@
     $("currentMonthBtn").addEventListener("click", setCurrentMonth);
     $("allTimeBtn").addEventListener("click", setAllTime);
     $("daysBody").addEventListener("click", event => {
+      const routeButton = event.target.closest("[data-route-day]");
+      if (routeButton) { selectRouteDay(routeButton.dataset.routeDay, true); return; }
       const button = event.target.closest("[data-edit-day]");
       if (button) openEdit(button.dataset.editDay, false);
     });
+    $("routeDaySelect").addEventListener("change", event => selectRouteDay(event.target.value, false));
+    $("showActiveRouteBtn").addEventListener("click", () => active && selectRouteDay(ROUTE_ACTIVE_ID, true));
+    $("centerRouteBtn").addEventListener("click", () => { routeMapState.autoFit = true; scheduleRouteMapRender(); });
+    $("carChooser").addEventListener("click", event => {
+      const button = event.target.closest("[data-car-id]");
+      if (!button) return;
+      selectedCarId = button.dataset.carId;
+      profile.carId = selectedCarId;
+      persistAll();
+      renderCarChooser();
+      scheduleRouteMapRender();
+    });
+    $("createRouteVideoBtn").addEventListener("click", createRouteVideo);
+    $("cancelRouteVideoBtn").addEventListener("click", cancelRouteVideo);
     $("closeEditBtn").addEventListener("click", closeEdit);
     $("cancelEditBtn").addEventListener("click", closeEdit);
     $("saveEditBtn").addEventListener("click", saveEdit);
@@ -1149,8 +1880,11 @@
   function setupApp() {
     normalizeLoadedData();
     setupEvents();
+    renderCarChooser();
+    setupRouteMapInteraction();
     setCurrentMonth();
-    $("secureNotice").hidden = window.isSecureContext || location.hostname === "localhost";
+    const secureNotice = $("secureNotice");
+    if (secureNotice) secureNotice.hidden = window.isSecureContext || location.hostname === "localhost";
     if (active) {
       showToast("Offener Arbeitstag gefunden", "Tippe auf „Tracking fortsetzen“, damit die GPS-Erfassung weiterläuft.");
       startTimer();

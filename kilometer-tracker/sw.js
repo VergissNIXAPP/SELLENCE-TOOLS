@@ -1,7 +1,14 @@
-const CACHE = "sellence-km-tracker-v2";
+const CACHE = "sellence-km-tracker-v3-route-video";
 const CORE = ["./", "./index.html", "./tracker.css", "./tracker.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
-self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting())));
-self.addEventListener("activate", event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
+
+self.addEventListener("install", event => {
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim()));
+});
+
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
@@ -9,5 +16,5 @@ self.addEventListener("fetch", event => {
   event.respondWith(caches.match(event.request).then(hit => hit || fetch(event.request).then(response => {
     if (response.ok) caches.open(CACHE).then(cache => cache.put(event.request, response.clone()));
     return response;
-  }).catch(() => caches.match("./index.html"))));
+  }).catch(() => event.request.mode === "navigate" ? caches.match("./index.html") : new Response("Offline", { status: 504 }))));
 });
