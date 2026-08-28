@@ -790,6 +790,56 @@ window.PRODUCT_DATA = [
     "image": "assets/thumbs/terea-silver-selection.png"
   },
   {
+    "brand": "TEREA",
+    "name": "Amber XL",
+    "ean": "4023500047081",
+    "pack_ean": "4023500747080",
+    "pack": "26 Stück | 10,00 €",
+    "gebinde": "10 Pack. / 260 St. | 100,00 €",
+    "category": "IQOS Tabaksticks",
+    "image": "assets/thumbs/terea-amber-xl.png"
+  },
+  {
+    "brand": "TEREA",
+    "name": "Russet XL",
+    "ean": "4023500047098",
+    "pack_ean": "4023500747097",
+    "pack": "26 Stück | 10,00 €",
+    "gebinde": "10 Pack. / 260 St. | 100,00 €",
+    "category": "IQOS Tabaksticks",
+    "image": "assets/thumbs/terea-russet-xl.png"
+  },
+  {
+    "brand": "TEREA",
+    "name": "Turquoise XL",
+    "ean": "4023500047166",
+    "pack_ean": "4023500747165",
+    "pack": "26 Stück | 10,00 €",
+    "gebinde": "10 Pack. / 260 St. | 100,00 €",
+    "category": "IQOS Tabaksticks",
+    "image": "assets/thumbs/terea-turquoise-xl.png"
+  },
+  {
+    "brand": "TEREA",
+    "name": "Sienna XL",
+    "ean": "4023500047173",
+    "pack_ean": "4023500747172",
+    "pack": "26 Stück | 10,00 €",
+    "gebinde": "10 Pack. / 260 St. | 100,00 €",
+    "category": "IQOS Tabaksticks",
+    "image": "assets/thumbs/terea-sienna-xl.png"
+  },
+  {
+    "brand": "TEREA",
+    "name": "Teak XL",
+    "ean": "4023500047593",
+    "pack_ean": "4023500747592",
+    "pack": "26 Stück | 10,00 €",
+    "gebinde": "10 Pack. / 260 St. | 100,00 €",
+    "category": "IQOS Tabaksticks",
+    "image": "assets/thumbs/terea-teak-xl.png"
+  },
+  {
     "brand": "LEVIA",
     "name": "Deep Mint",
     "ean": "4023500047357",
