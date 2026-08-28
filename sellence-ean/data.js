@@ -1198,5 +1198,35 @@ window.PRODUCT_DATA = [
     "gebinde": "",
     "category": "VEEV Kit",
     "image": "assets/thumbs/veev-one-kit-freshy-green.png"
+  },
+  {
+    "brand": "VEEV ONE",
+    "name": "Kit Plus Moonlight Gold",
+    "ean": "4023500050319",
+    "pack_ean": "",
+    "pack": "14,90 €",
+    "gebinde": "",
+    "category": "VEEV Kit",
+    "image": "assets/thumbs/veev-one-plus-moonlight-gold.png"
+  },
+  {
+    "brand": "VEEV ONE",
+    "name": "Kit Plus Starlit Purple",
+    "ean": "4023500050326",
+    "pack_ean": "",
+    "pack": "14,90 €",
+    "gebinde": "",
+    "category": "VEEV Kit",
+    "image": "assets/thumbs/veev-one-plus-starlit-purple.png"
+  },
+  {
+    "brand": "VEEV ONE",
+    "name": "Kit Plus Twilight Navy",
+    "ean": "4023500050302",
+    "pack_ean": "",
+    "pack": "14,90 €",
+    "gebinde": "",
+    "category": "VEEV Kit",
+    "image": "assets/thumbs/veev-one-plus-twilight-navy.png"
   }
 ];
