@@ -3,12 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a0a0d" />
-  <title>SELLENCE‑EAN 2026</title>
+  <meta name="theme-color" content="#05060a" />
+  <title>SELLENCE‑EAN Enterprise 2026</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icon-180.png" />
   <link rel="icon" href="assets/icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="bg"></div>
@@ -16,30 +19,30 @@
 
   <header class="top">
     <a class="backBtn" href="../index.html" aria-label="Zurück zu SELLENCE-TOOLS">
-      <span aria-hidden="true">←</span> Zurück
+      <span aria-hidden="true">←</span> SELLENCE Hub
     </a>
     <div class="heroPanel">
       <div class="heroGlow" aria-hidden="true"></div>
-      <div class="eyebrow">Digital Product Catalogue</div>
+      <div class="eyebrow">✨ Executive Catalog 2026</div>
       <div class="brandMark" aria-hidden="true">
-      <svg class="brandBarcode" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-  <rect x="6"  width="4" height="60"/>
-  <rect x="16" width="2" height="60"/>
-  <rect x="24" width="6" height="60"/>
-  <rect x="39" width="3" height="60"/>
-  <rect x="49" width="8" height="60"/>
-  <rect x="64" width="3" height="60"/>
-  <rect x="74" width="5" height="60"/>
-  <rect x="89" width="2" height="60"/>
-  <rect x="98" width="6" height="60"/>
-</svg>
+        <svg class="brandBarcode" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <rect x="6"  width="4" height="60"/>
+          <rect x="16" width="2" height="60"/>
+          <rect x="24" width="6" height="60"/>
+          <rect x="39" width="3" height="60"/>
+          <rect x="49" width="8" height="60"/>
+          <rect x="64" width="3" height="60"/>
+          <rect x="74" width="5" height="60"/>
+          <rect x="89" width="2" height="60"/>
+          <rect x="98" width="6" height="60"/>
+        </svg>
       </div>
       <h1 class="title">SELLENCE‑EAN</h1>
-      <p class="subtitle">EAN‑Übersicht 07/2026 mit Packungs‑ und Gebinde‑EANs für KataSymbol Excel‑Import</p>
+      <p class="subtitle">EAN‑Übersicht 09/2026 mit Packungs‑ und Gebinde‑EANs für KataSymbol Excel‑Import</p>
       <div class="heroStats" aria-label="App Kennzahlen">
         <div class="heroStat"><span id="heroProducts">–</span><small>Produkte</small></div>
         <div class="heroStat"><span id="heroBrands">–</span><small>Marken</small></div>
-        <div class="heroStat"><span>CSV</span><small>Export</small></div>
+        <div class="heroStat"><span>CSV</span><small>KataSymbol Export</small></div>
       </div>
     </div>
   </header>
@@ -47,10 +50,13 @@
   <main class="wrap">
     <section class="controls card">
       <div class="controlsRow">
-        <div class="searchWrap"><span aria-hidden="true">⌕</span><input id="search" class="search" type="search" placeholder="Suchen… z.B. TEREA, MB, Bronze, 7XL" autocomplete="off" /></div>
-        <button id="clearSel" class="btn ghost" type="button" title="Auswahl löschen">Leeren</button>
-        <button id="brandOrderBtn" class="btn ghost" type="button" title="Marken-Reihenfolge einstellen">Marken</button>
-        <button id="guideBtn" class="btn ghost" type="button" title="Anleitung anzeigen">Anleitung</button>
+        <div class="searchWrap">
+          <span aria-hidden="true">🔍</span>
+          <input id="search" class="search" type="search" placeholder="Produkt, EAN oder Marke suchen… (z.B. TEREA, XL, Amber)" autocomplete="off" />
+        </div>
+        <button id="clearSel" class="btn ghost" type="button" title="Auswahl löschen">🧹 Leeren</button>
+        <button id="brandOrderBtn" class="btn ghost" type="button" title="Marken-Reihenfolge einstellen">⚙️ Marken</button>
+        <button id="guideBtn" class="btn ghost" type="button" title="Anleitung anzeigen">🎬 Video-Guide</button>
       </div>
       <div class="hint" id="countHint"></div>
     </section>
@@ -62,40 +68,38 @@
     <div class="stickyInner">
       <div class="selInfo">
         <div class="selCount" id="selCount">0 ausgewählt</div>
-        <div class="selSub" id="selSub">Exportiert als CSV für KataSymbol</div>
+        <div class="selSub" id="selSub">Bereit für den KataSymbol CSV‑Export</div>
       </div>
-      <button id="exportBtn" class="btn primary" type="button">Export</button>
+      <button id="exportBtn" class="btn primary" type="button">⚡ CSV EXPORT</button>
     </div>
   </footer>
-
 
   <!-- Export-Auswahl Modal -->
   <div id="exportModal" class="modal" aria-hidden="true">
     <div class="modalBackdrop" data-close="1"></div>
     <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="exportTitle">
-      <div class="modalTitle" id="exportTitle">Was möchtest du exportieren?</div>
-      <div class="modalText">Wähle, ob die <b>Packungs‑EAN</b> oder die <b>Gebinde‑EAN</b> in die CSV geschrieben wird.</div>
+      <div class="modalTitle" id="exportTitle">Welche EAN exportieren?</div>
+      <div class="modalText">Wähle den passenden Code-Typ für deinen KataSymbol Excel‑ / Barcode-Drucker-Import.</div>
       <div class="modalBtns">
-        <button id="exportPackBtn" class="btn primary" type="button">Packungs‑EAN</button>
-        <button id="exportGebBtn" class="btn ghost" type="button">Gebinde‑EAN</button>
+        <button id="exportPackBtn" class="btn primary" type="button">📦 Packungs‑EAN (Einzelst.)</button>
+        <button id="exportGebBtn" class="btn ghost" type="button">📦📦 Gebinde‑EAN (Stange)</button>
         <button id="exportCancelBtn" class="btn ghost" type="button">Abbrechen</button>
       </div>
     </div>
   </div>
 
-  
   <!-- Marken-Reihenfolge Modal -->
   <div id="brandModal" class="modal" aria-hidden="true">
     <div class="modalBackdrop" data-close="1"></div>
     <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="brandTitle">
       <div class="modalTitle" id="brandTitle">Marken-Reihenfolge</div>
-      <div class="modalText">Stelle ein, in welcher Reihenfolge die Marken (von oben nach unten) angezeigt werden. Wird lokal gespeichert.</div>
+      <div class="modalText">Passe die Reihenfolge der Markengruppen nach deinen Wünschen an. Sie wird dauerhaft in deinem Browser gesichert.</div>
 
       <div id="brandOrderList" class="brandOrderList"></div>
 
-      <div class="modalBtns" style="margin-top:14px;">
-        <button id="brandResetBtn" class="btn ghost" type="button">Standard</button>
-        <button id="brandCloseBtn" class="btn primary" type="button">Fertig</button>
+      <div class="modalBtns" style="margin-top:20px;">
+        <button id="brandResetBtn" class="btn ghost" type="button">Standard-Sortierung</button>
+        <button id="brandCloseBtn" class="btn primary" type="button">Fertigstellen</button>
       </div>
     </div>
   </div>
@@ -104,14 +108,14 @@
   <div id="guideModal" class="modal" aria-hidden="true">
     <div class="modalBackdrop" data-close="1"></div>
     <div class="modalCard guideCard" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
-      <div class="modalTitle" id="guideTitle">Anleitung</div>
+      <div class="modalTitle" id="guideTitle">Video-Anleitung & Schulung</div>
       <div class="guideVideoWrap">
         <video id="guideVideo" class="guideVideo" controls preload="metadata" playsinline>
           <source src="assets/anleitung.mp4" type="video/mp4" />
-          Dein Browser kann dieses Video nicht abspielen.
+          Dein Browser unterstützt keine MP4 Video-Wiedergabe.
         </video>
       </div>
-      <div class="modalBtns" style="margin-top:14px;">
+      <div class="modalBtns" style="margin-top:20px;">
         <button id="guideCloseBtn" class="btn primary" type="button">Schließen</button>
       </div>
     </div>
