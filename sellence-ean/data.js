@@ -338,44 +338,44 @@ window.PRODUCT_DATA = [
     "gebinde": "3 Pack. / 180 St. | 60,00 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/marlboro-crafted-gold-op-7xl-box-lpe.png"
- },
- {
+  },
+  {
     "brand": "L&M SELECTION",
     "name": "L&M Red Label 10,00 €",
-    "ean": "42350004", // 8-stellige Packungs-EAN
-    "pack_ean": "4023500044813", // 13-stellige Gebinde-EAN
-    "pack": "10,00 €",
-    "gebinde": "Stange",
+    "ean": "42350004",
+    "pack_ean": "4023500044813",
+    "pack": "24 Stück | 10,00 €",
+    "gebinde": "10 Pack. / 240 St. | 100,00 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/lundm-red-label-10-00.png"
   },
   {
     "brand": "L&M SELECTION",
     "name": "L&M Blue Label 10,00 €",
-    "ean": "42350074", // 8-stellige Packungs-EAN
-    "pack_ean": "4023500044820", // 13-stellige Gebinde-EAN
-    "pack": "10,00 €",
-    "gebinde": "Stange",
+    "ean": "42350074",
+    "pack_ean": "4023500044820",
+    "pack": "24 Stück | 10,00 €",
+    "gebinde": "10 Pack. / 240 St. | 100,00 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/lundm-blue-label-10-00.png"
   },
   {
     "brand": "L&M SELECTION",
     "name": "L&M Red Label 20,00 €",
-    "ean": "42350011", // 8-stellige Packungs-EAN
-    "pack_ean": "4023500045117", // 13-stellige Gebinde-EAN
-    "pack": "20,00 €",
-    "gebinde": "Stange",
+    "ean": "42350011",
+    "pack_ean": "4023500045117",
+    "pack": "52 Stück | 20,00 €",
+    "gebinde": "3 Pack. / 156 St. | 60,00 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/lundm-red-label-20-00.png"
   },
   {
     "brand": "L&M SELECTION",
     "name": "L&M Blue Label 20,00 €",
-    "ean": "42350028", // 8-stellige Packungs-EAN
-    "pack_ean": "4023500045124", // 13-stellige Gebinde-EAN
-    "pack": "20,00 €",
-    "gebinde": "Stange",
+    "ean": "42350028",
+    "pack_ean": "4023500045124",
+    "pack": "52 Stück | 20,00 €",
+    "gebinde": "3 Pack. / 156 St. | 60,00 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/lundm-blue-label-20-00.png"
   },
