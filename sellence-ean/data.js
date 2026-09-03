@@ -340,6 +340,46 @@ window.PRODUCT_DATA = [
     "image": "assets/thumbs/marlboro-crafted-gold-op-7xl-box-lpe.png"
   },
   {
+    "brand": "L&M SELECTION",
+    "name": "L&M Red Label 10,00 €",
+    "ean": "4023500044813",
+    "pack_ean": "4023500744812",
+    "pack": "10,00 €",
+    "gebinde": "Stange",
+    "category": "Zigaretten",
+    "image": "assets/thumbs/lundm-red-label-10-00.png"
+  },
+  {
+    "brand": "L&M SELECTION",
+    "name": "L&M Blue Label 10,00 €",
+    "ean": "4023500044820",
+    "pack_ean": "4023500744829",
+    "pack": "10,00 €",
+    "gebinde": "Stange",
+    "category": "Zigaretten",
+    "image": "assets/thumbs/lundm-blue-label-10-00.png"
+  },
+  {
+    "brand": "L&M SELECTION",
+    "name": "L&M Red Label 20,00 €",
+    "ean": "4023500045117",
+    "pack_ean": "4023500745116",
+    "pack": "20,00 €",
+    "gebinde": "Stange",
+    "category": "Zigaretten",
+    "image": "assets/thumbs/lundm-red-label-20-00.png"
+  },
+  {
+    "brand": "L&M SELECTION",
+    "name": "L&M Blue Label 20,00 €",
+    "ean": "4023500045124",
+    "pack_ean": "4023500745123",
+    "pack": "20,00 €",
+    "gebinde": "Stange",
+    "category": "Zigaretten",
+    "image": "assets/thumbs/lundm-blue-label-20-00.png"
+  },
+  {
     "brand": "L&M",
     "name": "Red Label OP-Box",
     "ean": "42466659",
@@ -674,8 +714,8 @@ window.PRODUCT_DATA = [
     "name": "Classic Red",
     "ean": "4023500046688",
     "pack_ean": "4023500746687",
-    "pack": "20 Stück | 7,00 €",
-    "gebinde": "10 Pack. / 200 St. | 70,00 €",
+    "pack": "20 Stück | 7,50 €",
+    "gebinde": "10 Pack. / 200 St. | 75,00 €",
     "category": "IQOS Tabaksticks",
     "image": "assets/thumbs/delia-classic-red.png"
   },
@@ -684,8 +724,8 @@ window.PRODUCT_DATA = [
     "name": "Classic Gold",
     "ean": "4023500046695",
     "pack_ean": "4023500746694",
-    "pack": "20 Stück | 7,00 €",
-    "gebinde": "10 Pack. / 200 St. | 70,00 €",
+    "pack": "20 Stück | 7,50 €",
+    "gebinde": "10 Pack. / 200 St. | 75,00 €",
     "category": "IQOS Tabaksticks",
     "image": "assets/thumbs/delia-classic-gold.png"
   },
@@ -694,8 +734,8 @@ window.PRODUCT_DATA = [
     "name": "Classic Green",
     "ean": "4023500046701",
     "pack_ean": "4023500746700",
-    "pack": "20 Stück | 7,00 €",
-    "gebinde": "10 Pack. / 200 St. | 70,00 €",
+    "pack": "20 Stück | 7,50 €",
+    "gebinde": "10 Pack. / 200 St. | 75,00 €",
     "category": "IQOS Tabaksticks",
     "image": "assets/thumbs/delia-classic-green.png"
   },
@@ -848,36 +888,6 @@ window.PRODUCT_DATA = [
     "gebinde": "10 Pack. / 200 St. | 75,00 €",
     "category": "IQOS Nikotinsticks",
     "image": "assets/thumbs/levia-deep-mint.png"
-  },
-  {
-    "brand": "LEVIA",
-    "name": "Dark Berry",
-    "ean": "4023500047340",
-    "pack_ean": "4023500747349",
-    "pack": "20 Stück | 7,50 €",
-    "gebinde": "10 Pack. / 200 St. | 75,00 €",
-    "category": "IQOS Nikotinsticks",
-    "image": "assets/thumbs/levia-dark-berry.png"
-  },
-  {
-    "brand": "LEVIA",
-    "name": "Red Berry",
-    "ean": "4023500047333",
-    "pack_ean": "4023500747332",
-    "pack": "20 Stück | 7,50 €",
-    "gebinde": "10 Pack. / 200 St. | 75,00 €",
-    "category": "IQOS Nikotinsticks",
-    "image": "assets/thumbs/levia-red-berry.png"
-  },
-  {
-    "brand": "LEVIA",
-    "name": "Exotic",
-    "ean": "4023500056793",
-    "pack_ean": "4023500756792",
-    "pack": "20 Stück | 7,50 €",
-    "gebinde": "10 Pack. / 200 St. | 75,00 €",
-    "category": "IQOS Nikotinsticks",
-    "image": "assets/thumbs/levia-exotic.png"
   },
   {
     "brand": "LEVIA",
