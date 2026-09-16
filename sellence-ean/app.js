@@ -1,5 +1,6 @@
 const LS_KEY = "sellence_ean_selected_v3";
 const BRAND_ORDER_KEY = "sellence_ean_group_order_v2";
+const QTY_KEY = "sellence_ean_quantities_v1";
 
 const byId = (id) => document.getElementById(id);
 const listEl = byId("list");
@@ -86,6 +87,7 @@ function slugifyName(name){
 }
 
 let selected = new Set();
+let quantities = {};
 
 function loadSelection(){
   try{
@@ -99,7 +101,33 @@ function loadSelection(){
 function saveSelection(){
   try{
     localStorage.setItem(LS_KEY, JSON.stringify([...selected]));
+    localStorage.setItem(QTY_KEY, JSON.stringify(quantities));
   }catch(e){}
+}
+
+function loadQuantities(){
+  try{
+    const raw = localStorage.getItem(QTY_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    if(parsed && typeof parsed === "object" && !Array.isArray(parsed)) quantities = parsed;
+  }catch(e){ quantities = {}; }
+  // Bestehende Auswahlen aus älteren Versionen automatisch mit Menge 1 übernehmen.
+  for(const key of selected){
+    if(!Number.isFinite(Number(quantities[key])) || Number(quantities[key]) < 1) quantities[key] = 1;
+  }
+}
+
+function getQuantity(key){
+  const value = Math.floor(Number(quantities[key] || 1));
+  return Math.max(1, Math.min(99, Number.isFinite(value) ? value : 1));
+}
+
+function setQuantity(key, value){
+  const qty = Math.max(1, Math.min(99, Math.floor(Number(value) || 1)));
+  quantities[key] = qty;
+  selected.add(key);
+  saveSelection();
+  updateFooter();
 }
 
 function norm(s){ return (s||"").toLowerCase().trim(); }
@@ -297,7 +325,7 @@ function render(){
     btnAll.type = "button";
     btnAll.textContent = "Alle";
     btnAll.addEventListener("click", ()=>{
-      for(const it of items) selected.add(itemKey(it));
+      for(const it of items){ const k=itemKey(it); selected.add(k); if(!quantities[k]) quantities[k]=1; }
       saveSelection(); updateFooter(); render();
     });
 
@@ -306,7 +334,7 @@ function render(){
     btnNone.type = "button";
     btnNone.textContent = "Keine";
     btnNone.addEventListener("click", ()=>{
-      for(const it of items) selected.delete(itemKey(it));
+      for(const it of items){ const k=itemKey(it); selected.delete(k); delete quantities[k]; }
       saveSelection(); updateFooter(); render();
     });
 
@@ -360,13 +388,68 @@ function render(){
         if(it.pack || it.gebinde){ const detail=document.createElement("div"); detail.className="prodDetail"; detail.textContent=[it.pack?`Packung: ${it.pack}`:"", it.gebinde?`Gebinde: ${it.gebinde}`:""].filter(Boolean).join(" · "); meta.append(detail); }
       }
 
+      const qtyWrap = document.createElement("div");
+      qtyWrap.className = "qtyWrap";
+      qtyWrap.setAttribute("aria-label", `Anzahl für ${it.name}`);
+
+      const minus = document.createElement("button");
+      minus.className = "qtyBtn";
+      minus.type = "button";
+      minus.textContent = "−";
+      minus.title = "Anzahl verringern";
+
+      const qtyValue = document.createElement("span");
+      qtyValue.className = "qtyValue";
+      qtyValue.textContent = isSel ? getQuantity(itemKey(it)) : "1";
+
+      const plus = document.createElement("button");
+      plus.className = "qtyBtn";
+      plus.type = "button";
+      plus.textContent = "+";
+      plus.title = "Anzahl erhöhen";
+
+      const qtyLabel = document.createElement("span");
+      qtyLabel.className = "qtyLabel";
+      qtyLabel.textContent = "Anzahl";
+
+      qtyWrap.append(qtyLabel, minus, qtyValue, plus);
+
+      [minus, plus, qtyWrap].forEach(el=>el.addEventListener("click", e=>e.stopPropagation()));
+      qtyWrap.addEventListener("keydown", e=>e.stopPropagation());
+
+      minus.addEventListener("click", ()=>{
+        const k = itemKey(it);
+        const current = selected.has(k) ? getQuantity(k) : 1;
+        if(current <= 1){
+          selected.delete(k);
+          delete quantities[k];
+          saveSelection(); updateFooter(); render();
+          return;
+        }
+        setQuantity(k, current - 1);
+        render();
+      });
+
+      plus.addEventListener("click", ()=>{
+        const k = itemKey(it);
+        const current = selected.has(k) ? getQuantity(k) : 0;
+        setQuantity(k, current + 1);
+        render();
+      });
+
       const check = document.createElement("div");
       check.className = "check";
       check.innerHTML = makeCheckIcon();
 
       function toggle(){
         const k = itemKey(it);
-        if(selected.has(k)) selected.delete(k); else selected.add(k);
+        if(selected.has(k)){
+          selected.delete(k);
+          delete quantities[k];
+        }else{
+          selected.add(k);
+          quantities[k] = quantities[k] || 1;
+        }
         saveSelection();
         updateFooter();
         render();
@@ -380,7 +463,7 @@ function render(){
         }
       });
 
-      card.append(thumb, meta, check);
+      card.append(thumb, meta, qtyWrap, check);
       grid.appendChild(card);
     }
 
@@ -391,7 +474,8 @@ function render(){
 
 function updateFooter(){
   const n = selected.size;
-  selCountEl.textContent = `${n} ausgewählt`;
+  const totalQty = [...selected].reduce((sum, key)=>sum + getQuantity(key), 0);
+  selCountEl.textContent = n ? `${n} Produkt${n===1?"":"e"} · ${totalQty} Stellplatz${totalQty===1?"":"plätze"}` : "0 ausgewählt";
   const msg = n ? "Bereit für CSV‑Export (KataSymbol)" : "Wähle Produkte für den Export";
   selSubEl.textContent = msg;
   byId("exportBtn").disabled = n===0;
@@ -455,7 +539,8 @@ function doExportCSV(mode){
   const chosen = PRODUCT_DATA.filter(it => selected.has(itemKey(it)));
 
   let missingGebinde = 0;
-  const lines = chosen.map(it => {
+  const lines = [];
+  for(const it of chosen){
     let eanOut = it.ean;
     if(mode !== "pack"){
       if(it.pack_ean){
@@ -465,8 +550,11 @@ function doExportCSV(mode){
         eanOut = it.ean;
       }
     }
-    return `${exportProductNameForCSV(it)},${eanOut}`;
-  });
+    const qty = getQuantity(itemKey(it));
+    for(let i=0; i<qty; i++){
+      lines.push(`${exportProductNameForCSV(it)},${eanOut}`);
+    }
+  }
 
   if(mode !== "pack" && missingGebinde > 0){
     const ok = confirm(`${missingGebinde} Produkt(e) haben keine Gebinde‑EAN in der Liste.
@@ -499,6 +587,7 @@ function exportCSV(){
 
 function clearSelection(){
   selected = new Set();
+  quantities = {};
   saveSelection();
   updateFooter();
   render();
@@ -535,6 +624,7 @@ function hideGuideModal(){
 }
 
 loadSelection();
+loadQuantities();
 if(heroProductsEl) heroProductsEl.textContent = PRODUCT_DATA.length;
 if(heroBrandsEl) heroBrandsEl.textContent = getAllBrands().length;
 updateFooter();
