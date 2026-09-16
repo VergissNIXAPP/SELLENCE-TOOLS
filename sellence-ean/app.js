@@ -1,4 +1,4 @@
-const LS_KEY = "sellence_ean_selected_v3";
+const LS_KEY = "sellence_ean_selected_v222";
 const BRAND_ORDER_KEY = "sellence_ean_group_order_v2";
 const QTY_KEY = "sellence_ean_quantities_v1";
 
