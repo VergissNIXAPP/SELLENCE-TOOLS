@@ -1,4 +1,4 @@
-const LS_KEY = "sellence_ean_selected_v222";
+const LS_KEY = "sellence_ean_selected_v3";
 const BRAND_ORDER_KEY = "sellence_ean_group_order_v2";
 const QTY_KEY = "sellence_ean_quantities_v1";
 
@@ -315,7 +315,12 @@ function render(){
 
     const title = document.createElement("div");
     title.className = "brandTitle";
-    title.textContent = brand;
+    const titleText = document.createElement("span");
+    titleText.textContent = brand;
+    const brandCount = document.createElement("span");
+    brandCount.className = "brandCount";
+    brandCount.textContent = items.length;
+    title.append(titleText, brandCount);
 
     const actions = document.createElement("div");
     actions.className = "brandActions";
