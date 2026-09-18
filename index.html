@@ -10,8 +10,33 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="tools.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="tools-v5.css?v=20260918-2338">
+  <link rel="stylesheet" href="styles-v5.css?v=20260918-2338">
+  <style id="sellence-critical-layout-v5">
+    /* Critical layout override: deliberately inline so stale PWA/CSS caches cannot undo centering. */
+    .sectionHead.sectionHead--compact{
+      display:flex !important;
+      justify-content:center !important;
+      align-items:center !important;
+      text-align:center !important;
+      width:100% !important;
+    }
+    .sectionHead.sectionHead--compact > div{
+      width:100% !important;
+      display:flex !important;
+      flex-direction:column !important;
+      justify-content:center !important;
+      align-items:center !important;
+      text-align:center !important;
+    }
+    .sectionHead.sectionHead--compact .sectionKicker,
+    .sectionHead.sectionHead--compact h3,
+    .sectionHead.sectionHead--compact .sectionLead{
+      margin-left:auto !important;
+      margin-right:auto !important;
+      text-align:center !important;
+    }
+  </style>
 </head>
 <body>
   <div class="ambient ambient--one" aria-hidden="true"></div>
@@ -331,7 +356,11 @@
     clearBtn.addEventListener("click",()=>{clearAuth();passEl.value="";errEl.style.display="none";passEl.focus();});
     if(!isAuthed()) showLogin();
     if("serviceWorker" in navigator){
-      window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+      window.addEventListener("load",()=>{
+        navigator.serviceWorker.register("./sw.js")
+          .then(reg=>reg.update())
+          .catch(()=>{});
+      });
     }
   </script>
   <script src="./assets/dokumente/dateien.js"></script>
