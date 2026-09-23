@@ -1,0 +1,9 @@
+SELLENCE-VERTRAGSLEITFADEN-CREATOR
+Version 1.2.0 · 24.09.2026
+
+- Offizielle Sortimentsübersichten 2026 eingearbeitet
+- Packungs-EAN und Gebinde-EAN sauber getrennt
+- Auswahl der EAN-Art vor PDF-Erstellung
+- Fehlende aktuelle Produkte in EAN-Datenbank ergänzt
+- Aktualisierte OTP-Größen und EAN-Zuordnungen
+- Bestehende Scan-/Vertragsfunktionen beibehalten

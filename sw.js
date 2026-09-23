@@ -1,4 +1,4 @@
-const CACHE_NAME = "sellence-tools-kilometer-tp-v888";
+const CACHE_NAME = "sellence-tools-contract-app-v5-20260924";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -9,6 +9,13 @@ const CORE_FILES = [
   "./icon-512.png",
   "./assets/kilometer-tracker.png",
   "./assets/tp-provisionsrechner.png",
+  "./assets/vertragsleitfaden.png",
+  "./vertragsleitfaden/index.html",
+  "./vertragsleitfaden/assets/css/styles.css",
+  "./vertragsleitfaden/assets/js/data.js",
+  "./vertragsleitfaden/assets/js/app.js",
+  "./vertragsleitfaden/assets/icon-192.png",
+  "./vertragsleitfaden/assets/icon-512.png",
   "./tp-provisionsrechner/index.html",
   "./tp-provisionsrechner/styles.css",
   "./tp-provisionsrechner/app.js",

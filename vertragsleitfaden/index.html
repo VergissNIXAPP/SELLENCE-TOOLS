@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>SELLENCE – Vertragsleitfaden Creator</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="icon" href="assets/icon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brandmark"><span class="branddot"></span><span>SELLENCE</span></div>
+      <div class="topbar-sub">FIELD WORKSPACE · CONTRACT SUPPORT</div>
+    </header>
+
+    <main class="main">
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">SELLENCE-VERTRAGSLEITFADEN-CREATOR</div>
+          <h1>Aus dem Distributionsvertrag wird eine <span>Bestellhilfe.</span></h1>
+          <p>Marktdaten eingeben, die vier Vertragsseiten scannen und automatisch eine druckbare Pflichtartikel-Übersicht mit scanbaren EAN-Barcodes erzeugen.</p>
+          <div class="hero-chips">
+            <span>✓ lokale Markierungserkennung</span><span>✓ EAN-Datenbank integriert</span><span>✓ A4-PDF für Laminierung</span>
+          </div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-number" id="dbCount">260</div>
+          <div class="hero-stat-label">EAN-Datensätze<br>im Creator</div>
+        </div>
+      </section>
+
+      <section class="stepper" aria-label="Arbeitsablauf">
+        <div class="step active"><b>1</b><span>Marktdaten</span></div>
+        <div class="step"><b>2</b><span>Vertrag scannen</span></div>
+        <div class="step"><b>3</b><span>Prüfen</span></div>
+        <div class="step"><b>4</b><span>PDF erstellen</span></div>
+      </section>
+
+      <div class="two-col">
+        <section class="panel">
+          <div class="panel-head">
+            <div><div class="kicker">01 · VERTRAG</div><h2>Marktdaten</h2></div>
+            <div class="panel-icon">M</div>
+          </div>
+          <div class="form-grid">
+            <label class="field wide"><span>Marktname *</span><input id="marketName" placeholder="z. B. EDEKA Mustermann, Flensburg" autocomplete="organization" /></label>
+            <label class="field"><span>Vertragsstart *</span><input id="startDate" type="text" inputmode="numeric" maxlength="10" placeholder="TT.MM.JJJJ" autocomplete="off" /></label>
+            <label class="field"><span>Vertragsende *</span><input id="endDate" type="text" inputmode="numeric" maxlength="10" placeholder="TT.MM.JJJJ" autocomplete="off" /></label>
+            <label class="field wide remember-field">
+              <span class="field-label"><span>Ansprechpartner für den Markt *</span><span class="remember-toggle"><input id="rememberContact" type="checkbox" /> <span>Merken</span></span></span>
+              <input id="contactName" placeholder="z. B. Andre Schorn" autocomplete="name" />
+            </label>
+            <label class="field wide remember-field">
+              <span class="field-label"><span>Telefonnummer Ansprechpartner</span><span class="remember-toggle"><input id="rememberPhone" type="checkbox" /> <span>Merken</span></span></span>
+              <input id="contactPhone" type="tel" placeholder="z. B. 0151 12345678" autocomplete="tel" />
+            </label>
+          </div>
+          <div class="date-status" id="dateStatus">Vertragslaufzeit wird nach Eingabe automatisch geprüft. Datum einfach als TT.MM.JJJJ eintippen.</div>
+        </section>
+
+        <section class="panel scanner-panel">
+          <div class="panel-head">
+            <div><div class="kicker">02 · SCAN</div><h2>Vertragsseiten erfassen</h2></div>
+            <div class="panel-icon">4×</div>
+          </div>
+          <div class="dropzone" id="dropzone">
+            <div class="scan-glyph">⌁</div>
+            <strong>4 Seiten hier ablegen</strong>
+            <span>JPG / PNG / WEBP oder PDF · Seiten vollständig und gerade erfassen</span>
+            <div class="drop-actions">
+              <button class="btn secondary" id="chooseFiles" type="button">Dateien auswählen</button>
+              <button class="btn secondary" id="cameraButton" type="button">Kamera öffnen</button>
+            </div>
+            <input id="fileInput" type="file" accept="image/*,application/pdf" multiple hidden />
+            <input id="cameraInput" type="file" accept="image/*" capture="environment" multiple hidden />
+          </div>
+          <div class="scan-note"><b>Tipp:</b> Die Analyse ist auf die vier beigefügten DIS-Anlagen abgestimmt. Bei Fotos sollte die gesamte Seite ohne starke Perspektive sichtbar sein.</div>
+          <div id="pageQueue" class="page-queue"></div>
+          <div class="scanner-actions">
+            <button class="btn ghost" id="demoBtn" type="button">Referenz-Demo laden</button>
+            <button class="btn primary" id="analyzeBtn" type="button" disabled>Seiten analysieren</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="analysis-box hidden" id="analysisBox">
+        <div class="analysis-top">
+          <div><div class="kicker">SCAN-ANALYSE</div><h2 id="analysisTitle">Vertrag wird ausgewertet …</h2><p id="analysisText">Seitentypen, Ausrichtung und Markierungen werden erkannt.</p></div>
+          <div class="progress-ring"><span id="progressValue">0%</span></div>
+        </div>
+        <div class="progress-track"><div id="progressBar"></div></div>
+      </section>
+
+      <section class="panel review hidden" id="reviewSection">
+        <div class="panel-head review-head">
+          <div><div class="kicker">03 · PRÜFUNG</div><h2>Erkannte Pflichtartikel</h2><p>Automatisch erkannte Auswahl prüfen. Ein Klick auf ein Produkt entfernt es; fehlende Artikel können aus der integrierten EAN-Datenbank ergänzt werden.</p></div>
+          <button class="btn secondary" id="addProductBtn" type="button">+ Artikel ergänzen</button>
+        </div>
+        <div class="summary-cards" id="summaryCards"></div>
+        <div id="scanWarnings" class="warnings"></div>
+        <div id="productGroups"></div>
+      </section>
+
+      <section class="panel export-panel hidden" id="exportSection">
+        <div class="export-copy">
+          <div class="kicker">04 · EXPORT</div>
+          <h2>Druckfertigen Vertragsleitfaden erzeugen</h2>
+          <p>Hochformat A4, klar lesbar und mit ausreichend großen Barcodes zum direkten Nachbestellen. Bei vielen Artikeln wird automatisch auf mehrere Seiten verteilt.</p>
+          <div class="ean-selector" aria-label="EAN-Ausgabe auswählen">
+            <div class="ean-selector-copy"><b>Welche EAN soll in die PDF?</b><small>Die Vorschau oben wechselt sofort mit.</small></div>
+            <div class="ean-options">
+              <label class="ean-option"><input type="radio" name="eanMode" value="case" checked><span><b>Gebinde-EAN</b><small>für Karton / Gebinde</small></span></label>
+              <label class="ean-option"><input type="radio" name="eanMode" value="pack"><span><b>Packungs-EAN</b><small>für Einzelpackung</small></span></label>
+            </div>
+            <small class="ean-fallback-note">Falls es für einen Artikel nur eine EAN gibt, wird diese automatisch verwendet und als Ersatz gekennzeichnet.</small>
+          </div>
+        </div>
+        <div class="export-actions">
+          <div class="export-check"><span>✓</span><div><b id="exportCount">0 Artikel</b><small>werden in die PDF übernommen</small></div></div>
+          <button class="btn primary big" id="generatePdfBtn" type="button">PDF erstellen</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="productModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-head"><div><div class="kicker">EAN-DATENBANK</div><h2 id="modalTitle">Artikel ergänzen</h2></div><button class="icon-btn" id="closeModal" type="button">×</button></div>
+      <label class="search"><span>⌕</span><input id="productSearch" placeholder="Marke, Produkt oder Variante suchen …" /></label>
+      <div class="db-results" id="dbResults"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
