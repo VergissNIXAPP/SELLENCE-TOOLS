@@ -10,33 +10,8 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon-192.png" sizes="192x192">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="tools-v5.css?v=20260918-2338">
-  <link rel="stylesheet" href="styles-v5.css?v=20260918-2338">
-  <style id="sellence-critical-layout-v5">
-    /* Critical layout override: deliberately inline so stale PWA/CSS caches cannot undo centering. */
-    .sectionHead.sectionHead--compact{
-      display:flex !important;
-      justify-content:center !important;
-      align-items:center !important;
-      text-align:center !important;
-      width:100% !important;
-    }
-    .sectionHead.sectionHead--compact > div{
-      width:100% !important;
-      display:flex !important;
-      flex-direction:column !important;
-      justify-content:center !important;
-      align-items:center !important;
-      text-align:center !important;
-    }
-    .sectionHead.sectionHead--compact .sectionKicker,
-    .sectionHead.sectionHead--compact h3,
-    .sectionHead.sectionHead--compact .sectionLead{
-      margin-left:auto !important;
-      margin-right:auto !important;
-      text-align:center !important;
-    }
-  </style>
+  <link rel="stylesheet" href="tools.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="ambient ambient--one" aria-hidden="true"></div>
@@ -46,37 +21,26 @@
     <header class="hero" role="banner">
       <div class="hero__glow hero__glow--a"></div>
       <div class="hero__glow hero__glow--b"></div>
-      <div class="hero__noise" aria-hidden="true"></div>
-
-      <div class="heroTopbar">
-        <div class="workspaceStatus"><span class="workspaceStatusDot" aria-hidden="true"></span>Bereit</div>
-      </div>
-
       <div class="heroCopy heroCopy--centered">
-        <div class="heroEyebrow">DEIN DIGITALER AUSSENDIENST-HUB</div>
         <h1 class="heroTitle heroTitle--sellence">
           <span class="heroTitleMain">SELLENCE</span>
           <span class="heroTitleSub">TOOLS</span>
         </h1>
         <p class="heroText heroText--tagline heroText--taglineCenter">Digital · Einfach · Arbeiten</p>
         <div class="heroPills" aria-label="SELLENCE Vorteile">
-          <span><b>⚡</b> Schnellstart</span>
-          <span><b>🔒</b> Lokal gespeichert</span>
-          <span><b>📱</b> Mobil optimiert</span>
+          <span>⚡ Schnellstart</span>
+          <span>🔒 Lokal gespeichert</span>
+          <span>📱 App-ready</span>
         </div>
-      </div>
-
-      <div class="heroBottomLine" aria-hidden="true">
-        <span></span><small>SELLENCE PREMIUM TOOL SUITE</small><span></span>
       </div>
     </header>
 
     <section class="surface" aria-label="Tool Auswahl">
       <div class="sectionHead sectionHead--center">
         <div>
-          <div class="sectionKicker sectionKicker--workspace">WORKSPACE</div>
           <h2><span>Dein Command Center</span></h2>
-          <p class="sectionLead">Alle wichtigen SELLENCE Tools zentral an einem Ort – auswählen und direkt loslegen.</p>
+          <p class="sectionLead">Wähle dein Tool und starte direkt in deinen Außendienst-Workflow.</p>
+          
         </div>
       </div>
 
@@ -87,6 +51,16 @@
             <div class="kicker kicker--highlight">APP HIGHLIGHT</div>
             <p class="name name--highlight">EAN&apos;s</p>
             <p class="desc">Produkte auswählen, Export erstellen und sauber für die Katasymbol App vorbereiten.</p>
+          </div>
+          <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg></div>
+        </a>
+
+        <a class="tile tile--highlight tile--heroHighlight tile--contractNew" data-tool="vertragsleitfaden-highlight" href="./vertragsleitfaden/index.html" aria-label="SELLENCE Vertragsleitfaden Creator öffnen">
+          <div class="thumb thumb--highlight thumb--contract"><img src="./assets/vertragsleitfaden.png" alt="SELLENCE Vertragsleitfaden Creator Icon"></div>
+          <div class="meta">
+            <div class="kicker kicker--newApp">APP NEUHEIT</div>
+            <p class="name name--highlight">Vertragsleitfaden Creator</p>
+            <p class="desc">DIS-Vertragsseiten erfassen, Pflichtartikel erkennen und einen professionellen PDF-Leitfaden mit Gebinde- oder Packungs-EAN erstellen.</p>
           </div>
           <div class="go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13.2 5.3a1 1 0 0 1 1.4 0l6.4 6.4a1 1 0 0 1 0 1.4l-6.4 6.4a1 1 0 1 1-1.4-1.4l4.7-4.7H4a1 1 0 1 1 0-2h13.5l-4.7-4.7a1 1 0 0 1 0-1.4z"/></svg></div>
         </a>
@@ -117,8 +91,8 @@
 
       <div class="sectionHead sectionHead--compact">
         <div>
-          <div class="sectionKicker sectionKicker--apps">DEINE TOOLS</div>
-          <h3>Schnellzugriff</h3><p class="sectionLead sectionLead--compact">Für deinen täglichen Workflow.</p>
+          <div class="sectionKicker sectionKicker--apps">WEITERE APPS</div>
+          <h3>Schnellzugriff</h3>
         </div>
       </div>
 
@@ -356,11 +330,7 @@
     clearBtn.addEventListener("click",()=>{clearAuth();passEl.value="";errEl.style.display="none";passEl.focus();});
     if(!isAuthed()) showLogin();
     if("serviceWorker" in navigator){
-      window.addEventListener("load",()=>{
-        navigator.serviceWorker.register("./sw.js")
-          .then(reg=>reg.update())
-          .catch(()=>{});
-      });
+      window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
     }
   </script>
   <script src="./assets/dokumente/dateien.js"></script>
