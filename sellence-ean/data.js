@@ -41,16 +41,6 @@ window.PRODUCT_DATA = [
   },
   {
     "brand": "Marlboro",
-    "name": "Red OP 3XL-Box",
-    "ean": "42491941",
-    "pack_ean": "4023500749862",
-    "pack": "34 Stück | 15,00 €",
-    "gebinde": "8 Pack. / 272 St. | 120,00 €",
-    "category": "Zigaretten",
-    "image": "assets/thumbs/marlboro-red-op-3xl-box.png"
-  },
-  {
-    "brand": "Marlboro",
     "name": "Red OP 4XL-Box",
     "ean": "42493082",
     "pack_ean": "4023500752411",
@@ -158,16 +148,6 @@ window.PRODUCT_DATA = [
     "gebinde": "8 Pack. / 224 St. | 96,00 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/marlboro-gold-op-2xl-box.png"
-  },
-  {
-    "brand": "Marlboro",
-    "name": "Gold OP 3XL-Box",
-    "ean": "42492047",
-    "pack_ean": "4023500749879",
-    "pack": "34 Stück | 15,00 €",
-    "gebinde": "8 Pack. / 272 St. | 120,00 €",
-    "category": "Zigaretten",
-    "image": "assets/thumbs/marlboro-gold-op-3xl-box.png"
   },
   {
     "brand": "Marlboro",
@@ -343,9 +323,9 @@ window.PRODUCT_DATA = [
     "brand": "L&M SELECTION",
     "name": "L&M Red Label OP 2XL-Box",
     "ean": "42466093",
-    "pack_ean": "4023500044813",
-    "pack": "28 Stück | 10,00 €",
-    "gebinde": "8 Pack. / 224 St. | 80,00 €",
+    "pack_ean": "4023500748568",
+    "pack": "28 Stück | 9,90 €",
+    "gebinde": "8 Pack. / 224 St. | 79,20 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/lm-selection-red-label-xl-box.png"
   },
@@ -353,9 +333,9 @@ window.PRODUCT_DATA = [
     "brand": "L&M SELECTION",
     "name": "L&M Blue Label OP 2XL-Box",
     "ean": "42466130",
-    "pack_ean": "4023500044820",
-    "pack": "28 Stück | 10,00 €",
-    "gebinde": "8 Pack. / 224 St. | 80,00 €",
+    "pack_ean": "4023500748575",
+    "pack": "28 Stück | 9,90 €",
+    "gebinde": "8 Pack. / 224 St. | 79,20 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/lm-selection-blue-label-xl-box.png"
   },
@@ -363,7 +343,7 @@ window.PRODUCT_DATA = [
     "brand": "L&M SELECTION",
     "name": "L&M Red Label OP 7XL-Box",
     "ean": "42492610",
-    "pack_ean": "4023500045117",
+    "pack_ean": "4023500757652",
     "pack": "60 Stück | 20,00 €",
     "gebinde": "3 Pack. / 180 St. | 60,00 €",
     "category": "Zigaretten",
@@ -373,7 +353,7 @@ window.PRODUCT_DATA = [
     "brand": "L&M SELECTION",
     "name": "L&M Blue Label OP 7XL-Box",
     "ean": "42493259",
-    "pack_ean": "4023500045124",
+    "pack_ean": "4023500757669",
     "pack": "60 Stück | 20,00 €",
     "gebinde": "3 Pack. / 180 St. | 60,00 €",
     "category": "Zigaretten",
@@ -398,16 +378,6 @@ window.PRODUCT_DATA = [
     "gebinde": "8 Pack. / 192 St. | 80,00 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/lundm-red-label-op-xl-box.png"
-  },
-  {
-    "brand": "L&M",
-    "name": "Red Label OP XL-Box LPE*",
-    "ean": "42466406",
-    "pack_ean": "4023500750158",
-    "pack": "26 Stück | 10,00 €",
-    "gebinde": "8 Pack. / 208 St. | 80,00 €",
-    "category": "Zigaretten",
-    "image": "assets/thumbs/lundm-red-label-op-xl-box-lpe.png"
   },
   {
     "brand": "L&M",
@@ -481,16 +451,6 @@ window.PRODUCT_DATA = [
   },
   {
     "brand": "L&M",
-    "name": "Blue Label OP XL-Box LPE*",
-    "ean": "42466772",
-    "pack_ean": "4023500750165",
-    "pack": "26 Stück | 10,00 €",
-    "gebinde": "8 Pack. / 208 St. | 80,00 €",
-    "category": "Zigaretten",
-    "image": "assets/thumbs/lundm-blue-label-op-xl-box-lpe.png"
-  },
-  {
-    "brand": "L&M",
     "name": "Blue Label OP 2XL-Box",
     "ean": "42466031",
     "pack_ean": "4023500757331",
@@ -561,16 +521,6 @@ window.PRODUCT_DATA = [
   },
   {
     "brand": "Chesterfield",
-    "name": "Original OP XL-Box LPE*",
-    "ean": "42466239",
-    "pack_ean": "4023500750134",
-    "pack": "26 Stück | 10,00 €",
-    "gebinde": "8 Pack. / 208 St. | 80,00 €",
-    "category": "Zigaretten",
-    "image": "assets/thumbs/chesterfield-original-op-xl-box-lpe.png"
-  },
-  {
-    "brand": "Chesterfield",
     "name": "Original OP 2XL-Box",
     "ean": "42466680",
     "pack_ean": "4023500757508",
@@ -598,16 +548,6 @@ window.PRODUCT_DATA = [
     "gebinde": "8 Pack. / 192 St. | 80,00 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/chesterfield-blue-op-xl-box.png"
-  },
-  {
-    "brand": "Chesterfield",
-    "name": "Blue OP XL-Box LPE*",
-    "ean": "42466307",
-    "pack_ean": "4023500750141",
-    "pack": "26 Stück | 10,00 €",
-    "gebinde": "8 Pack. / 208 St. | 80,00 €",
-    "category": "Zigaretten",
-    "image": "assets/thumbs/chesterfield-blue-op-xl-box-lpe.png"
   },
   {
     "brand": "Chesterfield",
@@ -831,7 +771,7 @@ window.PRODUCT_DATA = [
   },
   {
     "brand": "TEREA",
-    "name": "Amber XL",
+    "name": "Amber Selection XL",
     "ean": "4023500047081",
     "pack_ean": "4023500747080",
     "pack": "26 Stück | 10,00 €",
@@ -841,7 +781,7 @@ window.PRODUCT_DATA = [
   },
   {
     "brand": "TEREA",
-    "name": "Russet XL",
+    "name": "Russet Selection XL",
     "ean": "4023500047098",
     "pack_ean": "4023500747097",
     "pack": "26 Stück | 10,00 €",
@@ -851,7 +791,7 @@ window.PRODUCT_DATA = [
   },
   {
     "brand": "TEREA",
-    "name": "Turquoise XL",
+    "name": "Turquoise Selection XL",
     "ean": "4023500047166",
     "pack_ean": "4023500747165",
     "pack": "26 Stück | 10,00 €",
@@ -861,7 +801,7 @@ window.PRODUCT_DATA = [
   },
   {
     "brand": "TEREA",
-    "name": "Sienna XL",
+    "name": "Sienna Selection XL",
     "ean": "4023500047173",
     "pack_ean": "4023500747172",
     "pack": "26 Stück | 10,00 €",
@@ -871,7 +811,7 @@ window.PRODUCT_DATA = [
   },
   {
     "brand": "TEREA",
-    "name": "Teak XL",
+    "name": "Teak Selection XL",
     "ean": "4023500047593",
     "pack_ean": "4023500747592",
     "pack": "26 Stück | 10,00 €",
@@ -904,8 +844,8 @@ window.PRODUCT_DATA = [
     "name": "Ice Mint",
     "ean": "4023500047555",
     "pack_ean": "4023500747554",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-ice-mint.png"
   },
@@ -914,8 +854,8 @@ window.PRODUCT_DATA = [
     "name": "Green Mint",
     "ean": "4023500054478",
     "pack_ean": "4023500754477",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-green-mint.png"
   },
@@ -924,8 +864,8 @@ window.PRODUCT_DATA = [
     "name": "Sour Apple",
     "ean": "4023500047500",
     "pack_ean": "4023500747509",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-sour-apple.png"
   },
@@ -934,18 +874,18 @@ window.PRODUCT_DATA = [
     "name": "Cherry",
     "ean": "4023500047494",
     "pack_ean": "4023500747493",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-cherry.png"
   },
   {
     "brand": "VEEV ONE",
     "name": "Mango",
-    "ean": "4023500044417",
-    "pack_ean": "4023500744416",
-    "pack": "",
-    "gebinde": "",
+    "ean": "4023500057578",
+    "pack_ean": "4023500757577",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-mango.png"
   },
@@ -954,8 +894,8 @@ window.PRODUCT_DATA = [
     "name": "Passion Fruit Kiwi Guava",
     "ean": "4023500046657",
     "pack_ean": "4023500746656",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-passion-fruit-kiwi-guava.png"
   },
@@ -964,8 +904,8 @@ window.PRODUCT_DATA = [
     "name": "Classic Tobacco",
     "ean": "4023500044387",
     "pack_ean": "4023500744386",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-classic-tobacco.png"
   },
@@ -974,8 +914,8 @@ window.PRODUCT_DATA = [
     "name": "Blue Mint",
     "ean": "4023500044394",
     "pack_ean": "4023500744393",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-blue-mint.png"
   },
@@ -984,8 +924,8 @@ window.PRODUCT_DATA = [
     "name": "Peach",
     "ean": "4023500044455",
     "pack_ean": "4023500744454",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-peach.png"
   },
@@ -994,8 +934,8 @@ window.PRODUCT_DATA = [
     "name": "Blueberry",
     "ean": "4023500044448",
     "pack_ean": "4023500744447",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-blueberry.png"
   },
@@ -1004,8 +944,8 @@ window.PRODUCT_DATA = [
     "name": "Strawberry",
     "ean": "4023500044431",
     "pack_ean": "4023500744430",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-strawberry.png"
   },
@@ -1014,8 +954,8 @@ window.PRODUCT_DATA = [
     "name": "Watermelon",
     "ean": "4023500044400",
     "pack_ean": "4023500744409",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-watermelon.png"
   },
@@ -1024,8 +964,8 @@ window.PRODUCT_DATA = [
     "name": "Blue Raspberry",
     "ean": "4023500044479",
     "pack_ean": "4023500744478",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-blue-raspberry.png"
   },
@@ -1034,8 +974,8 @@ window.PRODUCT_DATA = [
     "name": "Grape",
     "ean": "4023500046664",
     "pack_ean": "4023500746663",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-grape.png"
   },
@@ -1044,8 +984,8 @@ window.PRODUCT_DATA = [
     "name": "Balanced Tobacco",
     "ean": "4023500054904",
     "pack_ean": "4023500754903",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-balanced-tobacco.png"
   },
@@ -1054,48 +994,48 @@ window.PRODUCT_DATA = [
     "name": "Red Berries",
     "ean": "4023500057585",
     "pack_ean": "4023500757584",
-    "pack": "",
-    "gebinde": "",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-red-berries.png"
   },
   {
     "brand": "VEEV ONE",
-    "name": "Blueberry X",
+    "name": "Blueberry Extra",
     "ean": "4023500057738",
     "pack_ean": "4023500757737",
-    "pack": "2 Pods | 10,90 €",
-    "gebinde": "5 Pack. / 10 Pods | 49,00 €",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-blueberry-x.png"
   },
   {
     "brand": "VEEV ONE",
-    "name": "Mango X",
+    "name": "Mango Extra",
     "ean": "4023500057721",
     "pack_ean": "4023500757720",
-    "pack": "2 Pods | 10,90 €",
-    "gebinde": "5 Pack. / 10 Pods | 49,00 €",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-mango-x.png"
   },
   {
     "brand": "VEEV ONE",
-    "name": "Watermelon X",
+    "name": "Watermelon Extra",
     "ean": "4023500057745",
     "pack_ean": "4023500757744",
-    "pack": "2 Pods | 10,90 €",
-    "gebinde": "5 Pack. / 10 Pods | 49,00 €",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-watermelon-x.png"
   },
   {
     "brand": "VEEV ONE",
-    "name": "Strawberry X",
+    "name": "Strawberry Extra",
     "ean": "4023500057752",
     "pack_ean": "4023500757751",
-    "pack": "2 Pods | 10,90 €",
-    "gebinde": "5 Pack. / 10 Pods | 49,00 €",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
     "category": "VEEV Pods",
     "image": "assets/thumbs/veev-one-strawberry-x.png"
   },
@@ -1104,9 +1044,9 @@ window.PRODUCT_DATA = [
     "name": "Sour Apple",
     "ean": "4023500046794",
     "pack_ean": "4023500746793",
-    "pack": "",
-    "gebinde": "",
-    "category": "VEEV Einweg",
+    "pack": "1 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 5 St. | UVP 54,50 €",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-now-ultra-sour-apple.png"
   },
   {
@@ -1114,9 +1054,9 @@ window.PRODUCT_DATA = [
     "name": "Watermelon",
     "ean": "4023500046763",
     "pack_ean": "4023500746762",
-    "pack": "",
-    "gebinde": "",
-    "category": "VEEV Einweg",
+    "pack": "1 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 5 St. | UVP 54,50 €",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-now-ultra-watermelon.png"
   },
   {
@@ -1124,9 +1064,9 @@ window.PRODUCT_DATA = [
     "name": "Grape",
     "ean": "4023500046756",
     "pack_ean": "4023500746755",
-    "pack": "",
-    "gebinde": "",
-    "category": "VEEV Einweg",
+    "pack": "1 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 5 St. | UVP 54,50 €",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-now-ultra-grape.png"
   },
   {
@@ -1134,9 +1074,9 @@ window.PRODUCT_DATA = [
     "name": "Classic Mint",
     "ean": "4023500046725",
     "pack_ean": "4023500746724",
-    "pack": "",
-    "gebinde": "",
-    "category": "VEEV Einweg",
+    "pack": "1 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 5 St. | UVP 54,50 €",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-now-ultra-classic-mint.png"
   },
   {
@@ -1144,9 +1084,9 @@ window.PRODUCT_DATA = [
     "name": "Passion Fruit Kiwi Guava",
     "ean": "4023500046749",
     "pack_ean": "4023500746748",
-    "pack": "",
-    "gebinde": "",
-    "category": "VEEV Einweg",
+    "pack": "1 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 5 St. | UVP 54,50 €",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-now-ultra-passion-fruit-kiwi-guava.png"
   },
   {
@@ -1154,9 +1094,9 @@ window.PRODUCT_DATA = [
     "name": "Strawberry",
     "ean": "4023500046800",
     "pack_ean": "4023500746809",
-    "pack": "",
-    "gebinde": "",
-    "category": "VEEV Einweg",
+    "pack": "1 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 5 St. | UVP 54,50 €",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-now-ultra-strawberry.png"
   },
   {
@@ -1164,9 +1104,9 @@ window.PRODUCT_DATA = [
     "name": "Blue Raspberry",
     "ean": "4023500046770",
     "pack_ean": "4023500746779",
-    "pack": "",
-    "gebinde": "",
-    "category": "VEEV Einweg",
+    "pack": "1 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 5 St. | UVP 54,50 €",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-now-ultra-blue-raspberry.png"
   },
   {
@@ -1174,9 +1114,9 @@ window.PRODUCT_DATA = [
     "name": "Mango",
     "ean": "4023500046787",
     "pack_ean": "4023500746786",
-    "pack": "",
-    "gebinde": "",
-    "category": "VEEV Einweg",
+    "pack": "1 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 5 St. | UVP 54,50 €",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-now-ultra-mango.png"
   },
   {
@@ -1184,9 +1124,9 @@ window.PRODUCT_DATA = [
     "name": "Kit Velvet Black",
     "ean": "4023500044325",
     "pack_ean": "",
-    "pack": "",
+    "pack": "1 Stück | UVP 9,90 €",
     "gebinde": "",
-    "category": "VEEV Kit",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-one-kit-velvet-black.png"
   },
   {
@@ -1194,9 +1134,9 @@ window.PRODUCT_DATA = [
     "name": "Kit Silky Grey",
     "ean": "4023500044332",
     "pack_ean": "",
-    "pack": "",
+    "pack": "1 Stück | UVP 9,90 €",
     "gebinde": "",
-    "category": "VEEV Kit",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-one-kit-silky-grey.png"
   },
   {
@@ -1204,39 +1144,189 @@ window.PRODUCT_DATA = [
     "name": "Kit Freshy Green",
     "ean": "4023500044363",
     "pack_ean": "",
-    "pack": "",
+    "pack": "1 Stück | UVP 9,90 €",
     "gebinde": "",
-    "category": "VEEV Kit",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-one-kit-freshy-green.png"
   },
   {
     "brand": "VEEV ONE",
-    "name": "Kit Plus Moonlight Gold",
+    "name": "Plus Moonlight Gold",
     "ean": "4023500050319",
     "pack_ean": "",
-    "pack": "14,90 €",
+    "pack": "1 Stück | UVP 14,90 €",
     "gebinde": "",
-    "category": "VEEV Kit",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-one-plus-moonlight-gold.png"
   },
   {
     "brand": "VEEV ONE",
-    "name": "Kit Plus Starlit Purple",
+    "name": "Plus Starlit Purple",
     "ean": "4023500050326",
     "pack_ean": "",
-    "pack": "14,90 €",
+    "pack": "1 Stück | UVP 14,90 €",
     "gebinde": "",
-    "category": "VEEV Kit",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-one-plus-starlit-purple.png"
   },
   {
     "brand": "VEEV ONE",
-    "name": "Kit Plus Twilight Navy",
+    "name": "Plus Twilight Navy",
     "ean": "4023500050302",
     "pack_ean": "",
-    "pack": "14,90 €",
+    "pack": "1 Stück | UVP 14,90 €",
     "gebinde": "",
-    "category": "VEEV Kit",
+    "category": "E-Zigaretten",
     "image": "assets/thumbs/veev-one-plus-twilight-navy.png"
+  },
+  {
+    "brand": "VEEV ONE",
+    "name": "Orange",
+    "ean": "4023500049771",
+    "pack_ean": "4023500749770",
+    "pack": "2 Stück | UVP 10,90 €",
+    "gebinde": "5 Pack. / 10 St. | UVP 54,50 €",
+    "category": "VEEV Pods",
+    "image": "assets/thumbs/veev-one-orange.png"
+  },
+  {
+    "brand": "IQOS",
+    "name": "ILUMA i Kit Breeze Blue",
+    "ean": "7622100508939",
+    "pack_ean": "",
+    "pack": "1 Stück | UVP 69,00 €",
+    "gebinde": "",
+    "category": "IQOS Kits & Zubehör",
+    "image": "assets/thumbs/iqos-breeze-blue.png"
+  },
+  {
+    "brand": "IQOS",
+    "name": "ILUMA i Kit Midnight Black",
+    "ean": "7622100509011",
+    "pack_ean": "",
+    "pack": "1 Stück | UVP 69,00 €",
+    "gebinde": "",
+    "category": "IQOS Kits & Zubehör",
+    "image": "assets/thumbs/iqos-midnight-black.png"
+  },
+  {
+    "brand": "IQOS",
+    "name": "ILUMA i One Kit Breeze Blue",
+    "ean": "7622100566601",
+    "pack_ean": "",
+    "pack": "1 Stück | UVP 39,00 €",
+    "gebinde": "",
+    "category": "IQOS Kits & Zubehör",
+    "image": "assets/thumbs/iqos-iluma-i-one-breeze-blue.png"
+  },
+  {
+    "brand": "IQOS",
+    "name": "ILUMA i One Kit Midnight Black",
+    "ean": "7622100566649",
+    "pack_ean": "",
+    "pack": "1 Stück | UVP 39,00 €",
+    "gebinde": "",
+    "category": "IQOS Kits & Zubehör",
+    "image": "assets/thumbs/iqos-iluma-i-one-midnight-black.png"
+  },
+  {
+    "brand": "Marlboro",
+    "name": "Filterhülsen Red King Size",
+    "ean": "4023500001441",
+    "pack_ean": "4023500708548",
+    "pack": "200 St. | UVP 2,30 €",
+    "gebinde": "5 Packungen | UVP 11,50 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-marlboro-red-king-size.png"
+  },
+  {
+    "brand": "Marlboro",
+    "name": "Filterhülsen Red Extra",
+    "ean": "4023500001465",
+    "pack_ean": "4023500708562",
+    "pack": "250 St. | UVP 2,90 €",
+    "gebinde": "4 Packungen | UVP 11,60 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-marlboro-red-extra.png"
+  },
+  {
+    "brand": "Marlboro",
+    "name": "Filterhülsen Gold Original King Size",
+    "ean": "4023500001458",
+    "pack_ean": "4023500708555",
+    "pack": "200 St. | UVP 2,30 €",
+    "gebinde": "5 Packungen | UVP 11,50 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-marlboro-gold-king-size.png"
+  },
+  {
+    "brand": "Marlboro",
+    "name": "Filterhülsen Gold Original Extra",
+    "ean": "4023500001472",
+    "pack_ean": "4023500708586",
+    "pack": "250 St. | UVP 2,90 €",
+    "gebinde": "4 Packungen | UVP 11,60 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-marlboro-gold-extra.png"
+  },
+  {
+    "brand": "L&M",
+    "name": "Filterhülsen Red Label King Size",
+    "ean": "4023500003759",
+    "pack_ean": "4023500708593",
+    "pack": "200 St. | UVP 2,05 €",
+    "gebinde": "5 Packungen | UVP 10,25 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-lm-red-king-size.png"
+  },
+  {
+    "brand": "L&M",
+    "name": "Filterhülsen Red Label Extra",
+    "ean": "4023500003773",
+    "pack_ean": "4023500708616",
+    "pack": "250 St. | UVP 2,65 €",
+    "gebinde": "4 Packungen | UVP 10,60 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-lm-red-extra.png"
+  },
+  {
+    "brand": "L&M",
+    "name": "Filterhülsen Blue Label King Size",
+    "ean": "4023500003766",
+    "pack_ean": "4023500708609",
+    "pack": "200 St. | UVP 2,05 €",
+    "gebinde": "5 Packungen | UVP 10,25 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-lm-blue-king-size.png"
+  },
+  {
+    "brand": "L&M",
+    "name": "Filterhülsen Blue Label Extra",
+    "ean": "4023500003780",
+    "pack_ean": "4023500708623",
+    "pack": "250 St. | UVP 2,65 €",
+    "gebinde": "4 Packungen | UVP 10,60 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-lm-blue-extra.png"
+  },
+  {
+    "brand": "Chesterfield",
+    "name": "Filterhülsen Red King Size",
+    "ean": "4023500004619",
+    "pack_ean": "4023500708630",
+    "pack": "200 St. | UVP 2,05 €",
+    "gebinde": "5 Packungen | UVP 10,25 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-chesterfield-red-king-size.png"
+  },
+  {
+    "brand": "Chesterfield",
+    "name": "Filterhülsen Red Extra",
+    "ean": "4023500004633",
+    "pack_ean": "4023500708654",
+    "pack": "250 St. | UVP 2,65 €",
+    "gebinde": "4 Packungen | UVP 10,60 €",
+    "category": "Filterhülsen",
+    "image": "assets/thumbs/filter-chesterfield-red-extra.png"
   }
 ];
