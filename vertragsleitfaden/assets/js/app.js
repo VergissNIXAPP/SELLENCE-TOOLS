@@ -3,7 +3,7 @@
 
   const DATA = window.SELLENCE_DATA;
   const productMap = new Map(DATA.products.map(([id,name,path,section]) => [id,{id,name,path,section}]));
-  const dbEntries = Object.entries(DATA.db).map(([path,v]) => ({path,...v}));
+  const dbEntries = Object.entries(DATA.db).map(([path,v]) => ({path,...v})).sort((a,b)=>(b.current?1:0)-(a.current?1:0)||a.name.localeCompare(b.name,'de'));
   const formKeys = ['veev','cigarettes','otp','hnb'];
   const formLabels = Object.fromEntries(formKeys.map(k => [k,DATA.forms[k].label]));
 
@@ -14,7 +14,7 @@
     dropzone: $('#dropzone'), fileInput: $('#fileInput'), cameraInput: $('#cameraInput'), chooseFiles: $('#chooseFiles'), cameraButton: $('#cameraButton'), pageQueue: $('#pageQueue'), analyzeBtn: $('#analyzeBtn'), demoBtn: $('#demoBtn'),
     analysisBox: $('#analysisBox'), analysisTitle: $('#analysisTitle'), analysisText: $('#analysisText'), progressValue: $('#progressValue'), progressBar: $('#progressBar'),
     review: $('#reviewSection'), summary: $('#summaryCards'), warnings: $('#scanWarnings'), groups: $('#productGroups'), export: $('#exportSection'), exportCount: $('#exportCount'), generate: $('#generatePdfBtn'),
-    addProductBtn: $('#addProductBtn'), modal: $('#productModal'), closeModal: $('#closeModal'), productSearch: $('#productSearch'), dbResults: $('#dbResults'), toast: $('#toast'), dbCount: $('#dbCount')
+    addProductBtn: $('#addProductBtn'), modal: $('#productModal'), closeModal: $('#closeModal'), productSearch: $('#productSearch'), dbResults: $('#dbResults'), toast: $('#toast'), dbCount: $('#dbCount'), eanModeInputs: $$('input[name="eanMode"]')
   };
 
   els.dbCount.textContent = String(dbEntries.length);
@@ -25,6 +25,7 @@
     warnings: [],
     pageResults: [],
     templateSigs: {},
+    eanMode: DATA.eanUpdate?.defaultMode || 'case',
     generating: false
   };
 
@@ -68,6 +69,15 @@
     els.modal.addEventListener('click',e=>{if(e.target===els.modal)closeDbModal()});
     els.productSearch.addEventListener('input',()=>renderDbResults(els.productSearch.value));
     els.generate.addEventListener('click', generateGuidePdf);
+    els.eanModeInputs.forEach(input=>{
+      input.checked=input.value===state.eanMode;
+      input.addEventListener('change',()=>{
+        if(!input.checked)return;
+        state.eanMode=input.value;
+        if(!els.review.classList.contains('hidden'))renderReview();
+        if(!els.modal.classList.contains('hidden'))renderDbResults(els.productSearch.value);
+      });
+    });
     document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDbModal()});
   }
 
@@ -295,14 +305,25 @@
   function addSelectedById(id,source='scan'){
     const p=productMap.get(id); if(!p)return;
     const db=p.path?DATA.db[p.path]:null;
-    state.selected.set(id,{...p,source,barcodeData:db?.data||null,dbName:db?.name||null});
+    state.selected.set(id,{...p,source,barcodeData:db?.data||null,packData:db?.packData||null,caseData:db?.caseData||null,packEan:db?.packEan||null,caseEan:db?.caseEan||null,dbName:db?.name||null,currentDb:!!db?.current});
   }
 
   function addDbPath(path){
     const d=DATA.db[path]; if(!d)return;
     const id='db::'+path;
-    state.selected.set(id,{id,name:d.name,path,section:d.brand||'Weitere Artikel',source:'database',barcodeData:d.data,dbName:d.name});
+    state.selected.set(id,{id,name:d.name,path,section:d.section||d.brand||'Weitere Artikel',source:'database',barcodeData:d.data||null,packData:d.packData||null,caseData:d.caseData||null,packEan:d.packEan||null,caseEan:d.caseEan||null,dbName:d.name,currentDb:!!d.current});
     renderReview(); closeDbModal(); toast('Artikel ergänzt.');
+  }
+
+  function eanModeLabel(mode=state.eanMode){return mode==='pack'?'Packungs-EAN':'Gebinde-EAN'}
+  function barcodeChoice(p,mode=state.eanMode){
+    const wantPack=mode==='pack';
+    const primaryData=wantPack?p.packData:p.caseData, primaryEan=wantPack?p.packEan:p.caseEan;
+    const fallbackData=wantPack?p.caseData:p.packData, fallbackEan=wantPack?p.caseEan:p.packEan;
+    if(primaryData)return {data:primaryData,ean:primaryEan||'',label:eanModeLabel(mode),fallback:false};
+    if(fallbackData)return {data:fallbackData,ean:fallbackEan||'',label:eanModeLabel(wantPack?'case':'pack'),fallback:true};
+    if(p.barcodeData)return {data:p.barcodeData,ean:'',label:'EAN aus Bestandsdaten',fallback:true,legacy:true};
+    return {data:null,ean:'',label:eanModeLabel(mode),fallback:false};
   }
 
   function renderReview(){
@@ -324,7 +345,10 @@
       const grid=group.querySelector('.product-grid');
       arr.forEach(p=>{
         const row=document.createElement('div');row.className='product-row';
-        row.innerHTML=`<div class="checkdot">✓</div><div class="product-name"><b>${escapeHtml(p.name)}</b><small>${p.source==='scan'?'aus Vertrag erkannt':'aus EAN-Datenbank ergänzt'}</small></div>${p.barcodeData?`<img class="barcode" src="${p.barcodeData}" alt="EAN ${escapeHtml(p.name)}">`:`<div class="barcode-missing">Kein exakter EAN-Treffer<br>in der Datenbank</div>`}<button class="remove-product" title="Entfernen">×</button>`;
+        const bc=barcodeChoice(p);
+        const badge=bc.fallback?`${bc.label} · Ersatz`:bc.label;
+        const sourceText=p.source==='scan'?'aus Vertrag erkannt':'aus EAN-Datenbank ergänzt';
+        row.innerHTML=`<div class="checkdot">✓</div><div class="product-name"><b>${escapeHtml(p.name)}</b><small>${sourceText}</small></div>${bc.data?`<div class="barcode-wrap"><span class="ean-badge ${bc.fallback?'fallback':''}">${escapeHtml(badge)}</span><img class="barcode" src="${bc.data}" alt="${escapeHtml(bc.label)} ${escapeHtml(p.name)}"><small>${bc.ean?escapeHtml(bc.ean):'Bestands-EAN'}</small></div>`:`<div class="barcode-missing">Keine ${escapeHtml(eanModeLabel())}<br>in der Datenbank</div>`}<button class="remove-product" title="Entfernen">×</button>`;
         row.querySelector('.remove-product').addEventListener('click',()=>{state.selected.delete(p.id);renderReview()});
         grid.appendChild(row);
       });
@@ -340,12 +364,13 @@
   function closeDbModal(){els.modal.classList.add('hidden')}
   function renderDbResults(query){
     const q=normalize(query); let list=dbEntries;
-    if(q)list=list.filter(x=>normalize(x.name+' '+x.brand+' '+x.path).includes(q));
+    if(q)list=list.filter(x=>normalize(x.name+' '+x.brand+' '+x.path+' '+(x.packEan||'')+' '+(x.caseEan||'')).includes(q));
     list=list.slice(0,60);
     els.dbResults.innerHTML='';
     for(const d of list){
+      const bc=barcodeChoice({...d,barcodeData:d.data||null});
       const item=document.createElement('div'); item.className='db-item';
-      item.innerHTML=`<div><b>${escapeHtml(d.name)}</b><small>${escapeHtml(d.brand)}</small></div><img src="${d.data}" alt="EAN"><button class="btn secondary" type="button">Hinzufügen</button>`;
+      item.innerHTML=`<div class="db-copy"><b>${escapeHtml(d.name)}</b><small>${escapeHtml(d.brand||'')} ${d.current?'<span class="current-badge">2026 aktuell</span>':''}</small></div>${bc.data?`<div class="db-ean"><span>${escapeHtml(bc.fallback?bc.label+' · Ersatz':bc.label)}</span><img src="${bc.data}" alt="EAN"><small>${bc.ean?escapeHtml(bc.ean):'Bestands-EAN'}</small></div>`:'<div class="barcode-missing">Keine EAN</div>'}<button class="btn secondary" type="button">Hinzufügen</button>`;
       item.querySelector('button').addEventListener('click',()=>addDbPath(d.path));els.dbResults.appendChild(item);
     }
     if(!list.length)els.dbResults.innerHTML='<div class="warning">Keine passenden EAN-Datensätze gefunden.</div>';
@@ -362,10 +387,10 @@
     if(!items.length)return;
     state.generating=true; els.generate.disabled=true; els.generate.textContent='PDF wird erstellt …';
     try{
-      const canvases=await renderPdfPages(items,{market,contact,phone,start:startDate,end:endDate});
+      const canvases=await renderPdfPages(items,{market,contact,phone,start:startDate,end:endDate,eanMode:state.eanMode});
       const jpgs=canvases.map(c=>dataUrlToBytes(c.toDataURL('image/jpeg',.99)));
       const pdf=buildImagePdf(jpgs,canvases.map(c=>({w:c.width,h:c.height})));
-      const blob=new Blob([pdf],{type:'application/pdf'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Pflichtartikel_${sanitizeFilename(market)}.pdf`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2500);
+      const blob=new Blob([pdf],{type:'application/pdf'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Pflichtartikel_${sanitizeFilename(market)}_${state.eanMode==='pack'?'Packungs-EAN':'Gebinde-EAN'}.pdf`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2500);
       toast('PDF wurde erstellt.');
     }catch(err){console.error(err);toast('PDF konnte nicht erstellt werden: '+(err.message||err));}
     finally{state.generating=false;els.generate.disabled=false;els.generate.textContent='PDF erstellen';}
@@ -387,10 +412,10 @@
       const startY=pageNo===1?firstStart:nextStart;
       for(let i=0;i<batch.length;i++){
         const col=i%2,row=Math.floor(i/2),x=M+col*(COL+GAP),y=startY+row*CARD_H;
-        await drawProductCard(ctx,batch[i],x,y,COL,CARD_H-14);
+        await drawProductCard(ctx,batch[i],x,y,COL,CARD_H-14,meta.eanMode);
       }
       ctx.strokeStyle='#e4e7ec';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(M,footerY);ctx.lineTo(W-M,footerY);ctx.stroke();
-      ctx.fillStyle='#667085';ctx.font='600 21px Arial';ctx.fillText('EAN direkt zum Nachbestellen scannen · Vertragsübersicht als Arbeitshilfe',M,footerY+43);
+      ctx.fillStyle='#667085';ctx.font='600 21px Arial';ctx.fillText(`${eanModeLabel(meta.eanMode)} direkt zum Nachbestellen scannen · Vertragsübersicht als Arbeitshilfe`,M,footerY+43);
       ctx.textAlign='right';ctx.fillText(`Seite ${pageNo} von ${totalPages}`,W-M,footerY+43);ctx.textAlign='left';
       pages.push(c); pageNo++;
     }
@@ -417,7 +442,7 @@
         ['VERTRAGSLAUFZEIT',`${formatDate(meta.start)} – ${formatDate(meta.end)}`],
         ['ANSPRECHPARTNER',meta.contact],
         ['TELEFON',meta.phone||'–'],
-        ['UMFANG',`${totalItems} Pflichtartikel`]
+        ['EAN-AUSGABE',`${eanModeLabel(meta.eanMode)} · ${totalItems} Artikel`]
       ];
       labels.forEach((v,i)=>{
         const x=M+i*(boxW+boxGap);
@@ -425,18 +450,17 @@
         ctx.fillStyle='#98a2b3';ctx.font='900 13px Arial';ctx.fillText(v[0],x+16,y+26);
         ctx.fillStyle='#101828';ctx.font='900 18px Arial';fitText(ctx,v[1],x+16,y+58,boxW-32);
       });
-      ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='700 14px Arial';ctx.fillText('Zum Ausdrucken und Laminieren · Artikelbestand während der Vertragslaufzeit schnell prüfen',M,y+123);
     }else{
       const headerH=166;
       const grad=ctx.createLinearGradient(0,0,W,headerH);grad.addColorStop(0,'#0b1220');grad.addColorStop(1,'#17243a');ctx.fillStyle=grad;ctx.fillRect(0,0,W,headerH);
       ctx.fillStyle='#f97066';roundedRect(ctx,M,35,8,73,4,true);
       ctx.fillStyle='#fff';ctx.font='900 33px Arial';ctx.fillText('Pflichtartikel · Fortsetzung',M+26,72);
       ctx.fillStyle='#d0d5dd';ctx.font='700 20px Arial';fitText(ctx,meta.market,M+26,108,W*.55);
-      ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='800 19px Arial';ctx.fillText(`Vertrag bis ${formatDate(meta.end)}`,W-M,70);ctx.fillStyle='#98a2b3';ctx.font='700 16px Arial';ctx.fillText(`Seite ${pageNo} von ${totalPages}`,W-M,104);ctx.textAlign='left';
+      ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='800 19px Arial';ctx.fillText(`Vertrag bis ${formatDate(meta.end)}`,W-M,70);ctx.fillStyle='#98a2b3';ctx.font='700 16px Arial';ctx.fillText(`${eanModeLabel(meta.eanMode)} · Seite ${pageNo} von ${totalPages}`,W-M,104);ctx.textAlign='left';
     }
   }
 
-  async function drawProductCard(ctx,p,x,y,w,h){
+  async function drawProductCard(ctx,p,x,y,w,h,eanMode){
     ctx.fillStyle='#fff';ctx.strokeStyle='#e4e7ec';ctx.lineWidth=2;roundedRect(ctx,x,y,w,h,18,true,true);
     const sec=p.section||'Artikel';
     ctx.font='800 14px Arial';
@@ -447,15 +471,18 @@
 
     const bx=x+w*.48,by=y+19,bw=w*.49-17,bh=h-38;
     ctx.fillStyle='#fff';roundedRect(ctx,bx,by,bw,bh,12,true);ctx.strokeStyle='#eef1f5';roundedRect(ctx,bx,by,bw,bh,12,false,true);
-    if(p.barcodeData){
-      const im=await loadImage(p.barcodeData);
-      const padX=12,padY=10,maxW=bw-padX*2,maxH=bh-padY*2;
+    const bc=barcodeChoice(p,eanMode);
+    ctx.fillStyle=bc.fallback?'#b54708':'#667085';ctx.font='900 12px Arial';
+    fitText(ctx,bc.fallback?`${bc.label} · Ersatz`:bc.label,bx+12,by+18,bw-24);
+    if(bc.data){
+      const im=await loadImage(bc.data);
+      const padX=12,imageTop=by+27,maxW=bw-padX*2,maxH=bh-40;
       const scale=Math.min(maxW/im.naturalWidth,maxH/im.naturalHeight);
       const dw=Math.max(1,Math.floor(im.naturalWidth*scale)),dh=Math.max(1,Math.floor(im.naturalHeight*scale));
-      const dx=Math.round(bx+(bw-dw)/2),dy=Math.round(by+(bh-dh)/2);
+      const dx=Math.round(bx+(bw-dw)/2),dy=Math.round(imageTop+(maxH-dh)/2);
       ctx.imageSmoothingEnabled=false;ctx.drawImage(im,dx,dy,dw,dh);ctx.imageSmoothingEnabled=true;
     }else{
-      ctx.fillStyle='#b54708';ctx.font='800 15px Arial';ctx.textAlign='center';wrapText(ctx,'Kein exakter EAN-Treffer in der Datenbank',bx+bw/2,by+bh/2-10,bw-30,20,3,true);ctx.textAlign='left';
+      ctx.fillStyle='#b54708';ctx.font='800 15px Arial';ctx.textAlign='center';wrapText(ctx,`Keine ${eanModeLabel(eanMode)} in der Datenbank`,bx+bw/2,by+bh/2-10,bw-30,20,3,true);ctx.textAlign='left';
     }
   }
 
@@ -480,8 +507,8 @@
     const total=chunks.reduce((n,c)=>n+c.length,0),out=new Uint8Array(total);let pos=0;for(const c of chunks){out.set(c,pos);pos+=c.length;}return out;
   }
 
-  function sectionRank(s){return {'VEEV':1,'Zigaretten':2,'OTP':3,'Heat-not-Burn':4}[s]||9}
-  function sectionColor(s){return {'VEEV':'#7f56d9','Zigaretten':'#d92d20','OTP':'#b54708','Heat-not-Burn':'#1570ef'}[s]||'#475467'}
+  function sectionRank(s){return {'VEEV':1,'Zigaretten':2,'OTP':3,'Heat-not-Burn':4,'Filterhülsen':5}[s]||9}
+  function sectionColor(s){return {'VEEV':'#7f56d9','Zigaretten':'#d92d20','OTP':'#b54708','Heat-not-Burn':'#1570ef','Filterhülsen':'#344054'}[s]||'#475467'}
   function roundedRect(ctx,x,y,w,h,r,fill=false,stroke=false){ctx.beginPath();ctx.roundRect(x,y,w,h,r);if(fill)ctx.fill();if(stroke)ctx.stroke()}
   function wrapText(ctx,text,x,y,maxW,lineH,maxLines=3,center=false){const words=String(text).split(/\s+/);let line='',lines=[];for(const word of words){const t=line?line+' '+word:word;if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=word}else line=t}if(line)lines.push(line);lines=lines.slice(0,maxLines);if(lines.length===maxLines&&words.length>0){while(ctx.measureText(lines[maxLines-1]+'…').width>maxW&&lines[maxLines-1].length>3)lines[maxLines-1]=lines[maxLines-1].slice(0,-1);if(lines.length)lines[lines.length-1]+='…'}lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lineH));}
   function fitText(ctx,text,x,y,maxW){let t=String(text);while(ctx.measureText(t).width>maxW&&t.length>5)t=t.slice(0,-2);if(t!==text)t+='…';ctx.fillText(t,x,y)}

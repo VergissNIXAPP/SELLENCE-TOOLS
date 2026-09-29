@@ -107,6 +107,14 @@
           <div class="kicker">04 · EXPORT</div>
           <h2>Druckfertigen Vertragsleitfaden erzeugen</h2>
           <p>Hochformat A4, klar lesbar und mit ausreichend großen Barcodes zum direkten Nachbestellen. Bei vielen Artikeln wird automatisch auf mehrere Seiten verteilt.</p>
+          <div class="ean-selector" aria-label="EAN-Ausgabe auswählen">
+            <div class="ean-selector-copy"><b>Welche EAN soll in die PDF?</b><small>Die Vorschau oben wechselt sofort mit.</small></div>
+            <div class="ean-options">
+              <label class="ean-option"><input type="radio" name="eanMode" value="case" checked><span><b>Gebinde-EAN</b><small>für Karton / Gebinde</small></span></label>
+              <label class="ean-option"><input type="radio" name="eanMode" value="pack"><span><b>Packungs-EAN</b><small>für Einzelpackung</small></span></label>
+            </div>
+            <small class="ean-fallback-note">Falls es für einen Artikel nur eine EAN gibt, wird diese automatisch verwendet und als Ersatz gekennzeichnet.</small>
+          </div>
         </div>
         <div class="export-actions">
           <div class="export-check"><span>✓</span><div><b id="exportCount">0 Artikel</b><small>werden in die PDF übernommen</small></div></div>

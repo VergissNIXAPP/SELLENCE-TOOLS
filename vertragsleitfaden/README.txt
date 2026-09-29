@@ -21,3 +21,11 @@ Wichtig:
 
 Hinweis zur PDF:
 Die erzeugte PDF ist als Markt-Arbeitshilfe gedacht und ersetzt nicht den Originalvertrag.
+
+
+UPDATE 24.09.2026 - EAN-DATENBANK
+--------------------------------
+Die EAN-Datenbank wurde anhand der mitgelieferten offiziellen Sortimentsübersichten aktualisiert.
+Aktuelle Datensätze enthalten getrennte Packungs-EAN und Gebinde-EAN. Im Export kann die gewünschte Variante ausgewählt werden.
+Hat ein Artikel laut Sortimentsübersicht keine Gebinde-EAN (z. B. einzelne Geräte/Boxen), nutzt der Export die vorhandene EAN und kennzeichnet sie als Ersatz.
+Die aus den PDFs sauber ausgeschnittenen Barcode-Dateien liegen zusätzlich unter database/ean/current_2026/.
