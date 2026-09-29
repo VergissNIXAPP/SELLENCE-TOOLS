@@ -1,0 +1,10 @@
+SELLENCE-VERTRAGSLEITFADEN-CREATOR
+Version 1.1 · 23.09.2026
+
+Neu in 1.1:
+- SELLENCE-Kennzeichnung aus dem PDF-Titelbereich entfernt
+- PDF-Titelbereich hochwertiger und übersichtlicher gestaltet
+- größere, unverzerrte EAN-Barcodes; automatische Verteilung auf mehr Seiten
+- Telefonnummer für den Ansprechpartner ergänzt
+- Ansprechpartner und Telefonnummer können per „Merken“ lokal gespeichert werden
+- Vertragsstart und Vertragsende können direkt als TT.MM.JJJJ eingetippt werden
