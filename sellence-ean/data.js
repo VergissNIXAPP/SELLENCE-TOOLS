@@ -324,7 +324,7 @@ window.PRODUCT_DATA = [
     "name": "L&M Red Label OP 2XL-Box",
     "ean": "42466093",
     "pack_ean": "4023500748568",
-    "pack": "28 Stück | 9,90 €",
+    "pack": "28 Stück | 10,00 €",
     "gebinde": "8 Pack. / 224 St. | 79,20 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/lm-selection-red-label-xl-box.png"
@@ -334,7 +334,7 @@ window.PRODUCT_DATA = [
     "name": "L&M Blue Label OP 2XL-Box",
     "ean": "42466130",
     "pack_ean": "4023500748575",
-    "pack": "28 Stück | 9,90 €",
+    "pack": "28 Stück | 10,00 €",
     "gebinde": "8 Pack. / 224 St. | 79,20 €",
     "category": "Zigaretten",
     "image": "assets/thumbs/lm-selection-blue-label-xl-box.png"
