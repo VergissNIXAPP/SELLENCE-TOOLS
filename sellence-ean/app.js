@@ -1,5 +1,5 @@
 const LS_KEY = "sellence_ean_selected_v3";
-const BRAND_ORDER_KEY = "sellence_ean_group_order_v2";
+const BRAND_ORDER_KEY = "sellence_ean_group_order_v3";
 const QTY_KEY = "sellence_ean_quantities_v1";
 
 const byId = (id) => document.getElementById(id);
@@ -16,18 +16,13 @@ const BRAND_COLORS = {
   "TEREA": "#5BB8FF",
   "DELIA": "#FF3B30",
   "LEVIA": "#7a3cff",
-  "VEEV": "#FF8A00",
-  "IQOS": "#0B2A5B",
-  "MB CRAFTED": "#FFD200",
-  "MB RED": "#7c1010",
-  "MB GOLD": "#d6b85a",
-  "MB MIX": "#b60d2b",
-  "MB SONSTIGE": "#8ea1c4",
   "L&M SELECTION": "#E10600",
-  "L&M RED": "#c4004a",
-  "L&M BLUE": "#3f69b5",
-  "CHESTERFIELD ORIGINAL": "#b30424",
-  "CHESTERFIELD BLUE": "#3f6fb7",
+  "MARLBORO CRAFTED": "#FFD200",
+  "VEEV": "#FF8A00",
+  "MARLBORO": "#7c1010",
+  "L&M": "#c4004a",
+  "CHESTERFIELD": "#b30424",
+  "IQOS": "#0B2A5B",
   "F6 - PARLIAMENT - EVE": "#3aa2df"
 };
 
@@ -35,18 +30,13 @@ const GROUP_ORDER_DEFAULT = [
   "TEREA",
   "DELIA",
   "LEVIA",
-  "VEEV",
-  "IQOS",
-  "MB CRAFTED",
-  "MB RED",
-  "MB GOLD",
-  "MB MIX",
-  "MB SONSTIGE",
   "L&M SELECTION",
-  "L&M RED",
-  "L&M BLUE",
-  "CHESTERFIELD ORIGINAL",
-  "CHESTERFIELD BLUE",
+  "MARLBORO CRAFTED",
+  "VEEV",
+  "MARLBORO",
+  "L&M",
+  "CHESTERFIELD",
+  "IQOS",
   "F6 - PARLIAMENT - EVE"
 ];
 
@@ -139,23 +129,15 @@ function classifyGroup(it){
   if(brand === "TEREA") return "TEREA";
   if(brand === "DELIA") return "DELIA";
   if(brand === "LEVIA") return "LEVIA";
+  if(brand === "L&M SELECTION" || name.startsWith("L&M SELECTION")) return "L&M SELECTION";
+  if((brand === "MARLBORO" && name.startsWith("CRAFTED")) || brand === "MB CRAFTED" || name.startsWith("MB CRAFTED")) return "MARLBORO CRAFTED";
   if(brand === "VEEV" || brand === "VEEV ONE" || brand === "VEEV NOW ULTRA") return "VEEV";
+  if(brand === "MARLBORO") return "MARLBORO";
+  if(brand === "L&M") return "L&M";
+  if(brand === "CHESTERFIELD") return "CHESTERFIELD";
   if(brand === "IQOS") return "IQOS";
 
-  if(name.startsWith("MB CRAFTED") || brand === "MB CRAFTED" || (brand === "MARLBORO" && name.startsWith("CRAFTED"))) return "MB CRAFTED";
-  if(name.startsWith("MB RED")) return "MB RED";
-  if(name.startsWith("MB GOLD")) return "MB GOLD";
-  if(name.startsWith("MB MIX")) return "MB MIX";
-  if(name.startsWith("MB ")) return "MB SONSTIGE";
-
-  if(brand === "L&M SELECTION" || name.startsWith("L&M SELECTION")) return "L&M SELECTION";
-  if(name.startsWith("L&M RED") || name.startsWith("L&M SIMPLY RED")) return "L&M RED";
-  if(name.startsWith("L&M BLUE") || name.startsWith("L&M SIMPLY BLUE")) return "L&M BLUE";
-
-  if(name.startsWith("CHESTERFIELD ORIGINAL")) return "CHESTERFIELD ORIGINAL";
-  if(name.startsWith("CHESTERFIELD BLUE")) return "CHESTERFIELD BLUE";
-
-  if(brand === "F6" || brand === "PARLIAMENT" || brand === "EVE") return "F6 - PARLIAMENT - EVE";
+  if(brand === "F6" || brand === "PARLIAMENT" || brand === "PARLIAMENT NIGHT" || brand === "EVE" || brand === "EVE 120") return "F6 - PARLIAMENT - EVE";
 
   return it.brand || "SONSTIGE";
 }
@@ -511,33 +493,78 @@ function hideExportModal(){
 function exportBrandNameForCSV(it){
   const brand = String(it?.brand || "").trim();
   const upper = brand.toUpperCase();
+  const name = String(it?.name || "").trim().toUpperCase();
 
-  if(upper === "MARLBORO") return "MB";
+  if(upper === "MARLBORO" && name.startsWith("CRAFTED")) return "Marlboro Crafted";
+  if(upper === "MARLBORO") return "Marlboro";
   if(upper === "VEEV ONE") return "VEEV One";
   if(upper === "VEEV NOW ULTRA") return "VEEV Now Ultra";
   if(upper === "TEREA") return "TEREA";
   if(upper === "DELIA") return "DELIA";
   if(upper === "LEVIA") return "LEVIA";
   if(upper === "L&M SELECTION") return "L&M Selection";
+  if(upper === "L&M") return "L&M";
+  if(upper === "CHESTERFIELD") return "Chesterfield";
   if(upper === "F6") return "F6";
   if(upper === "EVE 120") return "EVE 120";
   if(upper === "PARLIAMENT NIGHT") return "Parliament Night";
   return brand;
 }
 
-function exportProductNameForCSV(it){
-  const brand = exportBrandNameForCSV(it);
-  const name = String(it?.name || "").trim();
-  if(!brand) return name;
-  if(!name) return brand;
+function exportPriceForCSV(it){
+  const pack = String(it?.pack || "");
+  const matches = [...pack.matchAll(/(\d+[,.]\d{2})\s*€/g)];
+  if(!matches.length) return "";
+  let price = matches[matches.length - 1][1].replace(".", ",");
+  price = price.replace(/,00$/, "");
+  return `${price}€`;
+}
 
-  const normalizedName = name.toUpperCase();
-  const normalizedBrand = brand.toUpperCase();
-  if(normalizedName === normalizedBrand || normalizedName.startsWith(normalizedBrand + " ") || normalizedName.startsWith(normalizedBrand + "-")){
-    return name;
+function cleanExportProductPart(it){
+  let name = String(it?.name || "").trim();
+  const brandUpper = String(it?.brand || "").trim().toUpperCase();
+
+  // L&M Selection enthält "L&M" bereits im Produktnamen – für den Export einmalig entfernen.
+  if(brandUpper === "L&M SELECTION") name = name.replace(/^L&M\s+/i, "");
+
+  // Bei Crafted steht "Crafted" bereits in der Export-Marke.
+  if(brandUpper === "MARLBORO") name = name.replace(/^Crafted\s+/i, "");
+
+  // Technische Verpackungsbegriffe kürzen. XL wird normalerweise nicht exportiert.
+  // Ausnahme: die fünf TEREA 10,00-€-Sorten, bei denen XL Teil des offiziellen Namens ist.
+  const keepTereaXL = brandUpper === "TEREA"
+    && /\bXL\b/i.test(name)
+    && /10[,.]00\s*€/.test(String(it?.pack || ""));
+
+  name = name
+    .replace(/\bOP\b/gi, " ")
+    .replace(/\bBox\b/gi, " ")
+    .replace(/\bLabel\b/gi, " ")
+    .replace(/\bSelection\b/gi, " ");
+
+  if(!keepTereaXL){
+    name = name.replace(/\b\d*XL\b/gi, " ");
   }
 
-  return `${brand} ${name}`.trim();
+  name = name
+    .replace(/\s*-\s*/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return name;
+}
+
+function exportProductNameForCSV(it){
+  const brand = exportBrandNameForCSV(it);
+  const product = cleanExportProductPart(it);
+  const price = exportPriceForCSV(it);
+  return [brand, product, price].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+}
+
+function csvField(value){
+  const text = String(value ?? "");
+  if(/[",\r\n]/.test(text)) return `"${text.replace(/"/g, '""')}"`;
+  return text;
 }
 
 function doExportCSV(mode){
@@ -557,7 +584,7 @@ function doExportCSV(mode){
     }
     const qty = getQuantity(itemKey(it));
     for(let i=0; i<qty; i++){
-      lines.push(`${exportProductNameForCSV(it)},${eanOut}`);
+      lines.push(`${csvField(exportProductNameForCSV(it))},${csvField(eanOut)}`);
     }
   }
 
