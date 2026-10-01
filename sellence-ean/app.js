@@ -515,8 +515,8 @@ function exportPriceForCSV(it){
   const pack = String(it?.pack || "");
   const matches = [...pack.matchAll(/(\d+[,.]\d{2})\s*€/g)];
   if(!matches.length) return "";
-  let price = matches[matches.length - 1][1].replace(".", ",");
-  price = price.replace(/,00$/, "");
+  let price = matches[matches.length - 1][1].replace(",", ".");
+  price = price.replace(/\.00$/, "");
   return `${price}€`;
 }
 
