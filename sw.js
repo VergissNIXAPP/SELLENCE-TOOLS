@@ -1,4 +1,4 @@
-const CACHE_NAME = "sellence-tools-contract-app-v7777-20260924";
+const CACHE_NAME = "sellence-tools-contract-app-v77777-20260924";
 const CORE_FILES = [
   "./",
   "./index.html",
