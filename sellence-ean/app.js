@@ -13,6 +13,7 @@ const heroBrandsEl = byId("heroBrands");
 
 // Gruppen-/Marken-Rahmenfarben
 const BRAND_COLORS = {
+  "NEUHEITEN": "#36e6b0",
   "TEREA": "#5BB8FF",
   "DELIA": "#FF3B30",
   "LEVIA": "#7a3cff",
@@ -27,6 +28,7 @@ const BRAND_COLORS = {
 };
 
 const GROUP_ORDER_DEFAULT = [
+  "NEUHEITEN",
   "TEREA",
   "DELIA",
   "LEVIA",
@@ -126,6 +128,10 @@ function classifyGroup(it){
   const name = (it.name || "").toUpperCase();
   const brand = (it.brand || "").toUpperCase();
 
+  // Neuheiten bleiben ihrer originalen Produktmarke zugeordnet,
+  // werden im Katalog jedoch gesammelt als erste Kategorie angezeigt.
+  if(brand === "TEREA" && (name === "BOLD BLACK" || name === "BOLD RED" || name.endsWith(" SELECTION XL"))) return "NEUHEITEN";
+  if(brand === "L&M SELECTION") return "NEUHEITEN";
   if(brand === "TEREA") return "TEREA";
   if(brand === "DELIA") return "DELIA";
   if(brand === "LEVIA") return "LEVIA";
@@ -172,7 +178,7 @@ function loadBrandOrder(){
       }
     }
     for(const b of all){ if(!set.has(b)) clean.push(b); }
-    return clean;
+    return ["NEUHEITEN", ...clean.filter(b=>b!=="NEUHEITEN")];
   }catch(_){
     return getAllBrands();
   }
@@ -186,6 +192,8 @@ function sortBrandEntries(entries){
   const order = loadBrandOrder();
   const idx = new Map(order.map((b,i)=>[b,i]));
   return entries.sort((a,b)=>{
+    if(a[0] === "NEUHEITEN") return -1;
+    if(b[0] === "NEUHEITEN") return 1;
     const ia = idx.has(a[0]) ? idx.get(a[0]) : 1e9;
     const ib = idx.has(b[0]) ? idx.get(b[0]) : 1e9;
     if(ia !== ib) return ia-ib;

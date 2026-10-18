@@ -1328,5 +1328,25 @@ window.PRODUCT_DATA = [
     "gebinde": "4 Packungen | UVP 10,60 €",
     "category": "Filterhülsen",
     "image": "assets/thumbs/filter-chesterfield-red-extra.png"
+  },
+  {
+    "brand": "TEREA",
+    "name": "Bold Black",
+    "ean": "4023500053297",
+    "pack_ean": "4023500753296",
+    "pack": "20 Stück | 8,00 €",
+    "gebinde": "10 Pack. / 200 St. | 80,00 €",
+    "category": "IQOS Tabaksticks",
+    "image": "assets/thumbs/terea-bold-black.png"
+  },
+  {
+    "brand": "TEREA",
+    "name": "Bold Red",
+    "ean": "4023500053303",
+    "pack_ean": "4023500753302",
+    "pack": "20 Stück | 8,00 €",
+    "gebinde": "10 Pack. / 200 St. | 80,00 €",
+    "category": "IQOS Tabaksticks",
+    "image": "assets/thumbs/terea-bold-red.png"
   }
 ];
